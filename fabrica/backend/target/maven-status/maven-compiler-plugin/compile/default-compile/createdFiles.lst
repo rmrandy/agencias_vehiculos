@@ -1,0 +1,11 @@
+com/agencias/backend/repository/RepuestoRepository.class
+com/agencias/backend/config/ConfigLoader.class
+com/agencias/backend/config/JerseyConfig.class
+com/agencias/backend/service/RepuestoService.class
+com/agencias/backend/controller/HealthResource$HealthStatus.class
+com/agencias/backend/Main.class
+com/agencias/backend/controller/RepuestoResource.class
+com/agencias/backend/controller/ErrorResponse.class
+com/agencias/backend/model/Repuesto.class
+com/agencias/backend/config/DatabaseConfig.class
+com/agencias/backend/controller/HealthResource.class

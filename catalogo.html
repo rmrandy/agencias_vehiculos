@@ -1,0 +1,32 @@
+<!doctype html><html lang="es"><head>
+    <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="estilos/style.css">/><title>Distribuidora | Catálogo</title></head>
+    <body>
+    <div class="header"><div class="brand">Distribuidora | Catálogo</div>
+    <div class="nav">
+      <a href="01-dashboard.html">Dashboard</a>
+      <a href="04-carrito.html">Carrito</a>
+      <a href="06-pedidos-a-fabrica.html">Pedidos a Fábrica</a>
+    </div></div>
+    
+    <div class="container">
+      <div class="card">
+        <h3 class="title">Búsqueda unificada (local + fábricas)</h3>
+        <p class="muted">Mockup: muestra resultados de inventario local y externos.</p>
+        <div class="row">
+          <input class="input" placeholder="Buscar por código / descripción / marca">
+          <select><option>Marca</option><option>Toyota</option><option>Honda</option></select>
+          <select><option>Disponibilidad</option><option>Local</option><option>Bajo pedido</option></select>
+          <a class="btn btn-primary" href="#">Buscar</a>
+        </div>
+    
+        <table class="table">
+          <thead><tr><th>Código</th><th>Repuesto</th><th>Origen</th><th>Precio</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>BRK-001</td><td>Pastillas de freno</td><td><span class="badge">Local</span></td><td>Q 120.00</td><td><a class="btn" href="03-detalle-repuesto.html">Ver</a></td></tr>
+            <tr><td>ENG-778</td><td>Bujía premium</td><td><span class="badge">Fábrica A</span></td><td>Q 85.00</td><td><a class="btn" href="03-detalle-repuesto.html">Ver</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </body></html>
