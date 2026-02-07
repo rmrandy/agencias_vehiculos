@@ -1,7 +1,9 @@
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/repository/RepuestoRepository.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/controller/ApiResource.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/controller/ErrorResponse.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/Main.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/config/DatabaseConfig.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/controller/DbResource.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/controller/RepuestoResource.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/config/ConfigLoader.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/controller/HealthResource.java

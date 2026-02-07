@@ -125,7 +125,27 @@ mvn exec:java -Dexec.mainClass="com.agencias.backend.Main"
 
 ## Endpoints de la API
 
-La API está disponible bajo el prefijo `/api`.
+La API está disponible bajo el prefijo `/api`. Usa siempre el puerto en la URL, por ejemplo: `http://localhost:8080/api`.
+
+### Raíz de la API
+
+**GET** `/api`
+
+Devuelve información de la API y enlaces a los demás endpoints.
+
+**Respuesta exitosa (200):**
+```json
+{
+  "api": "ok",
+  "health": "/api/health",
+  "repuestos": "/api/repuestos"
+}
+```
+
+**Ejemplo con curl:**
+```bash
+curl http://localhost:8080/api
+```
 
 ### Health Check
 
@@ -143,6 +163,33 @@ Verifica el estado del servidor.
 **Ejemplo con curl:**
 ```bash
 curl http://localhost:8080/api/health
+```
+
+### Verificación de conexión a la base de datos
+
+**GET** `/api/db`
+
+Comprueba que la aplicación puede conectarse a Oracle (útil para validar que Oracle en Docker es accesible).
+
+**Respuesta exitosa (200):**
+```json
+{
+  "status": "ok",
+  "database": "connected"
+}
+```
+
+**Respuesta si falla la conexión (503):**
+```json
+{
+  "status": "error",
+  "database": "mensaje del error"
+}
+```
+
+**Ejemplo con curl:**
+```bash
+curl http://localhost:8080/api/db
 ```
 
 ### Repuestos
@@ -265,6 +312,25 @@ Cuando ocurre un error interno:
 - **Hibernate 6.4.1**: Proveedor JPA
 - **Oracle JDBC (ojdbc11)**: Driver de conexión a Oracle
 - **Jackson 2.16.1**: Serialización/deserialización JSON
+
+## Oracle en Docker
+
+Si Oracle corre en un contenedor Docker:
+
+- **Backend en tu máquina (fuera de Docker):** Usa `DB_HOST=localhost` y asegúrate de publicar el puerto 1521 del contenedor (`docker run -p 1521:1521 ...`). Así `localhost:1521` llega al Oracle del contenedor.
+- **Backend también en Docker:** No uses `localhost` para la base de datos. Usa el nombre del contenedor de Oracle como `DB_HOST` (si están en la misma red Docker) o `host.docker.internal` para apuntar al host desde dentro del contenedor.
+
+Ejemplo con Oracle en Docker y backend en la máquina:
+```bash
+export DB_HOST=localhost
+export DB_PORT=1521
+export DB_SERVICE=XEPDB1
+export DB_USER=SYS
+export DB_PASS=tu_password
+java -jar target/backend-1.0.0.jar
+```
+
+Para comprobar que la conexión funciona: `curl http://localhost:8080/api/db`
 
 ## Notas Importantes
 

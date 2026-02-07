@@ -35,14 +35,15 @@ public class Main {
             
             ServletHolder jerseyServlet = new ServletHolder(new ServletContainer(jerseyConfig));
             jerseyServlet.setInitOrder(0);
-            context.addServlet(jerseyServlet, "/*");
+            context.addServlet(jerseyServlet, "/api/*");
             
             server.setHandler(context);
             
             // Agregar shutdown hook para cerrar EntityManagerFactory
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.out.println("Cerrando aplicación...");
-                DatabaseConfig.close();
+                try {
+                    DatabaseConfig.close();
+                } catch (Exception ignored) { }
             }));
             
             // Iniciar servidor

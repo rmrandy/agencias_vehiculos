@@ -1,6 +1,8 @@
+com/agencias/backend/controller/DbResource$DbStatus.class
 com/agencias/backend/repository/RepuestoRepository.class
 com/agencias/backend/config/ConfigLoader.class
 com/agencias/backend/config/JerseyConfig.class
+com/agencias/backend/controller/DbResource.class
 com/agencias/backend/service/RepuestoService.class
 com/agencias/backend/controller/HealthResource$HealthStatus.class
 com/agencias/backend/Main.class
