@@ -1,0 +1,21 @@
+.checkout-page { max-width: 480px; margin: 0 auto; }
+.checkout-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.checkout-user { color: #64748b; margin-bottom: 1rem; }
+.checkout-discount { background: #d1fae5; color: #065f46; padding: 0.5rem 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9375rem; }
+.checkout-error { background: #fee2e2; color: #b91c1c; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; }
+.checkout-summary { background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
+.checkout-summary ul { margin: 0.5rem 0; padding-left: 1.25rem; }
+.checkout-summary .total { font-size: 1.125rem; font-weight: 700; margin-top: 0.75rem; }
+.checkout-form { margin-top: 1rem; }
+.checkout-payment { background: #f1f5f9; padding: 1rem; border-radius: 8px; margin-bottom: 1.25rem; }
+.checkout-payment h2 { font-size: 1rem; margin: 0 0 0.35rem; }
+.checkout-payment-hint { font-size: 0.8125rem; color: #64748b; margin: 0 0 1rem; }
+.checkout-form .form-row { margin-bottom: 0.75rem; }
+.checkout-form .form-row label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem; }
+.checkout-form .form-row input { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; box-sizing: border-box; }
+.checkout-form .form-row-inline { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.payment-card-fields { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: end; }
+.payment-card-fields .input-card-number { font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
+.payment-card-fields .form-row-expiry { max-width: 6rem; }
+.payment-card-fields .input-expiry { font-variant-numeric: tabular-nums; }
+@media (max-width: 420px) { .payment-card-fields { grid-template-columns: 1fr; } }

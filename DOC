@@ -1,0 +1,642 @@
+Sí. Te dejo un esquema entidad–relación (ER) y luego el modelo más óptimo (normalizado, pensado para Oracle y para que escale bien) para el sistema de Fábrica de Repuestos del documento.  ￼
+
+⸻
+
+Esquema ER propuesto (entidades y relaciones)
+
+Usuarios y perfiles
+	•	USER (1) —— (N) USER_ADDRESS
+	•	USER (1) —— (0..1) ENTERPRISE_PROFILE (solo si es empresarial)
+	•	USER (N) —— (M) ROLE vía USER_ROLE (si querés permitir múltiples roles; si no, un role_id en USER)
+
+Catálogo de repuestos
+	•	PART (N) —— (1) CATEGORY
+	•	PART (N) —— (1) BRAND (marca del repuesto; distinto a marca del vehículo)
+	•	PART (1) —— (N) PART_IMAGE
+	•	PART (1) —— (N) PART_TECH_SPEC
+	•	PART (N) —— (M) VEHICLE vía PART_COMPATIBILITY (compatibilidad por código universal + marca/línea/año)
+
+Inventario y auditoría
+	•	PART (1) —— (N) INVENTORY_MOVEMENT (entradas, ajustes; deja trazabilidad de cada alta)
+	•	USER (1) —— (N) INVENTORY_MOVEMENT (quién lo hizo)
+
+Pedidos / compras
+	•	ORDER (N) —— (1) USER (quién compra: registrado o empresarial)
+	•	ORDER (1) —— (N) ORDER_ITEM —— (N) PART
+	•	ORDER (1) —— (N) ORDER_STATUS_HISTORY (estado: iniciada → preparación → enviado → entregado, con comentario, tracking, ETA)
+	•	ORDER (0..N) —— (1) PAYMENT (si lo separás; también puede ser 1:1)
+
+Comentarios y ratings
+	•	PART (1) —— (N) PART_REVIEW
+	•	USER (1) —— (N) PART_REVIEW
+	•	PART_REVIEW (1) —— (0..N) PART_REVIEW (self-relationship para comentarios multinivel / recursivos)
+
+Integración y logs de JSON
+	•	USER (empresarial) (1) —— (N) API_CREDENTIAL (si querés credenciales separadas para REST)
+	•	USER (1) —— (N) JSON_OPERATION_LOG (export/import/carga masiva; quién/cuándo/archivo/resultado)
+
+Reportes específicos (evaluación de mercado)
+	•	ENTERPRISE_PROFILE (1) —— (N) MARKET_FEED_CONFIG (endpoint por cliente empresarial)
+	•	MARKET_FEED_CONFIG (1) —— (N) MARKET_SALES_SNAPSHOT (lo que te mandan diario)
+	•	MARKET_SALES_SNAPSHOT (N) —— (1) PART (match por part_number, o con tabla de mapeo si no siempre calza)
+
+⸻
+
+Modelo óptimo de BD (tablas sugeridas)
+
+1) Seguridad / Usuarios
+
+USER
+	•	user_id (PK)
+	•	email (UNIQUE)
+	•	password_hash
+	•	full_name (opcional)
+	•	phone (opcional)
+	•	status (activo/bloqueado)
+	•	created_at
+
+ROLE
+	•	role_id (PK) [ADMIN, REGISTERED, ENTERPRISE, ANON] (ANON no necesita tabla realmente)
+	•	name
+
+USER_ROLE (opcional si multi-rol; si no, role_id directo en USER)
+	•	user_id (FK)
+	•	role_id (FK)
+	•	PK (user_id, role_id)
+
+USER_ADDRESS
+	•	address_id (PK)
+	•	user_id (FK)
+	•	line1, line2, city, state, zip, country
+	•	is_default_shipping
+	•	is_default_billing
+
+ENTERPRISE_PROFILE
+	•	enterprise_id (PK)
+	•	user_id (FK UNIQUE) (1:1 con USER empresarial)
+	•	default_shipping_address_id (FK)
+	•	default_billing_address_id (FK)
+	•	default_card_token (no guardes tarjeta en claro; tokeniza)
+	•	delivery_window (texto/JSON simple)
+	•	discount_percent (configurable por admin)
+
+Óptimo: tokenizar tarjeta o guardar solo last4 + token externo. En el documento piden tarjeta, pero lo “óptimo” es no guardar PAN/CVV.
+
+⸻
+
+2) Catálogo
+
+CATEGORY
+	•	category_id (PK)
+	•	name
+	•	parent_id (FK a CATEGORY) (si querés categorías jerárquicas)
+
+BRAND (marca del repuesto)
+	•	brand_id (PK)
+	•	name
+
+VEHICLE
+	•	vehicle_id (PK)
+	•	universal_vehicle_code (INDEX)
+	•	make (marca vehículo)
+	•	line (línea)
+	•	year
+	•	UNIQUE (universal_vehicle_code, year) (o lo que aplique)
+
+PART
+	•	part_id (PK)
+	•	category_id (FK)
+	•	brand_id (FK)
+	•	part_number (UNIQUE) (número de parte)
+	•	title
+	•	description
+	•	weight_lb
+	•	price
+	•	active (bool)
+	•	created_at
+
+PART_IMAGE
+	•	image_id (PK)
+	•	part_id (FK)
+	•	url/path
+	•	sort_order
+	•	CHECK (máx 3 por part) (esto se controla mejor desde app, pero se puede validar con trigger)
+
+PART_TECH_SPEC
+	•	spec_id (PK)
+	•	part_id (FK)
+	•	spec_name
+	•	spec_value
+	•	INDEX (part_id)
+
+PART_COMPATIBILITY
+	•	part_id (FK)
+	•	vehicle_id (FK)
+	•	PK (part_id, vehicle_id)
+
+⸻
+
+3) Inventario (con trazabilidad real)
+
+INVENTORY_MOVEMENT
+	•	movement_id (PK)
+	•	part_id (FK)
+	•	user_id (FK) (quién hizo la operación)
+	•	movement_type (INBOUND, ADJUSTMENT, OUTBOUND_RESERVED, OUTBOUND_SOLD) (si querés full control)
+	•	quantity (+/-)
+	•	reference (ej: “Carga masiva JSON #123”)
+	•	created_at
+
+PART_STOCK (tabla “cache” opcional para consultas rápidas)
+	•	part_id (PK/FK)
+	•	on_hand_qty
+	•	reserved_qty
+	•	updated_at
+
+Óptimo: mantener trazabilidad en INVENTORY_MOVEMENT y tener PART_STOCK como resumen.
+La alerta de “<=5” sale de on_hand_qty - reserved_qty.
+
+⸻
+
+4) Pedidos
+
+ORDER_HEADER
+	•	order_id (PK)
+	•	order_number (UNIQUE) (visible al usuario)
+	•	user_id (FK)
+	•	order_type (WEB / ENTERPRISE_API)
+	•	subtotal
+	•	shipping_total
+	•	total
+	•	currency
+	•	created_at
+
+ORDER_ITEM
+	•	order_item_id (PK)
+	•	order_id (FK)
+	•	part_id (FK)
+	•	qty
+	•	unit_price
+	•	line_total
+
+ORDER_STATUS_HISTORY
+	•	status_id (PK)
+	•	order_id (FK)
+	•	status (INITIATED, PREPARING, SHIPPED, DELIVERED)
+	•	comment
+	•	tracking_number (nullable)
+	•	eta_days (nullable)
+	•	changed_by_user_id (FK)
+	•	changed_at
+
+PAYMENT
+	•	payment_id (PK)
+	•	order_id (FK)
+	•	method (CARD)
+	•	amount
+	•	auth_code / reference
+	•	payment_status
+	•	created_at
+
+⸻
+
+5) Reviews multinivel
+
+PART_REVIEW
+	•	review_id (PK)
+	•	part_id (FK)
+	•	user_id (FK)
+	•	parent_review_id (FK a PART_REVIEW, nullable)
+	•	rating (0..5)
+	•	comment_text
+	•	created_at
+	•	INDEX (part_id), INDEX(parent_review_id)
+
+⸻
+
+6) Logs (JSON import/export + carga masiva)
+
+JSON_OPERATION_LOG
+	•	op_id (PK)
+	•	user_id (FK)
+	•	op_type (EXPORT_PARTS, IMPORT_PARTS, BULK_INVENTORY_LOAD)
+	•	file_name / file_path / checksum
+	•	success_count
+	•	error_count
+	•	error_detail (CLOB) (o tabla separada si querés granular)
+	•	created_at
+
+⸻
+
+7) Reporte evaluación de mercado (del documento)
+
+MARKET_FEED_CONFIG
+	•	feed_id (PK)
+	•	enterprise_id (FK)
+	•	endpoint_url
+	•	auth_type / token (si aplica)
+	•	active
+	•	created_at
+
+MARKET_SALES_SNAPSHOT
+	•	snapshot_id (PK)
+	•	feed_id (FK)
+	•	snapshot_date
+	•	part_number (texto recibido)
+	•	part_name (texto recibido)
+	•	qty
+	•	unit_price
+	•	currency
+	•	received_at
+	•	INDEX (snapshot_date), INDEX(part_number)
+
+(Opcional) PART_NUMBER_MAP
+	•	map_id (PK)
+	•	part_number_external
+	•	part_id (FK)
+	•	feed_id (FK nullable)
+	•	UNIQUE(part_number_external, feed_id)
+
+⸻
+
+Decisiones “óptimas” importantes (para que quede pro)
+	1.	Normalización hasta 3FN en catálogo (specs, imágenes, compatibilidad en tablas separadas).
+	2.	Inventario por movimientos + stock resumido: te da auditoría y performance a la vez.
+	3.	Estados del pedido como historial, no solo un campo: cumple “comentario por fase” + tracking + ETA.
+	4.	Reviews multinivel con parent_review_id (self FK).
+	5.	Índices clave:
+	•	PART(part_number)
+	•	VEHICLE(universal_vehicle_code, year)
+	•	PART_COMPATIBILITY(part_id, vehicle_id)
+	•	ORDER_HEADER(user_id, created_at)
+	•	ORDER_STATUS_HISTORY(order_id, changed_at)
+	•	MARKET_SALES_SNAPSHOT(snapshot_date, part_number)
+	6.	No guardar tarjeta en claro: token o vault; si te obligan, mínimo last4 + token.
+
+⸻
+
+Perfecto 🙌 te voy a consolidar todo lo relacionado al sistema de la Fábrica de Repuestos (Fabricantes de partes de vehículos – B2B) según el documento que compartiste  ￼, pero organizado y estructurado para que lo puedas usar en:
+	•	Documento de requerimientos
+	•	Project Charter
+	•	Diseño de arquitectura
+	•	Presentación
+	•	Manual técnico
+
+⸻
+
+🏭 SISTEMA: FÁBRICA DE REPUESTOS DE VEHÍCULOS (B2B)
+
+⸻
+
+🎯 1. Objetivo del Sistema
+
+El sistema de la fábrica tiene como propósito:
+	•	Vender repuestos de una marca específica.
+	•	Administrar catálogo e inventario.
+	•	Recibir pedidos de distribuidoras.
+	•	Recibir pagos.
+	•	Exponer servicios REST para integración con sistemas externos.
+	•	Generar reportes estratégicos y operativos.
+
+Forma parte del ecosistema B2B donde interactúa con sistemas de distribuidoras/ventas de repuestos  ￼.
+
+⸻
+
+🧩 2. Módulos del Sistema de Fábrica
+
+El sistema de fábrica incluye:
+	1.	Módulos Globales
+	2.	Módulos Específicos de Fabricante
+	3.	Integración REST Empresarial
+	4.	Reportes Específicos
+	5.	Tecnologías
+
+⸻
+
+👤 3. MÓDULOS GLOBALES
+
+3.1 Módulo de Usuarios
+
+Tipos de usuario:
+	1.	Administrador / Empleado
+	2.	Empresarial
+	3.	Visitante anónimo
+	4.	Visitante registrado
+
+Funcionalidades clave:
+
+🔹 Visitante Anónimo
+	•	Ver catálogo
+	•	Ver comentarios
+	•	No puede comprar
+	•	Puede registrarse (email + password + dirección + captcha)
+
+🔹 Usuario Registrado
+	•	Puede comprar
+	•	Puede dejar comentarios y ratings
+	•	Puede ver historial de pedidos
+
+🔹 Usuario Empresarial
+	•	Es asignado por administrador
+	•	Tiene descuento configurable
+	•	Puede:
+	•	Ver compras empresariales
+	•	Ver estado de envío
+	•	Configurar:
+	•	Dirección default
+	•	Tarjeta default
+	•	Horario de entrega
+
+🔹 Administrador
+
+Puede:
+	•	Administrar catálogo
+	•	Administrar portal web
+	•	Administrar reportes
+	•	Cambiar roles de usuarios
+	•	Configurar descuentos empresariales
+
+⸻
+
+📦 4. MÓDULO DE ADMINISTRACIÓN Y CATÁLOGO
+
+Este es uno de los módulos más importantes del sistema de fábrica.
+
+Campos obligatorios del repuesto:
+	•	1 a 3 fotografías
+	•	Categoría
+	•	Marca
+	•	Número de parte
+	•	Línea
+	•	Año
+	•	Código universal de vehículo
+	•	Título
+	•	Descripción
+	•	Peso
+	•	Características técnicas (tipo + valor)
+	•	Precio
+
+🧠 Vehículos
+
+Se clasifican por:
+	•	Marca
+	•	Línea
+	•	Año
+	•	Código universal (mismo código entre fabricantes)
+
+⸻
+
+📊 Inventario
+
+El administrador puede:
+	•	Agregar inventario a un repuesto
+	•	Registrar cada alta de inventario
+	•	Mostrar alerta si hay ≤ 5 unidades
+	•	Impedir compra si no hay inventario
+
+⸻
+
+📁 Importación / Exportación JSON
+
+El administrador puede:
+	•	Exportar repuestos a JSON
+	•	Importar JSON (sobreescribe datos)
+	•	Carga masiva de inventario por JSON
+
+Debe existir:
+	•	Log de operaciones
+	•	Quién hizo la operación
+	•	Cuándo
+	•	Archivo usado
+	•	Cuántos exitosos
+	•	Cuántos con error
+
+⸻
+
+🛒 5. MÓDULO DE COMPRA Y PEDIDOS
+
+Permite:
+	•	Múltiples repuestos en un pedido
+	•	Generar número de orden de compra
+
+⸻
+
+🔄 Flujo de Pedido
+	1.	Orden iniciada
+	2.	Preparación
+	3.	Enviado
+	4.	Entregado
+
+El administrador puede:
+	•	Cambiar estado
+	•	Agregar comentarios
+	•	Agregar tracking number
+	•	Agregar tiempo estimado de entrega (o usar default global)
+
+⸻
+
+🖥 Compras por Portal Web
+
+El usuario puede:
+	•	Agregar al carrito
+	•	Quitar del carrito
+	•	Modificar cantidad
+	•	Ver subtotal
+	•	Ver envío
+	•	Ver total
+
+Checkout solicita:
+	•	Dirección envío
+	•	Tarjeta
+	•	CVV
+	•	Nombre
+	•	Dirección de cobro
+
+Al finalizar:
+	•	Historial de pedidos
+	•	Detalle
+	•	Recibo descargable
+
+⸻
+
+🔗 Compras por Integración Empresarial
+
+Se realizan vía servicios REST.
+
+⸻
+
+🌐 6. MÓDULO DE INTEGRACIÓN REST (CLIENTES EMPRESARIALES)
+
+Este es el módulo clave del B2B.
+
+El sistema debe exponer endpoints REST en JSON.
+
+⸻
+
+🔐 Seguridad
+	•	Solo usuarios empresariales autenticados
+	•	Validación por password
+	•	Si no está autenticado → error
+
+⸻
+
+📌 Servicios obligatorios
+
+1️⃣ Servicio de Pedido
+
+Recibe:
+	•	Datos del usuario final
+	•	Lista de repuestos
+
+Usa:
+	•	Dirección default empresarial
+	•	Tarjeta default empresarial
+
+Responde:
+	•	JSON con:
+	•	Orden de compra
+	•	Fecha
+	•	Detalle completo
+
+Debe poder consultarse luego vía REST.
+
+⸻
+
+2️⃣ Servicio de Búsqueda
+
+Recibe:
+	•	Nombre
+	•	Descripción
+	•	Especificaciones
+
+Responde:
+	•	Lista de repuestos
+	•	Código de repuesto
+
+⸻
+
+3️⃣ Servicio de Detalle
+
+Recibe:
+	•	Código de repuesto
+
+Responde:
+	•	Todos los datos del repuesto
+
+⸻
+
+📈 7. MÓDULO DE REPORTES ESPECÍFICOS
+
+📊 Reporte Evaluación de Mercado
+
+Diariamente el sistema:
+	•	Consulta endpoint de clientes empresariales
+	•	Recibe JSON con:
+	•	Número de parte
+	•	Nombre
+	•	Cantidad vendida
+	•	Precio unitario
+
+El sistema:
+	•	Guarda datos localmente
+	•	Consolida información
+	•	Compara precios
+
+⸻
+
+📊 Reportería adicional
+	•	Ventas
+	•	Repuestos consultados
+	•	Repuestos vistos en detalle
+	•	Repuestos agregados a carrito
+
+⸻
+
+🖥 8. MÓDULO PORTAL WEB
+
+Administrador puede configurar:
+
+Globales:
+	•	Header
+	•	Footer
+
+Home:
+	•	Carrusel promociones
+	•	Categorías
+
+Categoría:
+	•	Filtros:
+	•	Marca
+	•	Línea
+	•	Año
+	•	Precio
+	•	Rating
+	•	Ordenamientos
+
+Repuesto:
+	•	Galería
+	•	Detalle
+	•	Rating
+	•	Comentarios multinivel
+	•	Botón agregar carrito (solo si hay stock)
+
+Checkout
+
+Paso a paso guiado
+
+Detalle pedidos
+
+Historial completo
+
+⸻
+
+🧠 9. TECNOLOGÍAS OBLIGATORIAS
+
+Para Fábrica de Repuestos:
+	•	Base de datos: Oracle
+	•	Backend: Java (NO Spring)
+	•	Frontend: stack aprobado por catedrático
+	•	Servidores: Linux
+	•	Webservices: REST en JSON
+
+⸻
+
+⚙️ 10. REGLAS ARQUITECTÓNICAS IMPORTANTES
+	•	Cada sistema tiene su propia base de datos.
+	•	Comunicación solo backend a backend.
+	•	No llamadas frontend a otros sistemas.
+	•	Mínimo 2 fábricas en el ecosistema.
+	•	Comunicación solo por REST.
+	•	Buenas prácticas obligatorias.
+
+⸻
+
+📚 11. ENTREGABLES RELACIONADOS A ESTE SISTEMA
+
+Para la fábrica debes entregar:
+	•	Project Charter
+	•	Documento de requerimientos funcionales y no funcionales
+	•	10 historias de usuario por miembro
+	•	Análisis de riesgos
+	•	Pruebas unitarias (Java)
+	•	Manual técnico
+	•	Manual de usuario
+	•	Documentación de webservices
+	•	Diagrama entidad-relación
+	•	Plataforma funcional en servidor independiente
+
+⸻
+
+🧩 RESUMEN GENERAL DEL SISTEMA DE FÁBRICA
+
+El sistema de fábrica:
+	•	Administra repuestos
+	•	Controla inventario
+	•	Recibe pedidos
+	•	Expone API REST
+	•	Gestiona clientes empresariales
+	•	Consolida reportes de mercado
+	•	Se comunica con múltiples distribuidoras
+	•	Funciona como núcleo proveedor del ecosistema B2B
+
+⸻

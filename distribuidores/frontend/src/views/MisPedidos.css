@@ -1,0 +1,15 @@
+.mis-pedidos-page { max-width: 640px; margin: 0 auto; }
+.mis-pedidos-page h1 { font-size: 1.5rem; margin-bottom: 1rem; }
+.pedidos-list { list-style: none; padding: 0; margin: 0; }
+.pedido-item { margin-bottom: 0.5rem; }
+.pedido-item a {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+.pedido-item a:hover { background: #f1f5f9; }

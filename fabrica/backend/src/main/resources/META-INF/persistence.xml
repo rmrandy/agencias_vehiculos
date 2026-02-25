@@ -7,6 +7,19 @@
     <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>com.agencias.backend.model.Repuesto</class>
+        <class>com.agencias.backend.model.Role</class>
+        <class>com.agencias.backend.model.AppUser</class>
+        <class>com.agencias.backend.model.EnterpriseProfile</class>
+        <class>com.agencias.backend.model.Category</class>
+        <class>com.agencias.backend.model.Brand</class>
+        <class>com.agencias.backend.model.Vehicle</class>
+        <class>com.agencias.backend.model.Part</class>
+        <class>com.agencias.backend.model.OrderHeader</class>
+        <class>com.agencias.backend.model.OrderItem</class>
+        <class>com.agencias.backend.model.OrderStatusHistory</class>
+        <class>com.agencias.backend.model.PartReview</class>
+        <class>com.agencias.backend.model.InventoryLog</class>
+        <class>com.agencias.backend.model.ImportExportLog</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <!-- Estas propiedades serán sobrescritas por la configuración programática -->

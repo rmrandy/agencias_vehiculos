@@ -1,0 +1,65 @@
+1. Configuración de proveedores
+	•	Requisito: El sistema debe permitir agregar o eliminar proveedores dinámicamente sin un límite en el número de proveedores.
+	•	Requisitos adicionales:
+	•	Proveedores internacionales: Para proveedores internacionales, se debe incluir el tipo de cambio para realizar conversiones de precios a quetzales, lo que es necesario para manejar compras de repuestos importados.
+
+2. Manejo de repuestos y pedidos
+	•	Requisito: Al ejecutar una búsqueda, el sistema debe buscar en el catálogo local y en los proveedores conectados, mostrando todos los resultados en pantalla.
+	•	Detalles:
+	•	Compra de repuestos:
+	•	El cliente podrá realizar compras con repuestos de distintos proveedores, pero el sistema generará una única orden de compra, independientemente de la procedencia de los repuestos.
+	•	El envío se fragmentará dependiendo de los tiempos de entrega de cada proveedor.
+	•	Repuestos internacionales: Para los repuestos de proveedores internacionales, el sistema debe calcular un tiempo estimado de entrega, así como un porcentaje de ganancia configurable para cada proveedor, sumando el costo de envío basado en el peso (costo por libra configurable) y el cálculo de impuestos.
+
+3. Módulo de integración REST para proveedores
+	•	Requisito: Este módulo debe exponer servicios REST para permitir que los sistemas de distribución y venta de repuestos puedan:
+	•	Realizar pedidos: Se validará la autenticación del usuario por medio de su password.
+	•	Consultar repuestos: Permitirá buscar repuestos por nombre, descripción o especificaciones.
+	•	Generar órdenes de compra: A pesar de que los repuestos pueden provenir de distintos proveedores, el sistema generará un único pedido con todos los repuestos seleccionados.
+
+4. Módulo de reportes específicos
+	•	Requisito: El sistema debe generar reportes específicos sobre las ventas diarias de repuestos, incluyendo:
+	•	Reporte de evaluación de mercado: El sistema consultará un endpoint configurado por cada cliente empresarial para entregar un listado de los repuestos vendidos por otros proveedores en determinada fecha. Este reporte incluirá el número de parte, nombre del repuesto, cantidad vendida y precio unitario.
+	•	Sistema de reportería de ventas: Deberá generar reportes sobre ventas, repuestos consultados, vistos en detalle y agregados al carrito, ya sea de clientes particulares o empresariales.
+
+5. Plataforma de Clientes Externos
+	•	Requisito: Los clientes podrán interactuar con el sistema de la siguiente manera:
+	•	Realizar compras y buscar productos: El sistema debe permitir a los clientes realizar compras y buscar repuestos en el catálogo.
+	•	Mostrar costos totales: Los costos deben incluir todos los cargos asociados, como importación, aranceles, IVA, y costos de envío local para los repuestos internacionales. Para los repuestos locales, solo deben mostrar IVA y costo de envío local.
+
+6. Plataforma de Clientes Internos
+	•	Requisito: Para los administradores del sistema:
+	•	Gestión dinámica de proveedores: El sistema permitirá agregar o eliminar proveedores (tanto internacionales como locales) de manera dinámica.
+	•	Integración con proveedores: El sistema debe reportar al fabricante si un repuesto fue visto en detalle o agregado al carrito pero no comprado.
+	•	Reportes de ventas: Se deben generar reportes de ventas y categorías de productos vendidos, entre otros.
+
+7. Tecnologías
+	•	Base de datos: El sistema de distribución/venta de repuestos debe usar SQL Server.
+	•	Backend: Se usará C# para desarrollar el backend del sistema de distribución de repuestos.
+	•	Frontend: El stack tecnológico será aprobado por el catedrático. Esto implica que debe ser una tecnología adecuada para manejar interfaces de usuario web.
+
+8. Comunicaciones entre sistemas
+	•	Requisito: Todos los sistemas deben comunicarse entre sí exclusivamente mediante servicios REST, sin llamadas directas entre el frontend y un sistema que no sea el correspondiente.
+	•	Base de datos separada: Cada sistema de fabricantes de partes de vehículos y de distribución de repuestos debe tener su propia base de datos, aunque pueden estar en la misma instancia.
+
+9. Consideraciones adicionales
+	•	Seguridad: No se especifican consideraciones estrictas de seguridad en el alcance del proyecto.
+	•	Prácticas recomendadas: Se deben aplicar buenas prácticas en el desarrollo de bases de datos, backend y servicios REST, especialmente aquellas aprendidas en los cursos correspondientes.
+
+10. Funcionalidades del portal web
+	•	Header y Footer: El portal debe tener un encabezado (con logo, búsqueda, carrito de compras, login, etc.) y un pie de página con la información básica de la empresa (teléfono, dirección, etc.).
+	•	Página de Categorías: El portal debe mostrar categorías de repuestos con imágenes y permitir al usuario filtrar productos por características como marca, precio, rating, etc.
+	•	Página de Detalle de Repuesto: Cada repuesto tendrá su propia página con información detallada como imágenes, título, descripción, características técnicas y comentarios de los usuarios.
+	•	Comentarios y Ratings: Los repuestos permitirán que los usuarios dejen comentarios y calificaciones (de 0 a 5 estrellas).
+	•	Proceso de Checkout: Este módulo guiará al cliente para completar su compra, solicitando datos de envío, tarjeta de crédito, y otros detalles necesarios para finalizar la compra.
+	•	Historial de Pedidos: Después de la compra, el cliente podrá ver el historial de sus pedidos con detalles como estatus, lista de repuestos y subtotales.
+
+11. Entregables
+	•	Código fuente: Todo el código debe estar versionado en repositorios git.
+	•	Documentación:
+	•	Project Charter de cada sistema.
+	•	Requerimientos funcionales, no funcionales y de dominio.
+	•	Historias de usuario para cada sistema.
+	•	Análisis de riesgos.
+	•	Pruebas unitarias.
+	•	Documentación técnica generada del código, con detalles sobre los servicios REST y el modelo de datos.

@@ -192,7 +192,102 @@ Comprueba que la aplicación puede conectarse a Oracle (útil para validar que O
 curl http://localhost:8080/api/db
 ```
 
-### Repuestos
+### Usuarios y roles
+
+- **Primer usuario** que se registra recibe automáticamente el rol **ADMIN**. El resto de usuarios creados reciben el rol **REGISTERED** (usuario normal).
+- Solo un usuario con rol **ADMIN** puede listar usuarios y asignar/cambiar roles desde el panel.
+
+#### Registrar usuario (crear cuenta)
+
+**POST** `/api/usuarios`
+
+**Body (JSON):**
+```json
+{
+  "email": "admin@ejemplo.com",
+  "password": "miPassword123",
+  "fullName": "Administrador",
+  "phone": "+34 600 000 000"
+}
+```
+
+**Respuesta exitosa (201):** devuelve el usuario creado (sin contraseña), con la lista de roles asignados (p. ej. `["ADMIN"]` si es el primero, o `["REGISTERED"]`).
+
+#### Listar usuarios (admin)
+
+**GET** `/api/usuarios`
+
+Devuelve la lista de usuarios con sus roles. Pensado para el panel de administración.
+
+#### Obtener un usuario por ID
+
+**GET** `/api/usuarios/{id}`
+
+Devuelve el detalle del usuario (sin contraseña).
+
+#### Asignar roles a un usuario (admin)
+
+**PUT** `/api/usuarios/{id}/roles`
+
+Requiere header **`X-Admin-User-Id`** con el ID del usuario administrador que realiza la acción.
+
+**Body (JSON):**
+```json
+{
+  "roleIds": [1, 2]
+}
+```
+
+Solo usuarios con rol ADMIN pueden usar este endpoint.
+
+#### Listar roles
+
+**GET** `/api/roles`
+
+Devuelve todos los roles disponibles (para el panel de asignación de roles).
+
+---
+
+### Catálogo
+
+#### Categorías
+
+**POST** `/api/categorias` - Crear categoría (body: `{ "name": "Motor", "parentId": null }`)  
+**GET** `/api/categorias` - Listar todas  
+**GET** `/api/categorias/{id}` - Obtener por ID  
+**PUT** `/api/categorias/{id}` - Actualizar  
+**DELETE** `/api/categorias/{id}` - Eliminar
+
+#### Marcas
+
+**POST** `/api/marcas` - Crear marca (body: `{ "name": "Bosch" }`)  
+**GET** `/api/marcas` - Listar todas  
+**GET** `/api/marcas/{id}` - Obtener por ID  
+**PUT** `/api/marcas/{id}` - Actualizar  
+**DELETE** `/api/marcas/{id}` - Eliminar
+
+#### Vehículos
+
+**POST** `/api/vehiculos` - Crear vehículo (body: `{ "universalVehicleCode": "UVC-TOY-CAM-2020", "make": "Toyota", "line": "Camry", "yearNumber": 2020 }`)  
+**GET** `/api/vehiculos` - Listar todos  
+**GET** `/api/vehiculos/{id}` - Obtener por ID  
+**PUT** `/api/vehiculos/{id}` - Actualizar  
+**DELETE** `/api/vehiculos/{id}` - Eliminar
+
+#### Repuestos (Parts)
+
+**POST** `/api/repuestos` - Crear repuesto (body: `{ "categoryId": 1, "brandId": 1, "partNumber": "ABC123", "title": "Filtro", "description": "...", "weightLb": 0.5, "price": 25.99 }`)  
+**GET** `/api/repuestos` - Listar todos (activos)  
+**GET** `/api/repuestos?categoryId=1` - Filtrar por categoría  
+**GET** `/api/repuestos?brandId=2` - Filtrar por marca  
+**GET** `/api/repuestos/{id}` - Obtener por ID  
+**GET** `/api/repuestos/numero/{partNumber}` - Buscar por número de parte  
+**PUT** `/api/repuestos/{id}` - Actualizar (body: campos a modificar + `"active": 0` para desactivar)  
+**DELETE** `/api/repuestos/{id}` - Eliminar
+
+---
+
+### Repuestos (legacy - endpoint antiguo)
 
 #### Crear un repuesto
 

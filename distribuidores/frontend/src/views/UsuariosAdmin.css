@@ -1,0 +1,31 @@
+.usuarios-admin-page { max-width: 980px; margin: 0 auto; }
+.usuarios-admin-header {
+  background: var(--card-bg); padding: 1.25rem 1.5rem; border-radius: var(--radius);
+  border: 1px solid var(--border); box-shadow: var(--card-shadow); margin-bottom: 1.5rem;
+}
+.usuarios-admin-header h1 { margin: 0; font-size: 1.375rem; font-weight: 700; color: var(--text-secondary); }
+.usuarios-admin-header .page-subtitle { color: var(--text-muted); font-size: 0.9375rem; margin: 0.25rem 0 0; }
+.usuarios-admin-empty { color: var(--text-muted); padding: 2rem; text-align: center; }
+.usuarios-admin-table-wrap {
+  overflow-x: auto; background: var(--card-bg); border-radius: var(--radius);
+  border: 1px solid var(--border); box-shadow: var(--card-shadow);
+}
+.usuarios-admin-table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+.usuarios-admin-table th, .usuarios-admin-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border-light); }
+.usuarios-admin-table thead th { background: var(--bg-subtle); font-weight: 600; color: var(--text-secondary); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.usuarios-admin-table tbody tr:hover { background: var(--border-light); }
+.usuarios-admin-table .email-cell { font-weight: 500; }
+.usuarios-admin-table .roles-cell { font-size: 0.875rem; color: var(--text-muted); }
+.status-pill { display: inline-block; padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600; }
+.status-pill.status-active { background: #d1fae5; color: #065f46; }
+.status-pill.status-inactive { background: #f1f5f9; color: #475569; }
+.status-pill.status-suspended { background: #fee2e2; color: #b91c1c; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+.modal-content { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow-xl); max-width: 420px; width: 100%; padding: 1.5rem; }
+.usuarios-admin-modal h2 { margin: 0 0 1rem; font-size: 1.125rem; }
+.usuarios-admin-modal .form-row { margin-bottom: 1rem; }
+.usuarios-admin-modal .form-row label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.35rem; }
+.usuarios-admin-modal .form-row select { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); box-sizing: border-box; }
+.roles-checkboxes { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; }
+.role-check { display: flex; align-items: center; gap: 0.35rem; cursor: pointer; font-size: 0.9375rem; }
+.usuarios-admin-modal .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem; }

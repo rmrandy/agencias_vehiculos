@@ -1,0 +1,18 @@
+.producto-form { max-width: 560px; margin: 0 auto; }
+.producto-form .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.producto-form .page-header h1 { margin: 0; font-size: 1.5rem; }
+.producto-form-fields .form-group { margin-bottom: 1rem; }
+.producto-form-fields label { display: block; font-weight: 500; margin-bottom: 0.35rem; font-size: 0.9375rem; }
+.producto-form-fields input[type="text"],
+.producto-form-fields input[type="number"],
+.producto-form-fields select,
+.producto-form-fields textarea {
+  width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; box-sizing: border-box;
+}
+.producto-form-fields .form-row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.producto-form-fields .form-actions { margin-top: 1.5rem; }
+.form-error { background: #fee2e2; color: #b91c1c; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; }
+.image-preview { margin-top: 0.5rem; }
+.image-preview img { max-width: 200px; max-height: 150px; object-fit: contain; border-radius: 8px; border: 1px solid #e2e8f0; }
+.form-hint { font-size: 0.8125rem; color: var(--text-muted); margin: 0 0 0.5rem; }
+.adding-label { font-size: 0.875rem; color: var(--primary); margin-left: 0.5rem; }

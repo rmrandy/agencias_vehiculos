@@ -16,7 +16,7 @@ La conexión se configura en `appsettings.json` o con variables de entorno. Los 
 | DBeaver / JDBC | .NET Connection String |
 |----------------|------------------------|
 | localhost:1433 | Server=localhost,1433 |
-| databaseName=master | Database=master |
+| databaseName=AgenciasDistribuidores | Database=AgenciasDistribuidores |
 | trustServerCertificate=true | TrustServerCertificate=True |
 | Usuario sa | User Id=sa |
 | Contraseña | Password=TuPassword |
@@ -25,7 +25,7 @@ La conexión se configura en `appsettings.json` o con variables de entorno. Los 
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=localhost,1433;Database=master;User Id=sa;Password=TuPassword;TrustServerCertificate=True;"
+  "DefaultConnection": "Server=localhost,1433;Database=AgenciasDistribuidores;User Id=sa;Password=TuPassword;TrustServerCertificate=True;"
 }
 ```
 
@@ -33,7 +33,7 @@ La conexión se configura en `appsettings.json` o con variables de entorno. Los 
 
 ```bash
 # Cadena completa (recomendado para no dejar la contraseña en el repo)
-export ConnectionStrings__DefaultConnection="Server=localhost,1433;Database=master;User Id=sa;Password=TuPassword;TrustServerCertificate=True;"
+export ConnectionStrings__DefaultConnection="Server=localhost,1433;Database=AgenciasDistribuidores;User Id=sa;Password=TuPassword;TrustServerCertificate=True;"
 
 # Puerto del API (por defecto 5080)
 export PORT=5080
@@ -69,14 +69,50 @@ O:
 dotnet run --urls "http://localhost:8080"
 ```
 
+## Base de datos
+
+El sistema usa **una base de datos propia** en SQL Server: **AgenciasDistribuidores** (DOC2: cada sistema con su propia BD). Al arrancar, si no existen las tablas se crean con `EnsureCreatedAsync` y se ejecuta el seed:
+
+- **Roles:** USER, ADMIN  
+- **Usuario de prueba:** `admin@distribuidor.local` / `123456`  
+- **Catálogo:** categorías (Motor, Frenos, Suspensión, Eléctrico, Filtros, etc.), marcas (Bosch, Denso, NGK, Brembo, Mann Filter, Monroe) y repuestos dummy.
+
+La estructura replica la lógica de la fábrica: CATEGORY, BRAND, PART, ORDER_HEADER, ORDER_ITEM, ORDER_STATUS_HISTORY, APP_USER, ROLE, USER_ROLE, PART_REVIEW, PROVEEDOR, más la tabla legacy Distribuidores.
+
 ## Endpoints
+
+### Locales (catálogo y compra local)
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | /api/auth/login | Login local (email + password). Devuelve userId, email, roles. |
+| POST | /api/auth/register | Registro de usuario (opcional). |
+| GET | /api/categorias | Lista categorías. |
+| GET | /api/marcas | Lista marcas. |
+| GET | /api/repuestos | Lista repuestos (opc. categoryId, brandId). |
+| GET | /api/repuestos/busqueda | Búsqueda (q, nombre, descripcion, especificaciones). |
+| GET | /api/repuestos/{id} | Un repuesto por ID. |
+| GET | /api/images/part/{id} | Imagen del repuesto (si tiene). |
+| POST | /api/pedidos | Crear pedido (body: userId, items: [{ partId, qty }]). |
+| GET | /api/pedidos/usuario/{userId} | Pedidos del usuario. |
+| GET | /api/pedidos/{orderId} | Detalle de un pedido. |
+
+### Proxy a fábrica (opcional)
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | /api/fabrica/auth/login | Login contra la fábrica (usuarios empresariales). |
+| GET | /api/fabrica/repuestos | Repuestos de la fábrica. |
+| GET/POST | /api/fabrica/pedidos | Pedidos en la fábrica. |
+
+### Otros
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | GET | /api | Info de la API y enlaces |
 | GET | /api/health | Estado del servidor `{"status":"ok"}` |
 | GET | /api/db | Comprueba conexión a SQL Server |
-| GET | /api/distribuidores | Lista de distribuidores |
+| GET | /api/distribuidores | Lista de distribuidores (legacy) |
 | GET | /api/distribuidores/{id} | Un distribuidor por ID |
 | POST | /api/distribuidores | Crear distribuidor |
 | PUT | /api/distribuidores/{id} | Actualizar distribuidor |

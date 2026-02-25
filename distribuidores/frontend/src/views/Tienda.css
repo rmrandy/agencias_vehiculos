@@ -1,0 +1,45 @@
+.tienda-page { max-width: 1200px; margin: 0 auto; }
+.page-header { margin-bottom: 1.5rem; }
+.page-header h1 { font-size: 1.5rem; margin: 0; color: #0f172a; }
+.page-subtitle { margin: 0.25rem 0 0; color: #64748b; font-size: 0.9375rem; }
+.search-bar { margin-bottom: 1rem; }
+.search-bar input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+.product-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.product-image {
+  aspect-ratio: 1;
+  background: var(--bg-subtle, #f1f5f9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+}
+.product-image:hover { opacity: 0.95; }
+.product-image img { width: 100%; height: 100%; object-fit: cover; }
+.no-image { font-size: 3rem; color: #94a3b8; }
+.product-info { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+.product-title-link { text-decoration: none; color: inherit; }
+.product-title-link:hover h3 { color: var(--primary); }
+.product-info h3 { margin: 0; font-size: 1rem; color: #0f172a; transition: color 0.15s; }
+.part-number { font-size: 0.8125rem; color: #64748b; margin: 0; }
+.price { font-size: 1.25rem; font-weight: 700; color: #059669; margin: 0; }
+.loading, .no-results { padding: 2rem; text-align: center; color: #64748b; }

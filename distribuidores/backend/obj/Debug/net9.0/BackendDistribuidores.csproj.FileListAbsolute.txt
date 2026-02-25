@@ -150,3 +150,4 @@
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/BackendDistribuidores.pdb
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/BackendDistribuidores.genruntimeconfig.cache
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/ref/BackendDistribuidores.dll
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/bin/Debug/net9.0/BCrypt.Net-Next.dll
