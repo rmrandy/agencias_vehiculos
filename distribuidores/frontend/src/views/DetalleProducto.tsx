@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { getRepuesto, getGaleria, getPartImageUrl, type Part } from '../api/repuestos'
 import { getComentarios, createComentario, type Comentario } from '../api/comentarios'
+import { reportVistoDetalle, reportAgregadoCarrito } from '../api/reportes'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
@@ -40,6 +41,7 @@ export function DetalleProducto() {
           setPart(p)
           setGalleryCount(g.count)
           setComments(c)
+          reportVistoDetalle(partId, user?.userId)
         }
       })
       .catch(() => { if (!cancelled) setPart(null) })
@@ -99,6 +101,7 @@ export function DetalleProducto() {
       navigate('/login')
       return
     }
+    reportAgregadoCarrito(partId, user?.userId)
     add(part, 1)
     toast.success('Agregado al carrito')
   }

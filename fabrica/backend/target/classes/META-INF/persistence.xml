@@ -20,6 +20,7 @@
         <class>com.agencias.backend.model.PartReview</class>
         <class>com.agencias.backend.model.InventoryLog</class>
         <class>com.agencias.backend.model.ImportExportLog</class>
+        <class>com.agencias.backend.model.PartEngagementLog</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <!-- Estas propiedades serán sobrescritas por la configuración programática -->

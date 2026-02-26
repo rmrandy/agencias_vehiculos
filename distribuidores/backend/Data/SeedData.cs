@@ -7,8 +7,30 @@ public static class SeedData
 {
     public static async Task EnsureSeedAsync(AppDbContext db, CancellationToken ct = default)
     {
+        await EnsurePartImageTableAsync(db, ct);
         await SeedRolesAndUserAsync(db, ct);
         await SeedCatalogAsync(db, ct);
+    }
+
+    /// <summary>Crea la tabla PART_IMAGE si no existe (por si la BD se creó antes de añadir galería).</summary>
+    static async Task EnsurePartImageTableAsync(AppDbContext db, CancellationToken ct)
+    {
+        try
+        {
+            await db.Database.ExecuteSqlRawAsync(
+                @"IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'PART_IMAGE')
+                  CREATE TABLE PART_IMAGE (
+                    PartImageId bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                    PartId bigint NOT NULL,
+                    SortOrder int NOT NULL,
+                    ImageData varbinary(max) NOT NULL,
+                    ImageType nvarchar(50) NULL
+                  );", ct);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[SeedData] EnsurePartImageTable: " + ex.Message);
+        }
     }
 
     static async Task SeedRolesAndUserAsync(AppDbContext db, CancellationToken ct)

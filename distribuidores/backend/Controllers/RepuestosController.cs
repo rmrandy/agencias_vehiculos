@@ -81,6 +81,11 @@ public class RepuestosController : ControllerBase
             return Ok(new { count });
         }
         catch (ArgumentException e) { return BadRequest(new { message = e.Message }); }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[Repuestos] AddImagen error: " + ex.Message);
+            return BadRequest(new { message = "No se pudo guardar la imagen. Compruebe el formato (base64) y que la base de datos tenga la tabla PART_IMAGE." });
+        }
     }
 
     /// <summary>Crear repuesto (misma lógica que fábrica). Opcional: imageData (base64), imageType.</summary>

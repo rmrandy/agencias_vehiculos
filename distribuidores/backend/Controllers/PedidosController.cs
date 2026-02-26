@@ -147,7 +147,7 @@ public class PedidosController : ControllerBase
         }));
     }
 
-    /// <summary>Actualizar estado del pedido (solo ADMIN/EMPLOYEE). Envía correo al cliente con la actualización.</summary>
+    /// <summary>Actualizar estado del pedido (solo ADMIN/EMPLOYEE). Solo se puede avanzar, no retroceder. Envía correo al cliente.</summary>
     [HttpPatch("{orderId:long}/estado")]
     public async Task<IActionResult> UpdateEstado(long orderId, [FromBody] UpdateEstadoRequest body, CancellationToken ct)
     {
@@ -155,8 +155,14 @@ public class PedidosController : ControllerBase
             return Forbid();
         try
         {
+            var newStatus = (body.Status ?? "INITIATED").Trim().ToUpperInvariant();
+            var current = await _orderService.GetLatestStatusAsync(orderId, ct);
+            var currentStatus = current?.Status?.Trim().ToUpperInvariant() ?? "INITIATED";
+            if (!CanAdvanceTo(currentStatus, newStatus))
+                return BadRequest(new { message = "No se puede retroceder el estado. Estado actual: " + (current?.Status ?? "Iniciado") + ". Solo se puede avanzar (p. ej. Iniciado → Confirmado → En preparación → Enviado → Entregado)." });
+
             await _orderService.AddOrderStatusAsync(
-                orderId, body.Status ?? "INITIATED", body.Comment, body.TrackingNumber, body.EtaDays, body.UserId.Value, ct);
+                orderId, newStatus, body.Comment, body.TrackingNumber, body.EtaDays, body.UserId.Value, ct);
             var latest = await _orderService.GetLatestStatusAsync(orderId, ct);
             var order = await _orderService.GetByIdAsync(orderId, ct);
             if (order != null)
@@ -170,7 +176,7 @@ public class PedidosController : ControllerBase
                             customer.Email,
                             customer.FullName,
                             order.OrderNumber,
-                            latest?.Status ?? body.Status ?? "INITIATED",
+                            latest?.Status ?? newStatus,
                             body.Comment,
                             body.TrackingNumber,
                             body.EtaDays);
@@ -189,6 +195,26 @@ public class PedidosController : ControllerBase
             });
         }
         catch (ArgumentException e) { return BadRequest(new { message = e.Message }); }
+    }
+
+    /// <summary>Orden de estados: solo se permite avanzar (no retroceder). CANCELLED y DELIVERED son finales.</summary>
+    private static bool CanAdvanceTo(string currentStatus, string newStatus)
+    {
+        var order = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["INITIATED"] = 0,
+            ["CONFIRMED"] = 1,
+            ["PREPARING"] = 2,
+            ["IN_PREPARATION"] = 2,
+            ["SHIPPED"] = 3,
+            ["DELIVERED"] = 4,
+            ["CANCELLED"] = 99
+        };
+        if (!order.TryGetValue(newStatus, out var newOrder)) return true;
+        if (!order.TryGetValue(currentStatus, out var currentOrder)) return true;
+        if (currentOrder == 99) return false;
+        if (newStatus == "CANCELLED") return true;
+        return newOrder >= currentOrder;
     }
 
     private async Task<bool> IsAdminAsync(long userId, CancellationToken ct)

@@ -118,7 +118,15 @@ public class PartService
         if (string.IsNullOrWhiteSpace(base64Data)) return (Array.Empty<byte>(), imageType);
         var data = base64Data.Trim();
         if (data.Contains(',')) data = data.Split(',', 2)[1].Trim();
-        var bytes = Convert.FromBase64String(data);
+        byte[] bytes;
+        try
+        {
+            bytes = Convert.FromBase64String(data);
+        }
+        catch (FormatException)
+        {
+            throw new ArgumentException("Imagen inválida: formato base64 incorrecto");
+        }
         if (bytes.Length > MaxImageSizeBytes)
             throw new ArgumentException("La imagen excede el tamaño máximo de 5MB");
         if (!string.IsNullOrEmpty(imageType) && !ValidImageTypes.Contains(imageType.Trim().ToLowerInvariant()))
