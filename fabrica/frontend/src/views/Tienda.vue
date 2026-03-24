@@ -44,13 +44,13 @@
       <div v-for="part in filteredParts" :key="part.partId" class="product-card">
         <router-link :to="`/producto/${part.partId}`" class="product-link">
           <div class="product-image">
-            <img v-if="part.hasImage" :src="`http://localhost:8080/api/images/part/${part.partId}`" :alt="part.title" />
-            <div v-else class="no-image">📦</div>
+            <img v-if="part.hasImage" :src="`${API_URL}/api/images/part/${part.partId}`" :alt="part.title" @error="$event.target.style.display='none'; $event.target.nextElementSibling?.classList?.add('show')" />
+            <div class="no-image" :class="{ show: !part.hasImage }">📦</div>
           </div>
           
           <div class="product-info">
             <h3 class="product-title">{{ part.title }}</h3>
-            <p class="product-number">No. Parte: {{ part.partNumber }}</p>
+            <p class="product-number">No. Parte: {{ part.partNumber }}{{ part.partYear ? ` · Año ${part.partYear}` : '' }}</p>
             <p class="product-description">{{ part.description || 'Sin descripción' }}</p>
             
             <!-- Badge de inventario -->
@@ -61,7 +61,11 @@
             </div>
             
             <div class="product-footer">
-              <span class="product-price">${{ part.price.toFixed(2) }}</span>
+              <span v-if="hasDiscount" class="discount-tag">{{ discountPercent }}% desc.</span>
+              <span v-if="hasDiscount" class="product-price original">${{ part.price.toFixed(2) }}</span>
+              <span class="product-price" :class="{ discounted: hasDiscount }">
+                ${{ (precioConDescuento(part.price) ?? part.price).toFixed(2) }}
+              </span>
             </div>
           </div>
         </router-link>
@@ -91,10 +95,13 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 import { useToast } from '../composables/useToast'
 import { useCart } from '../composables/useCart'
+import { useEnterpriseDiscount } from '../composables/useEnterpriseDiscount'
 import { listCategorias, listMarcas, listRepuestos } from '../api/catalogo'
+import { API_URL } from '../api/config'
 
 const router = useRouter()
 const { isLoggedIn } = useAuth()
+const { hasDiscount, discountPercent, precioConDescuento } = useEnterpriseDiscount()
 const { success, info } = useToast()
 const { addToCart: addToCartComposable } = useCart()
 
@@ -321,12 +328,49 @@ function addToCart(part) {
 
 .product-footer {
   margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.discount-tag {
+  background: #059669;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .product-price {
   font-size: 24px;
   font-weight: 700;
   color: #10b981;
+}
+
+.product-price.original {
+  font-size: 14px;
+  color: #9ca3af;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.product-price.discounted {
+  color: #059669;
+}
+
+.product-image .no-image {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #9ca3af;
+  font-size: 2rem;
+}
+
+.product-image .no-image.show {
+  display: flex;
 }
 
 .product-actions {

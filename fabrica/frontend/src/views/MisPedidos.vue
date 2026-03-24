@@ -37,6 +37,9 @@
           <router-link :to="`/mis-pedidos/${pedido.orderId}`" class="btn btn-secondary">
             Ver detalles
           </router-link>
+          <a :href="getReciboUrl(pedido.orderId)" target="_blank" rel="noopener" class="btn btn-recibo">
+            📄 Recibo PDF
+          </a>
         </div>
       </div>
     </div>
@@ -46,7 +49,11 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useAuth } from '../composables/useAuth'
-import { getUserOrders } from '../api/pedidos'
+import { getUserOrders, getReciboPdfUrl } from '../api/pedidos'
+
+function getReciboUrl(orderId) {
+  return getReciboPdfUrl(orderId)
+}
 
 const { user } = useAuth()
 
@@ -246,5 +253,20 @@ function getStatusLabel(orderId) {
 
 .btn-secondary:hover {
   background: #e5e7eb;
+}
+
+.btn-recibo {
+  background: #059669;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-recibo:hover {
+  background: #047857;
 }
 </style>

@@ -38,6 +38,7 @@ public class PartResource {
             BigDecimal price = body.get("price") != null ? new BigDecimal(body.get("price").toString()) : null;
             Integer stockQuantity = body.get("stockQuantity") != null ? ((Number) body.get("stockQuantity")).intValue() : 0;
             Integer lowStockThreshold = body.get("lowStockThreshold") != null ? ((Number) body.get("lowStockThreshold")).intValue() : 5;
+            Integer partYear = body.get("partYear") != null ? ((Number) body.get("partYear")).intValue() : null;
             
             // Procesar imagen si existe
             byte[] imageData = null;
@@ -53,7 +54,7 @@ public class PartResource {
                 imageData = Base64.getDecoder().decode(base64Data);
             }
             
-            Part p = service.create(categoryId, brandId, partNumber, title, description, weightLb, price, stockQuantity, lowStockThreshold);
+            Part p = service.create(categoryId, brandId, partNumber, title, description, weightLb, price, stockQuantity, lowStockThreshold, partYear);
             
             // Agregar imagen si existe
             if (imageData != null) {
@@ -205,9 +206,11 @@ public class PartResource {
             Integer active = body.get("active") != null ? ((Number) body.get("active")).intValue() : null;
             Integer stockQuantity = body.get("stockQuantity") != null ? ((Number) body.get("stockQuantity")).intValue() : null;
             Integer lowStockThreshold = body.get("lowStockThreshold") != null ? ((Number) body.get("lowStockThreshold")).intValue() : null;
+            Integer partYear = body.containsKey("partYear") ? (body.get("partYear") != null ? ((Number) body.get("partYear")).intValue() : null) : null;
+            Boolean updatePartYear = body.containsKey("partYear");
             
             // Actualizar datos básicos
-            Part p = service.update(id, categoryId, brandId, title, description, weightLb, price, active);
+            Part p = service.update(id, categoryId, brandId, title, description, weightLb, price, active, partYear, updatePartYear);
             
             // Actualizar inventario si se proporcionó
             if (stockQuantity != null || lowStockThreshold != null) {

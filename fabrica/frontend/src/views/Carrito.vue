@@ -14,14 +14,17 @@
         <div v-for="item in cartItems" :key="item.partId" class="cart-item-wrapper">
           <div class="cart-item">
             <div class="item-image">
-              <img v-if="item.hasImage" :src="`http://localhost:8080/api/images/part/${item.partId}`" :alt="item.title" />
+              <img v-if="item.hasImage" :src="imageUrl(item.partId)" :alt="item.title" />
               <div v-else class="no-image">📦</div>
             </div>
 
             <div class="item-info">
               <h3>{{ item.title }}</h3>
-              <p class="item-number">No. Parte: {{ item.partNumber }}</p>
-              <p class="item-price">${{ item.price.toFixed(2) }} c/u</p>
+              <p class="item-number">No. Parte: {{ item.partNumber }}{{ item.partYear ? ` · Año ${item.partYear}` : '' }}</p>
+              <p class="item-price">
+                <span v-if="hasDiscount" class="price-original">${{ item.price.toFixed(2) }}</span>
+                <span>${{ (precioUnitario(item) || item.price).toFixed(2) }} c/u</span>
+              </p>
             </div>
 
             <div class="item-quantity">
@@ -37,7 +40,7 @@
 
             <div class="item-total">
               <span class="total-label">Total:</span>
-              <span class="total-price">${{ (item.price * item.qty).toFixed(2) }}</span>
+              <span class="total-price">${{ (lineTotal(item)).toFixed(2) }}</span>
             </div>
 
             <button @click="removeFromCart(item.partId)" class="btn-remove" title="Eliminar">
@@ -64,20 +67,24 @@
 
       <div class="cart-summary">
         <h2>Resumen del pedido</h2>
-        
+        <div v-if="hasDiscount" class="discount-banner">
+          <span class="discount-tag">{{ discountPercent }}% descuento empresarial</span>
+        </div>
         <div class="summary-row">
           <span>Subtotal ({{ cartCount }} artículos):</span>
-          <span>${{ cartTotal.toFixed(2) }}</span>
+          <span>${{ cartSubtotalDisplay.toFixed(2) }}</span>
         </div>
-
+        <div v-if="hasDiscount" class="summary-row">
+          <span>Descuento ({{ discountPercent }}%):</span>
+          <span class="discount-amount">-${{ (cartTotal - cartTotalDisplay).toFixed(2) }}</span>
+        </div>
         <div class="summary-row">
           <span>Envío:</span>
           <span>Gratis</span>
         </div>
-
         <div class="summary-row total-row">
           <span>Total:</span>
-          <span>${{ cartTotal.toFixed(2) }}</span>
+          <span>${{ cartTotalDisplay.toFixed(2) }}</span>
         </div>
 
         <!-- Alertas generales -->
@@ -117,12 +124,31 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 import { useCart } from '../composables/useCart'
 import { useToast } from '../composables/useToast'
+import { useEnterpriseDiscount } from '../composables/useEnterpriseDiscount'
 import { getRepuesto } from '../api/catalogo'
+import { API_URL } from '../api/config'
 
 const router = useRouter()
 const { user, isLoggedIn } = useAuth()
 const { cartItems, cartTotal, cartCount, removeFromCart, updateQuantity, clearCart } = useCart()
 const { success, error: showError, warning } = useToast()
+const { hasDiscount, discountPercent, precioConDescuento } = useEnterpriseDiscount()
+
+function imageUrl(partId) {
+  return `${API_URL}/api/images/part/${partId}`
+}
+function precioUnitario(item) {
+  return precioConDescuento(item.price)
+}
+function lineTotal(item) {
+  const p = precioUnitario(item) ?? item.price
+  return p * item.qty
+}
+const cartTotalDisplay = computed(() => {
+  if (!hasDiscount.value) return cartTotal.value
+  return cartItems.value.reduce((sum, item) => sum + lineTotal(item), 0)
+})
+const cartSubtotalDisplay = computed(() => cartTotalDisplay.value)
 
 const processing = ref(false)
 const stockWarnings = ref([])
@@ -367,6 +393,30 @@ function adjustQuantity(partId, maxQty) {
   font-size: 14px;
   color: #475569;
   font-weight: 500;
+}
+
+.item-price .price-original {
+  text-decoration: line-through;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.discount-banner {
+  margin-bottom: 12px;
+}
+
+.cart-summary .discount-tag {
+  background: #059669;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.discount-amount {
+  color: #059669;
 }
 
 .item-quantity {

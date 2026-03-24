@@ -17,20 +17,21 @@
         <div class="producto-gallery">
           <div class="main-image">
             <img 
-              v-if="producto.hasImage" 
-              :src="`http://localhost:8080/api/images/part/${producto.partId}`" 
+              v-if="producto.hasImage && !imageError" 
+              :src="imageUrl" 
               :alt="producto.title"
+              @error="imageError = true"
             />
-            <div v-else class="no-image">📦</div>
+            <div v-if="!producto.hasImage || imageError" class="no-image">📦</div>
           </div>
           
           <!-- Thumbnails (por ahora solo una imagen, pero preparado para múltiples) -->
           <div class="thumbnails">
             <div 
-              v-if="producto.hasImage" 
+              v-if="producto.hasImage && !imageError" 
               class="thumbnail active"
             >
-              <img :src="`http://localhost:8080/api/images/part/${producto.partId}`" :alt="producto.title" />
+              <img :src="imageUrl" :alt="producto.title" />
             </div>
           </div>
         </div>
@@ -40,14 +41,18 @@
           <h1 class="producto-title">{{ producto.title }}</h1>
           
           <div class="producto-meta">
-            <span class="part-number">No. Parte: <strong>{{ producto.partNumber }}</strong></span>
+            <span class="part-number">No. Parte: <strong>{{ producto.partNumber }}</strong>{{ producto.partYear ? ` · Año ${producto.partYear}` : '' }}</span>
             <span v-if="categoria" class="category">Categoría: <strong>{{ categoria.name }}</strong></span>
             <span v-if="marca" class="brand">Marca: <strong>{{ marca.name }}</strong></span>
           </div>
 
           <div class="producto-price">
             <span class="price-label">Precio:</span>
-            <span class="price-amount">${{ producto.price.toFixed(2) }}</span>
+            <span v-if="hasDiscount" class="discount-tag">{{ discountPercent }}% descuento</span>
+            <span v-if="hasDiscount" class="price-original">${{ producto.price.toFixed(2) }}</span>
+            <span class="price-amount" :class="{ discounted: hasDiscount }">
+              ${{ (precioConDescuento(producto.price) ?? producto.price).toFixed(2) }}
+            </span>
           </div>
 
           <!-- Estado de inventario -->
@@ -182,12 +187,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 import { useCart } from '../composables/useCart'
 import { useToast } from '../composables/useToast'
+import { useEnterpriseDiscount } from '../composables/useEnterpriseDiscount'
 import { apiFetch } from '../api/config'
+import { API_URL } from '../api/config'
 import { getComentarios, createComentario } from '../api/comentarios'
 import CommentItem from '../components/CommentItem.vue'
 
@@ -196,6 +203,7 @@ const router = useRouter()
 const { user, isLoggedIn } = useAuth()
 const { addToCart: addToCartComposable } = useCart()
 const { success, info, error: showError } = useToast()
+const { hasDiscount, discountPercent, precioConDescuento } = useEnterpriseDiscount()
 
 const producto = ref(null)
 const categoria = ref(null)
@@ -203,6 +211,9 @@ const marca = ref(null)
 const loading = ref(true)
 const error = ref('')
 const qty = ref(1)
+const imageError = ref(false)
+
+const imageUrl = computed(() => producto.value ? `${API_URL}/api/images/part/${producto.value.partId}` : '')
 
 const comentarios = ref([])
 const comentariosPromedio = ref(null)
@@ -419,19 +430,51 @@ function addToCart() {
   background: #f9fafb;
   border-radius: 8px;
   display: flex;
-  align-items: baseline;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 12px;
 }
 
 .price-label {
   font-size: 16px;
   color: #6b7280;
+  width: 100%;
+}
+
+.discount-tag {
+  background: #059669;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.price-original {
+  font-size: 20px;
+  color: #9ca3af;
+  text-decoration: line-through;
+  font-weight: 500;
 }
 
 .price-amount {
   font-size: 40px;
   font-weight: 700;
   color: #10b981;
+}
+
+.price-amount.discounted {
+  color: #059669;
+}
+
+.main-image .no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  background: #f3f4f6;
+  color: #9ca3af;
+  font-size: 4rem;
 }
 
 .producto-stock {

@@ -41,7 +41,7 @@ public class PartService {
 
     public Part create(Long categoryId, Long brandId, String partNumber, String title, 
                       String description, BigDecimal weightLb, BigDecimal price, 
-                      Integer stockQuantity, Integer lowStockThreshold) {
+                      Integer stockQuantity, Integer lowStockThreshold, Integer partYear) {
         if (partNumber == null || partNumber.isBlank()) {
             throw new IllegalArgumentException("El número de parte es obligatorio");
         }
@@ -65,11 +65,12 @@ public class PartService {
         p.setPrice(price);
         p.setStockQuantity(stockQuantity != null ? stockQuantity : 0);
         p.setLowStockThreshold(lowStockThreshold != null ? lowStockThreshold : 5);
+        p.setPartYear(partYear);
         return repo.save(p);
     }
 
     public Part update(Long id, Long categoryId, Long brandId, String title, 
-                      String description, BigDecimal weightLb, BigDecimal price, Integer active) {
+                      String description, BigDecimal weightLb, BigDecimal price, Integer active, Integer partYear, Boolean updatePartYear) {
         Part p = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Repuesto no encontrado"));
         if (categoryId != null) p.setCategoryId(categoryId);
         if (brandId != null) p.setBrandId(brandId);
@@ -78,6 +79,7 @@ public class PartService {
         if (weightLb != null) p.setWeightLb(weightLb);
         if (price != null) p.setPrice(price);
         if (active != null) p.setActive(active);
+        if (updatePartYear != null && updatePartYear) p.setPartYear(partYear);
         return repo.save(p);
     }
 

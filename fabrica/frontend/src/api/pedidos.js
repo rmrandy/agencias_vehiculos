@@ -61,3 +61,12 @@ export async function getAllOrders(filters = {}) {
 export async function getOrderStatusFlow() {
   return apiFetch('/api/pedidos/flujo-estados')
 }
+
+/**
+ * URL para descargar el recibo en PDF del pedido.
+ * Usar como href del enlace (misma origen) o abrir en nueva pestaña.
+ */
+export function getReciboPdfUrl(orderId) {
+  const base = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+  return `${base}/api/pedidos/${orderId}/recibo`
+}

@@ -45,6 +45,7 @@ const repuestoForm = ref({
   description: '',
   weightLb: null,
   price: null,
+  partYear: null,
   stockQuantity: 0,
   lowStockThreshold: 5,
   imageData: null,
@@ -120,6 +121,7 @@ async function submitRepuesto() {
       brandId: Number(repuestoForm.value.brandId),
       weightLb: repuestoForm.value.weightLb ? Number(repuestoForm.value.weightLb) : null,
       price: Number(repuestoForm.value.price),
+      partYear: repuestoForm.value.partYear ? Number(repuestoForm.value.partYear) : null,
       stockQuantity: Number(repuestoForm.value.stockQuantity) || 0,
       lowStockThreshold: Number(repuestoForm.value.lowStockThreshold) || 5,
     }
@@ -157,6 +159,7 @@ function resetRepuestoForm() {
     description: '', 
     weightLb: null, 
     price: null,
+    partYear: null,
     stockQuantity: 0,
     lowStockThreshold: 5,
     imageData: null, 
@@ -176,6 +179,7 @@ function editRepuesto(repuesto) {
     description: repuesto.description || '',
     weightLb: repuesto.weightLb,
     price: repuesto.price,
+    partYear: repuesto.partYear ?? null,
     stockQuantity: repuesto.stockQuantity || 0,
     lowStockThreshold: repuesto.lowStockThreshold || 5,
     imageData: null,
@@ -415,6 +419,10 @@ async function submitInventario() {
             <label>Precio *</label>
             <input v-model="repuestoForm.price" type="number" step="0.01" required placeholder="25.99" />
           </div>
+          <div class="form-group">
+            <label>Año del repuesto</label>
+            <input v-model="repuestoForm.partYear" type="number" min="1900" max="2100" placeholder="Ej: 2020" />
+          </div>
           
           <!-- CAMPOS DE INVENTARIO -->
           <div class="form-group">
@@ -447,6 +455,7 @@ async function submitInventario() {
               <th>ID</th>
               <th>Número</th>
               <th>Título</th>
+              <th>Año</th>
               <th>Categoría</th>
               <th>Marca</th>
               <th>Precio</th>
@@ -460,6 +469,7 @@ async function submitInventario() {
               <td>{{ r.partId }}</td>
               <td><code>{{ r.partNumber }}</code></td>
               <td>{{ r.title }}</td>
+              <td>{{ r.partYear ?? '—' }}</td>
               <td>{{ categorias.find((c) => c.categoryId === r.categoryId)?.name || '—' }}</td>
               <td>{{ marcas.find((m) => m.brandId === r.brandId)?.name || '—' }}</td>
               <td>${{ r.price }}</td>

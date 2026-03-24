@@ -5,6 +5,7 @@ import com.agencias.backend.model.OrderHeader;
 import com.agencias.backend.model.OrderItem;
 import com.agencias.backend.model.OrderStatusHistory;
 import com.agencias.backend.service.OrderService;
+import com.agencias.backend.service.ReciboPdfService;
 import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.ws.rs.*;
@@ -23,10 +24,12 @@ import java.util.regex.Pattern;
 @Singleton
 public class OrderResource {
     private final OrderService service;
+    private final ReciboPdfService reciboPdfService;
 
     public OrderResource() {
         EntityManagerFactory emf = DatabaseConfig.getEntityManagerFactory();
         this.service = new OrderService(emf);
+        this.reciboPdfService = new ReciboPdfService(emf);
     }
 
     private static final Pattern ONLY_DIGITS = Pattern.compile("\\d+");
@@ -157,16 +160,36 @@ public class OrderResource {
                 return Response.status(404).entity(new ErrorResponse(404, "Pedido no encontrado")).build();
             }
 
-            // Construir respuesta completa con items y estado
+            // Construir respuesta completa con items, estado y link al recibo PDF
             Map<String, Object> response = new HashMap<>();
             response.put("order", order);
             response.put("items", service.getOrderItems(orderId));
             response.put("status", service.getLatestStatus(orderId));
+            response.put("reciboUrl", "/api/pedidos/" + orderId + "/recibo");
 
             return Response.ok(response).build();
         } catch (Exception e) {
             return Response.status(500).entity(new ErrorResponse(500, e.getMessage())).build();
         }
+    }
+
+    /**
+     * Descargar recibo del pedido en PDF.
+     * GET /api/pedidos/{orderId}/recibo
+     */
+    @GET
+    @Path("/{orderId}/recibo")
+    @Produces("application/pdf")
+    public Response getReciboPdf(@PathParam("orderId") Long orderId) {
+        byte[] pdf = reciboPdfService.generarReciboPdf(orderId);
+        if (pdf == null) {
+            return Response.status(404).entity(new ErrorResponse(404, "Pedido no encontrado")).build();
+        }
+        OrderHeader order = service.getOrderById(orderId);
+        String filename = "recibo-" + (order != null ? order.getOrderNumber() : orderId) + ".pdf";
+        return Response.ok(pdf)
+                .header("Content-Disposition", "attachment; filename=\"" + filename + "\"")
+                .build();
     }
 
     /**

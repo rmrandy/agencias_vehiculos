@@ -17,14 +17,15 @@
           <div class="order-items">
             <div v-for="item in cartItems" :key="item.partId" class="order-item">
               <div class="item-thumb">
-                <img v-if="item.hasImage" :src="`http://localhost:8080/api/images/part/${item.partId}`" :alt="item.title" />
+                <img v-if="item.hasImage" :src="imageUrl(item.partId)" :alt="item.title" />
                 <span v-else class="no-img">📦</span>
               </div>
               <div class="item-details">
                 <span class="item-title">{{ item.title }}</span>
-                <span class="item-meta">{{ item.partNumber }} · {{ item.qty }} × ${{ item.price.toFixed(2) }}</span>
+                <span class="item-meta">{{ item.partNumber }}{{ item.partYear ? ` · Año ${item.partYear}` : '' }} · {{ item.qty }} × ${{ (precioUnitario(item) ?? item.price).toFixed(2) }}</span>
+                <span v-if="hasDiscount" class="item-meta original">P. original: ${{ (item.price * item.qty).toFixed(2) }}</span>
               </div>
-              <span class="item-line-total">${{ (item.price * item.qty).toFixed(2) }}</span>
+              <span class="item-line-total">${{ lineTotal(item).toFixed(2) }}</span>
             </div>
           </div>
         </section>
@@ -74,7 +75,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary btn-block btn-pay" :disabled="processing">
-              {{ processing ? 'Procesando...' : `Pagar $${cartTotal.toFixed(2)}` }}
+              {{ processing ? 'Procesando...' : `Pagar $${cartTotalDisplay.toFixed(2)}` }}
             </button>
           </form>
         </section>
@@ -83,9 +84,16 @@
       <aside class="checkout-sidebar">
         <div class="sidebar-box">
           <h3>Total a pagar</h3>
+          <div v-if="hasDiscount" class="sidebar-discount">
+            <span class="discount-tag">{{ discountPercent }}% descuento empresarial</span>
+          </div>
           <div class="sidebar-row">
             <span>Subtotal ({{ cartCount }} artículos)</span>
-            <span>${{ cartTotal.toFixed(2) }}</span>
+            <span>${{ cartTotalDisplay.toFixed(2) }}</span>
+          </div>
+          <div v-if="hasDiscount" class="sidebar-row">
+            <span>Descuento aplicado</span>
+            <span class="discount-amount">-${{ (cartTotal - cartTotalDisplay).toFixed(2) }}</span>
           </div>
           <div class="sidebar-row">
             <span>Envío</span>
@@ -93,7 +101,7 @@
           </div>
           <div class="sidebar-row total">
             <span>Total</span>
-            <span>${{ cartTotal.toFixed(2) }}</span>
+            <span>${{ cartTotalDisplay.toFixed(2) }}</span>
           </div>
         </div>
         <p class="secure-note">🔒 No guardamos los datos de tu tarjeta.</p>
@@ -108,12 +116,29 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 import { useCart } from '../composables/useCart'
 import { useToast } from '../composables/useToast'
+import { useEnterpriseDiscount } from '../composables/useEnterpriseDiscount'
 import { createOrder } from '../api/pedidos'
+import { API_URL } from '../api/config'
 
 const router = useRouter()
 const { user } = useAuth()
 const { cartItems, cartTotal, cartCount, clearCart } = useCart()
 const { success, error: showError } = useToast()
+const { hasDiscount, discountPercent, precioConDescuento } = useEnterpriseDiscount()
+
+function imageUrl(partId) {
+  return `${API_URL}/api/images/part/${partId}`
+}
+function precioUnitario(item) {
+  return precioConDescuento(item.price) ?? item.price
+}
+function lineTotal(item) {
+  return precioUnitario(item) * item.qty
+}
+const cartTotalDisplay = computed(() => {
+  if (!hasDiscount.value) return cartTotal.value
+  return cartItems.value.reduce((sum, item) => sum + lineTotal(item), 0)
+})
 
 const cardDisplay = ref('')
 const expiryMonth = ref(null)
@@ -425,6 +450,30 @@ async function submitPayment() {
   font-size: 18px;
   font-weight: 700;
   color: #1a1a2e;
+}
+
+.sidebar-discount {
+  margin-bottom: 12px;
+}
+
+.sidebar-discount .discount-tag {
+  background: #059669;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.discount-amount {
+  color: #059669;
+}
+
+.item-meta.original {
+  display: block;
+  font-size: 12px;
+  color: #94a3b8;
+  text-decoration: line-through;
 }
 
 .secure-note {

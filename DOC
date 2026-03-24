@@ -627,6 +627,30 @@ Para la fábrica debes entregar:
 
 ⸻
 
+✅ 11.1 CONFIRMACIONES Y REQUISITOS ADICIONALES (FÁBRICA)
+
+• Usuario empresarial puede dejar definida:
+	• Dirección (default de envío y/o facturación) — ver ENTERPRISE_PROFILE, USER_ADDRESS y § 3.1 Usuario Empresarial.
+	• Tarjeta (default; guardar tokenizado, no PAN en claro) — ver ENTERPRISE_PROFILE.default_card_token.
+	• Horario de entrega — ver ENTERPRISE_PROFILE.delivery_window.
+
+• Descuento configurable:
+	• Confirmado: el usuario empresarial tiene descuento configurable por el administrador (ENTERPRISE_PROFILE.discount_percent; § 3.1 y Administrador).
+
+• Año del repuesto:
+	• El repuesto debe incluir el año. Queda cubierto por:
+		– Campos obligatorios del repuesto: Línea, Año, código universal (§ 4).
+		– Clasificación de vehículos: Marca, Línea, Año (§ 4).
+		– PART_COMPATIBILITY y VEHICLE.year para compatibilidad. En el catálogo y en servicios REST debe mostrarse/consultarse el año del repuesto (asociado al vehículo o al ítem según diseño).
+
+• Link para recibo:
+	• Tras finalizar la compra (portal web o consulta de pedido), el usuario debe poder acceder a un enlace (link) al recibo del pedido (recibo descargable).
+
+• Generar PDF:
+	• El sistema debe poder generar el recibo del pedido en formato PDF y ofrecerlo para descarga (vía link para recibo o descarga directa).
+
+⸻
+
 🧩 RESUMEN GENERAL DEL SISTEMA DE FÁBRICA
 
 El sistema de fábrica:

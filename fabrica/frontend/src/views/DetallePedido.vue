@@ -42,7 +42,7 @@
         <div class="items-list">
           <div v-for="item in orderData.items" :key="item.orderItemId" class="order-item">
             <div class="item-image">
-              <img v-if="item.partId" :src="`http://localhost:8080/api/images/part/${item.partId}`" alt="Producto" />
+              <img v-if="item.partId" :src="imageUrl(item.partId)" alt="Producto" />
               <div v-else class="no-image">📦</div>
             </div>
             <div class="item-info">
@@ -73,6 +73,13 @@
         </div>
       </div>
 
+      <!-- Link recibo PDF -->
+      <div class="recibo-section">
+        <a :href="reciboPdfUrl" target="_blank" rel="noopener" class="btn btn-recibo">
+          📄 Descargar recibo (PDF)
+        </a>
+      </div>
+
       <!-- Botones -->
       <div class="actions-section">
         <router-link to="/mis-pedidos" class="btn btn-secondary">
@@ -87,15 +94,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { getOrderById } from '../api/pedidos'
+import { getOrderById, getReciboPdfUrl } from '../api/pedidos'
+import { API_URL } from '../api/config'
 
 const route = useRoute()
 
 const orderData = ref(null)
 const loading = ref(true)
 const error = ref('')
+
+const reciboPdfUrl = computed(() =>
+  orderData.value?.order?.orderId ? getReciboPdfUrl(orderData.value.order.orderId) : '#'
+)
+function imageUrl(partId) {
+  return `${API_URL}/api/images/part/${partId}`
+}
 
 onMounted(async () => {
   const orderId = route.params.id
@@ -332,6 +347,27 @@ function getStatusLabel(status) {
   color: #1f2937;
   border-bottom: none;
   padding-top: 16px;
+}
+
+.recibo-section {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.btn-recibo {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #059669;
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-recibo:hover {
+  background: #047857;
 }
 
 .actions-section {

@@ -60,6 +60,10 @@ public class Part {
     @Column(name = "RESERVED_QUANTITY", nullable = false)
     private Integer reservedQuantity = 0;
 
+    /** Año del repuesto (compatibilidad o año de referencia). */
+    @Column(name = "PART_YEAR")
+    private Integer partYear;
+
     @Transient
     private Boolean hasImage;
 
@@ -141,4 +145,6 @@ public class Part {
     public void setLowStock(Boolean lowStock) { this.lowStock = lowStock; }
     public Integer getAvailableQuantity() { return availableQuantity; }
     public void setAvailableQuantity(Integer availableQuantity) { this.availableQuantity = availableQuantity; }
+    public Integer getPartYear() { return partYear; }
+    public void setPartYear(Integer partYear) { this.partYear = partYear; }
 }
