@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo - Sistema de Notificaciones Toast</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .demo-container {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #1f2937;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    p {
+      color: #6b7280;
+      margin-bottom: 30px;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 14px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: white;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-success {
+      background: #10b981;
+    }
+
+    .btn-error {
+      background: #ef4444;
+    }
+
+    .btn-warning {
+      background: #f59e0b;
+    }
+
+    .btn-info {
+      background: #3b82f6;
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      max-width: 500px;
+      padding: 16px 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      pointer-events: auto;
+      animation: toast-in 0.3s ease;
+    }
+
+    .toast:hover {
+      transform: translateX(-5px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .toast.removing {
+      animation: toast-out 0.3s ease;
+    }
+
+    .toast-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 16px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .toast-message {
+      flex: 1;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #333;
+    }
+
+    /* Success */
+    .toast-success {
+      border-left: 4px solid #10b981;
+    }
+
+    .toast-success .toast-icon {
+      background: #d1fae5;
+      color: #10b981;
+    }
+
+    /* Error */
+    .toast-error {
+      border-left: 4px solid #ef4444;
+    }
+
+    .toast-error .toast-icon {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+
+    /* Warning */
+    .toast-warning {
+      border-left: 4px solid #f59e0b;
+    }
+
+    .toast-warning .toast-icon {
+      background: #fef3c7;
+      color: #f59e0b;
+    }
+
+    /* Info */
+    .toast-info {
+      border-left: 4px solid #3b82f6;
+    }
+
+    .toast-info .toast-icon {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+
+    @keyframes toast-in {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes toast-out {
+      from {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(100%) scale(0.8);
+      }
+    }
+
+    .examples {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .examples h3 {
+      color: #374151;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .examples ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .examples li {
+      color: #6b7280;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+
+    .examples li::before {
+      content: "✓ ";
+      color: #10b981;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>🔔 Sistema de Notificaciones Toast</h1>
+    <p>Click en los botones para ver las notificaciones animadas</p>
+
+    <div class="button-grid">
+      <button class="btn-success" onclick="showToast('success', '¡Repuesto creado exitosamente!')">
+        Success
+      </button>
+      <button class="btn-error" onclick="showToast('error', 'Error al subir la imagen')">
+        Error
+      </button>
+      <button class="btn-warning" onclick="showToast('warning', 'El archivo excede 5MB')">
+        Warning
+      </button>
+      <button class="btn-info" onclick="showToast('info', 'Procesando solicitud...')">
+        Info
+      </button>
+    </div>
+
+    <div class="examples">
+      <h3>Ejemplos de uso en el sistema:</h3>
+      <ul>
+        <li>¡Bienvenido, usuario@email.com!</li>
+        <li>Cuenta creada exitosamente</li>
+        <li>Roles actualizados para usuario</li>
+        <li>Categoría "Motor" creada exitosamente</li>
+        <li>Marca "Bosch" creada exitosamente</li>
+        <li>Repuesto "Filtro de aceite" creado</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    let toastId = 0;
+
+    function showToast(type, message, duration = 3000) {
+      const container = document.getElementById('toastContainer');
+      const id = toastId++;
+
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.id = `toast-${id}`;
+
+      const icons = {
+        success: '✓',
+        error: '✕',
+        warning: '⚠',
+        info: 'ℹ'
+      };
+
+      toast.innerHTML = `
+        <div class="toast-icon">${icons[type]}</div>
+        <div class="toast-message">${message}</div>
+      `;
+
+      toast.onclick = () => removeToast(id);
+
+      container.appendChild(toast);
+
+      setTimeout(() => removeToast(id), duration);
+    }
+
+    function removeToast(id) {
+      const toast = document.getElementById(`toast-${id}`);
+      if (toast) {
+        toast.classList.add('removing');
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }
+    }
+
+    // Demo automático al cargar
+    setTimeout(() => {
+      showToast('success', '¡Bienvenido al sistema Fábrica!');
+    }, 500);
+  </script>
+</body>
+</html>

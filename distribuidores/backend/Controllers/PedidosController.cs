@@ -42,10 +42,24 @@ public class PedidosController : ControllerBase
 
         try
         {
-            var items = request.Items
-                .Select(i => new OrderItemDto { PartId = i.PartId, Qty = i.Qty })
-                .ToList();
-            var order = await _orderService.CreateOrderAsync(request.UserId.Value, items, ct);
+            OrderHeader order;
+            if (request.Items.Any(PedidoItemRequest.IsFabricLine))
+            {
+                order = await _orderService.CreateMultiSourceOrderAsync(request.UserId.Value, request.Items, ct);
+            }
+            else
+            {
+                foreach (var i in request.Items)
+                {
+                    if (!i.PartId.HasValue || i.PartId.Value <= 0)
+                        return BadRequest(new { message = "Cada ítem local debe incluir partId" });
+                }
+
+                var items = request.Items
+                    .Select(i => new OrderItemDto { PartId = i.PartId!.Value, Qty = i.Qty })
+                    .ToList();
+                order = await _orderService.CreateOrderAsync(request.UserId.Value, items, ct);
+            }
 
             if (request.Payment != null)
             {
@@ -58,8 +72,16 @@ public class PedidosController : ControllerBase
                         var emailItems = new List<(string PartTitle, int Qty, decimal UnitPrice, decimal LineTotal)>();
                         foreach (var i in orderItems)
                         {
-                            var part = await _partService.GetByIdAsync(i.PartId, ct);
-                            emailItems.Add((part?.Title ?? "Repuesto #" + i.PartId, i.Qty, i.UnitPrice, i.LineTotal));
+                            string title;
+                            if (string.Equals(i.LineSource, "FABRICA", StringComparison.OrdinalIgnoreCase) || i.PartId == null)
+                                title = i.TitleSnapshot ?? $"Repuesto fábrica #{i.FabricaPartId}";
+                            else
+                            {
+                                var part = await _partService.GetByIdAsync(i.PartId.Value, ct);
+                                title = part?.Title ?? "Repuesto #" + i.PartId;
+                            }
+
+                            emailItems.Add((title, i.Qty, i.UnitPrice, i.LineTotal));
                         }
                         _mailService.SendOrderConfirmation(user.Email, user.FullName, order, emailItems);
                     }
@@ -248,11 +270,23 @@ public class PedidosController : ControllerBase
         var itemsWithTitle = new List<object>();
         foreach (var i in items)
         {
-            var part = await _partService.GetByIdAsync(i.PartId, ct);
+            string partTitle;
+            if (string.Equals(i.LineSource, "FABRICA", StringComparison.OrdinalIgnoreCase) || i.PartId == null)
+                partTitle = i.TitleSnapshot ?? $"Repuesto fábrica #{i.FabricaPartId}";
+            else
+            {
+                var part = await _partService.GetByIdAsync(i.PartId.Value, ct);
+                partTitle = part?.Title ?? $"Repuesto #{i.PartId}";
+            }
+
             itemsWithTitle.Add(new
             {
+                lineSource = i.LineSource,
                 partId = i.PartId,
-                partTitle = part?.Title ?? $"Repuesto #{i.PartId}",
+                fabricaPartId = i.FabricaPartId,
+                proveedorId = i.ProveedorId,
+                fabricaOrderId = i.FabricaOrderId,
+                partTitle,
                 qty = i.Qty,
                 unitPrice = i.UnitPrice,
                 lineTotal = i.LineTotal
@@ -276,33 +310,4 @@ public class PedidosController : ControllerBase
             status = status == null ? null : new { status = status.Status, trackingNumber = status.TrackingNumber, etaDays = status.EtaDays }
         });
     }
-}
-
-public class CreatePedidoRequest
-{
-    public long? UserId { get; set; }
-    public List<PedidoItemRequest>? Items { get; set; }
-    public PaymentRequest? Payment { get; set; }
-}
-
-public class PaymentRequest
-{
-    public string? CardNumber { get; set; }
-    public int? ExpiryMonth { get; set; }
-    public int? ExpiryYear { get; set; }
-}
-
-public class PedidoItemRequest
-{
-    public long PartId { get; set; }
-    public int Qty { get; set; }
-}
-
-public class UpdateEstadoRequest
-{
-    public long? UserId { get; set; }
-    public string? Status { get; set; }
-    public string? Comment { get; set; }
-    public string? TrackingNumber { get; set; }
-    public int? EtaDays { get; set; }
 }

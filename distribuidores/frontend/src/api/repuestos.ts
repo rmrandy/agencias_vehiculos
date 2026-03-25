@@ -18,6 +18,19 @@ export interface Part {
   stockQuantity?: number
 }
 
+/** Catálogo unificado: local o fila remota de una fábrica (proveedor). */
+export type CatalogPart = Part & {
+  source?: 'local' | 'fabrica'
+  proveedorId?: number
+  proveedorNombre?: string
+  fabricaBaseUrl?: string
+}
+
+export function catalogLineKey(p: CatalogPart): string {
+  if (p.source === 'fabrica' && p.proveedorId != null) return `f:${p.proveedorId}:${p.partId}`
+  return `l:${p.partId}`
+}
+
 export interface CreateRepuestoBody {
   categoryId: number
   brandId: number
@@ -68,6 +81,13 @@ export async function buscarRepuestos(params?: {
   return apiFetch(`/api/repuestos/busqueda${qs ? '?' + qs : ''}`)
 }
 
+/** Local + N fábricas (proveedores con API). Requiere texto de búsqueda. */
+export async function buscarCatalogoUnificado(q: string): Promise<CatalogPart[]> {
+  const term = q.trim()
+  if (!term) return []
+  return apiFetch(`/api/repuestos/catalogo/unificado?q=${encodeURIComponent(term)}`)
+}
+
 export async function getRepuesto(id: number): Promise<Part> {
   return apiFetch(`/api/repuestos/${id}`)
 }
@@ -94,8 +114,8 @@ export async function getGaleria(partId: number): Promise<{ count: number }> {
   return apiFetch(`/api/repuestos/${partId}/galeria`)
 }
 
-export function getPartImageUrl(partId: number, index: number): string {
-  const base = (import.meta.env.VITE_API_URL || 'http://localhost:5080').replace(/\/$/, '')
+export function getPartImageUrl(partId: number, index: number, fabricaBaseUrl?: string | null): string {
+  const base = (fabricaBaseUrl || import.meta.env.VITE_API_URL || 'http://localhost:5080').replace(/\/$/, '')
   return `${base}/api/images/part/${partId}/imagen/${index}`
 }
 

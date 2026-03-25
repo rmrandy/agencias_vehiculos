@@ -20,7 +20,21 @@ export function Checkout() {
     else if (items.length === 0) navigate('/carrito')
   }, [isLoggedIn, user, items.length, navigate])
 
-  const orderItems = items.map((x) => ({ partId: x.part.partId, qty: x.qty }))
+  const orderItems = items.map((x) => {
+    const p = x.part
+    if (p.source === 'fabrica' && p.proveedorId != null) {
+      return {
+        source: 'fabrica' as const,
+        proveedorId: p.proveedorId,
+        fabricaPartId: p.partId,
+        qty: x.qty,
+        unitPrice: p.price,
+        title: p.title,
+        partNumber: p.partNumber,
+      }
+    }
+    return { source: 'local' as const, partId: p.partId, qty: x.qty }
+  })
   const subtotal = items.reduce((s, x) => s + x.part.price * x.qty, 0)
   const digitsOnly = cardNumber.replace(/\D/g, '')
   const hasPayment = digitsOnly.length >= 13 && expiry.length >= 4

@@ -1,0 +1,18 @@
+[
+  {
+    "partNumber": "FILT-ACEITE-001",
+    "stockQuantity": 150
+  },
+  {
+    "partNumber": "PAST-FRENO-DEL",
+    "stockQuantity": 25
+  },
+  {
+    "partNumber": "BOMB-AGUA-002",
+    "stockQuantity": 12
+  },
+  {
+    "partNumber": "CODIGO-INEXISTENTE",
+    "stockQuantity": 50
+  }
+]

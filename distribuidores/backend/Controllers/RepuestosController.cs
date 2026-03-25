@@ -8,10 +8,22 @@ namespace BackendDistribuidores.Controllers;
 public class RepuestosController : ControllerBase
 {
     private readonly PartService _partService;
+    private readonly UnifiedCatalogService _unifiedCatalog;
 
-    public RepuestosController(PartService partService)
+    public RepuestosController(PartService partService, UnifiedCatalogService unifiedCatalog)
     {
         _partService = partService;
+        _unifiedCatalog = unifiedCatalog;
+    }
+
+    /// <summary>Catálogo local + resultados de todas las fábricas (proveedores con apiBaseUrl). Requiere texto de búsqueda.</summary>
+    [HttpGet("catalogo/unificado")]
+    public async Task<IActionResult> CatalogoUnificado([FromQuery] string? q, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(q))
+            return BadRequest(new { message = "Indique q (texto de búsqueda)" });
+        var list = await _unifiedCatalog.SearchAsync(q.Trim(), ct);
+        return Ok(list);
     }
 
     [HttpGet]

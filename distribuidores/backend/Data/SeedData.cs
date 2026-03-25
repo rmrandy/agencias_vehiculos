@@ -8,8 +8,38 @@ public static class SeedData
     public static async Task EnsureSeedAsync(AppDbContext db, CancellationToken ct = default)
     {
         await EnsurePartImageTableAsync(db, ct);
+        await EnsureMultisourceSchemaAsync(db, ct);
         await SeedRolesAndUserAsync(db, ct);
         await SeedCatalogAsync(db, ct);
+    }
+
+    /// <summary>Columnas para pedidos multi-fábrica y usuario de integración en PROVEEDOR (BD creada antes de este cambio).</summary>
+    static async Task EnsureMultisourceSchemaAsync(AppDbContext db, CancellationToken ct)
+    {
+        try
+        {
+            await db.Database.ExecuteSqlRawAsync(
+                @"IF COL_LENGTH(N'ORDER_ITEM', N'LineSource') IS NULL
+                  ALTER TABLE ORDER_ITEM ADD LineSource nvarchar(20) NOT NULL CONSTRAINT DF_ORDER_ITEM_LineSource DEFAULT N'LOCAL';
+                IF COL_LENGTH(N'ORDER_ITEM', N'ProveedorId') IS NULL
+                  ALTER TABLE ORDER_ITEM ADD ProveedorId bigint NULL;
+                IF COL_LENGTH(N'ORDER_ITEM', N'FabricaPartId') IS NULL
+                  ALTER TABLE ORDER_ITEM ADD FabricaPartId bigint NULL;
+                IF COL_LENGTH(N'ORDER_ITEM', N'FabricaOrderId') IS NULL
+                  ALTER TABLE ORDER_ITEM ADD FabricaOrderId bigint NULL;
+                IF COL_LENGTH(N'ORDER_ITEM', N'TitleSnapshot') IS NULL
+                  ALTER TABLE ORDER_ITEM ADD TitleSnapshot nvarchar(500) NULL;
+                IF COL_LENGTH(N'ORDER_ITEM', N'PartNumberSnapshot') IS NULL
+                  ALTER TABLE ORDER_ITEM ADD PartNumberSnapshot nvarchar(100) NULL;
+                IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'ORDER_ITEM') AND name = N'PartId' AND is_nullable = 0)
+                  ALTER TABLE ORDER_ITEM ALTER COLUMN PartId bigint NULL;
+                IF COL_LENGTH(N'PROVEEDOR', N'FabricaEnterpriseUserId') IS NULL
+                  ALTER TABLE PROVEEDOR ADD FabricaEnterpriseUserId bigint NULL;", ct);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[SeedData] EnsureMultisourceSchema: " + ex.Message);
+        }
     }
 
     /// <summary>Crea la tabla PART_IMAGE si no existe (por si la BD se creó antes de añadir galería).</summary>

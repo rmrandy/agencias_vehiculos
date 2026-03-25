@@ -19,7 +19,17 @@ export function DetallePedido() {
   const { orderId } = useParams<{ orderId: string }>()
   const [data, setData] = useState<{
     order: { orderNumber: string; subtotal: number; shippingTotal: number; total: number; orderType: string; createdAt: string }
-    items: { partId: number; partTitle?: string; qty: number; unitPrice: number; lineTotal: number }[]
+    items: {
+      lineSource?: string
+      partId?: number | null
+      fabricaPartId?: number | null
+      proveedorId?: number | null
+      fabricaOrderId?: number | null
+      partTitle?: string
+      qty: number
+      unitPrice: number
+      lineTotal: number
+    }[]
     status: { status: string; trackingNumber?: string; etaDays?: number }
   } | null>(null)
   const [loading, setLoading] = useState(true)
@@ -67,8 +77,16 @@ export function DetallePedido() {
         <h2>Productos</h2>
         <ul className="detalle-items">
           {items.map((item, i) => (
-            <li key={i} className="detalle-item-row">
-              <span className="item-name">{item.partTitle ?? `Repuesto #${item.partId}`}</span>
+            <li
+              key={`${item.lineSource ?? 'L'}-${item.partId ?? ''}-${item.fabricaPartId ?? ''}-${item.proveedorId ?? ''}-${i}`}
+              className="detalle-item-row"
+            >
+              <span className="item-name">
+                {item.lineSource === 'FABRICA' && item.fabricaOrderId != null && (
+                  <span className="item-fabrica-badge">Fábrica (pedido #{item.fabricaOrderId}) </span>
+                )}
+                {item.partTitle ?? `Repuesto #${item.partId ?? item.fabricaPartId ?? '?'}`}
+              </span>
               <span className="item-qty">× {item.qty}</span>
               <span className="item-price">${Number(item.unitPrice).toFixed(2)} c/u</span>
               <span className="item-total">${Number(item.lineTotal).toFixed(2)}</span>

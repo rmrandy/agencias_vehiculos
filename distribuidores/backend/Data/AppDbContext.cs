@@ -115,8 +115,12 @@ public class AppDbContext : DbContext
         {
             e.ToTable("ORDER_ITEM");
             e.HasKey(x => x.OrderItemId);
+            e.Property(x => x.LineSource).HasMaxLength(20).HasDefaultValue("LOCAL");
+            e.Property(x => x.PartId).IsRequired(false);
             e.Property(x => x.UnitPrice).HasPrecision(12, 2);
             e.Property(x => x.LineTotal).HasPrecision(12, 2);
+            e.Property(x => x.TitleSnapshot).HasMaxLength(500);
+            e.Property(x => x.PartNumberSnapshot).HasMaxLength(100);
         });
 
         // ORDER_STATUS_HISTORY
@@ -154,6 +158,7 @@ public class AppDbContext : DbContext
             e.Property(x => x.Email).HasMaxLength(200);
             e.Property(x => x.Telefono).HasMaxLength(50);
             e.Property(x => x.ApiBaseUrl).HasMaxLength(500);
+            e.Property(x => x.FabricaEnterpriseUserId);
             e.Property(x => x.TipoCambioAQuetzales).HasPrecision(12, 4);
             e.Property(x => x.PorcentajeGanancia).HasPrecision(7, 4);
             e.Property(x => x.CostoEnvioPorLibra).HasPrecision(12, 4);

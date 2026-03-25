@@ -10,6 +10,8 @@ public class Proveedor
     public string? Telefono { get; set; }
     /// <summary>Base URL del API REST del proveedor (ej. fábrica).</summary>
     public string? ApiBaseUrl { get; set; }
+    /// <summary>USER_ID en la fábrica para crear pedidos vía API (usuario empresarial / integración).</summary>
+    public long? FabricaEnterpriseUserId { get; set; }
     /// <summary>Si es internacional: tipo de cambio a quetzales (GTQ).</summary>
     public decimal? TipoCambioAQuetzales { get; set; }
     /// <summary>Si es internacional: porcentaje de ganancia configurable.</summary>

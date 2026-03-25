@@ -62,6 +62,7 @@
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/service/OrderService.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/model/OrderItem.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/service/VehicleService.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/config/DistributorApiKeyFilter.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/model/EnterpriseProfile.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/repository/AppUserRepository.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica/backend/src/main/java/com/agencias/backend/model/InventoryLog.java

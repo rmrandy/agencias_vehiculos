@@ -17,12 +17,24 @@ export interface PaymentParams {
   expiryYear: number
 }
 
+export type PedidoItemPayload =
+  | { source: 'local'; partId: number; qty: number }
+  | {
+      source: 'fabrica'
+      proveedorId: number
+      fabricaPartId: number
+      qty: number
+      unitPrice: number
+      title?: string
+      partNumber?: string
+    }
+
 export async function createPedido(
   userId: number,
-  items: { partId: number; qty: number }[],
+  items: PedidoItemPayload[],
   payment?: PaymentParams | null
 ): Promise<OrderHeader> {
-  const body: { userId: number; items: { partId: number; qty: number }[]; payment?: PaymentParams } = {
+  const body: { userId: number; items: PedidoItemPayload[]; payment?: PaymentParams } = {
     userId,
     items,
   }
@@ -45,7 +57,17 @@ export async function getPedidosByUser(userId: number): Promise<OrderHeader[]> {
 
 export async function getPedido(orderId: number): Promise<{
   order: OrderHeader
-  items: { partId: number; partTitle?: string; qty: number; unitPrice: number; lineTotal: number }[]
+  items: {
+    lineSource?: string
+    partId?: number | null
+    fabricaPartId?: number | null
+    proveedorId?: number | null
+    fabricaOrderId?: number | null
+    partTitle?: string
+    qty: number
+    unitPrice: number
+    lineTotal: number
+  }[]
   status: { status: string; trackingNumber?: string; etaDays?: number }
 }> {
   return apiFetch(`/api/pedidos/${orderId}`)

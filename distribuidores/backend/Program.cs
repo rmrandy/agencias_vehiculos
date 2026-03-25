@@ -15,6 +15,12 @@ builder.Services.AddScoped<BackendDistribuidores.Services.PartService>();
 builder.Services.AddScoped<BackendDistribuidores.Services.OrderService>();
 builder.Services.AddScoped<BackendDistribuidores.Services.MailService>();
 builder.Services.AddHttpClient<BackendDistribuidores.Services.FabricaProxyService>();
+builder.Services.AddHttpClient("FabricaIntegration", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(120);
+});
+builder.Services.AddScoped<BackendDistribuidores.Services.FabricaIntegrationService>();
+builder.Services.AddScoped<BackendDistribuidores.Services.UnifiedCatalogService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

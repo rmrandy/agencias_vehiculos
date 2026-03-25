@@ -1,11 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
-import { getPartImageUrl } from '../api/repuestos'
+import { getPartImageUrl, catalogLineKey } from '../api/repuestos'
 import './Carrito.css'
 
 export function Carrito() {
-  const { items, remove, setQty } = useCart()
+  const { items, removeLine, setQtyLine } = useCart()
   const { isLoggedIn } = useAuth()
   const navigate = useNavigate()
 
@@ -45,11 +45,21 @@ export function Carrito() {
       <p className="carrito-count">{items.length} {items.length === 1 ? 'producto' : 'productos'}</p>
       <ul className="carrito-list">
         {items.map(({ part, qty }) => {
+          const lineKey = catalogLineKey(part)
           const lineTotal = part.price * qty
-          const imageUrl = part.hasImage ? getPartImageUrl(part.partId, 0) : null
+          const imageUrl = part.hasImage
+            ? getPartImageUrl(part.partId, 0, part.source === 'fabrica' ? part.fabricaBaseUrl : undefined)
+            : null
+          const detalleTo = part.source === 'fabrica' ? '#' : `/producto/${part.partId}`
           return (
-            <li key={part.partId} className="carrito-item">
-              <Link to={`/producto/${part.partId}`} className="carrito-item-image">
+            <li key={lineKey} className="carrito-item">
+              <Link
+                to={detalleTo}
+                className="carrito-item-image"
+                onClick={(e) => {
+                  if (part.source === 'fabrica') e.preventDefault()
+                }}
+              >
                 {imageUrl ? (
                   <img src={imageUrl} alt={part.title} />
                 ) : (
@@ -57,9 +67,16 @@ export function Carrito() {
                 )}
               </Link>
               <div className="carrito-item-info">
-                <Link to={`/producto/${part.partId}`} className="carrito-item-title">
-                  {part.title}
-                </Link>
+                {part.source === 'fabrica' ? (
+                  <span className="carrito-item-title">{part.title}</span>
+                ) : (
+                  <Link to={detalleTo} className="carrito-item-title">
+                    {part.title}
+                  </Link>
+                )}
+                {part.source === 'fabrica' && part.proveedorNombre && (
+                  <p className="carrito-item-code">Fábrica: {part.proveedorNombre}</p>
+                )}
                 {part.partNumber && (
                   <p className="carrito-item-code">Código: {part.partNumber}</p>
                 )}
@@ -74,12 +91,12 @@ export function Carrito() {
                   type="number"
                   min={1}
                   value={qty}
-                  onChange={(e) => setQty(part.partId, Math.max(1, parseInt(e.target.value, 10) || 1))}
+                  onChange={(e) => setQtyLine(lineKey, Math.max(1, parseInt(e.target.value, 10) || 1))}
                 />
               </div>
               <div className="carrito-item-total">
                 <span className="carrito-item-line-total">${lineTotal.toFixed(2)}</span>
-                <button type="button" className="btn btn-sm btn-danger" onClick={() => remove(part.partId)}>
+                <button type="button" className="btn btn-sm btn-danger" onClick={() => removeLine(lineKey)}>
                   Quitar
                 </button>
               </div>

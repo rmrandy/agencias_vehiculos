@@ -52,6 +52,7 @@ public class ProveedoresController : ControllerBase
             Email = Normalize(body.Email),
             Telefono = Normalize(body.Telefono),
             ApiBaseUrl = Normalize(body.ApiBaseUrl),
+            FabricaEnterpriseUserId = body.FabricaEnterpriseUserId,
             TipoCambioAQuetzales = body.TipoCambioAQuetzales,
             PorcentajeGanancia = body.PorcentajeGanancia,
             CostoEnvioPorLibra = body.CostoEnvioPorLibra,
@@ -78,6 +79,7 @@ public class ProveedoresController : ControllerBase
         proveedor.Email = Normalize(body.Email);
         proveedor.Telefono = Normalize(body.Telefono);
         proveedor.ApiBaseUrl = Normalize(body.ApiBaseUrl);
+        proveedor.FabricaEnterpriseUserId = body.FabricaEnterpriseUserId;
         proveedor.TipoCambioAQuetzales = body.TipoCambioAQuetzales;
         proveedor.PorcentajeGanancia = body.PorcentajeGanancia;
         proveedor.CostoEnvioPorLibra = body.CostoEnvioPorLibra;
@@ -113,6 +115,7 @@ public class ProveedoresController : ControllerBase
             email = p.Email,
             telefono = p.Telefono,
             apiBaseUrl = p.ApiBaseUrl,
+            fabricaEnterpriseUserId = p.FabricaEnterpriseUserId,
             tipoCambioAQuetzales = p.TipoCambioAQuetzales,
             porcentajeGanancia = p.PorcentajeGanancia,
             costoEnvioPorLibra = p.CostoEnvioPorLibra,
@@ -158,6 +161,7 @@ public class SaveProveedorRequest
     public string? Email { get; set; }
     public string? Telefono { get; set; }
     public string? ApiBaseUrl { get; set; }
+    public long? FabricaEnterpriseUserId { get; set; }
     public decimal? TipoCambioAQuetzales { get; set; }
     public decimal? PorcentajeGanancia { get; set; }
     public decimal? CostoEnvioPorLibra { get; set; }

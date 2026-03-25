@@ -102,7 +102,7 @@ export function DetalleProducto() {
       return
     }
     reportAgregadoCarrito(partId, user?.userId)
-    add(part, 1)
+    add({ ...part, source: 'local' }, 1)
     toast.success('Agregado al carrito')
   }
 
