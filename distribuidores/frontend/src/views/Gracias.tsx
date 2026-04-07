@@ -12,32 +12,41 @@ export function Gracias() {
   useEffect(() => {
     if (orderId && !didToast.current) {
       didToast.current = true
-      toast.success('Pedido realizado correctamente')
+      toast.success('Compra completada: tu pedido ya está registrado.')
     }
   }, [orderId, toast])
 
   return (
     <div className="gracias-page">
       <div className="gracias-card">
-        <div className="gracias-icon">✓</div>
+        <div className="gracias-icon" aria-hidden>
+          <span className="gracias-check">✓</span>
+        </div>
+        <p className="gracias-kicker">Compra exitosa</p>
         <h1>¡Gracias por tu compra!</h1>
         <p className="gracias-text">
-          Tu pedido ha sido registrado correctamente.
-          {orderNumber && (
-            <>
-              <br />
-              <strong>Número de pedido: {orderNumber}</strong>
-            </>
-          )}
+          Hemos recibido tu pedido. Recibirás actualizaciones por correo cuando haya novedades en el envío.
         </p>
+        {orderNumber && (
+          <p className="gracias-order-box">
+            <span className="gracias-order-label">Número de pedido</span>
+            <strong className="gracias-order-number">{orderNumber}</strong>
+          </p>
+        )}
         {orderId && (
-          <Link to={`/pedidos/${orderId}`} className="btn btn-primary btn-lg">
-            Ver detalle del pedido
-          </Link>
+          <div className="gracias-primary-actions">
+            <Link to={`/pedidos/${orderId}`} className="btn btn-primary btn-lg">
+              Ver detalle y recibos
+            </Link>
+          </div>
         )}
         <div className="gracias-links">
-          <Link to="/pedidos" className="btn btn-secondary">Mis pedidos</Link>
-          <Link to="/tienda" className="btn btn-secondary">Seguir comprando</Link>
+          <Link to="/pedidos" className="btn btn-secondary">
+            Mis pedidos
+          </Link>
+          <Link to="/tienda" className="btn btn-secondary">
+            Seguir comprando
+          </Link>
         </div>
       </div>
     </div>

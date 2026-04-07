@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "dTBZ81rl6e8=",
+  "dgSpecHash": "kkG4aS4+MG0=",
   "success": true,
   "projectFilePath": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/BackendDistribuidores.csproj",
   "expectedPackageFiles": [
@@ -49,6 +49,7 @@
     "/Users/randyrivera/.nuget/packages/microsoft.sqlserver.server/1.0.0/microsoft.sqlserver.server.1.0.0.nupkg.sha512",
     "/Users/randyrivera/.nuget/packages/microsoft.win32.systemevents/6.0.0/microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "/Users/randyrivera/.nuget/packages/mono.texttemplating/3.0.0/mono.texttemplating.3.0.0.nupkg.sha512",
+    "/Users/randyrivera/.nuget/packages/questpdf/2025.7.0/questpdf.2025.7.0.nupkg.sha512",
     "/Users/randyrivera/.nuget/packages/system.clientmodel/1.0.0/system.clientmodel.1.0.0.nupkg.sha512",
     "/Users/randyrivera/.nuget/packages/system.codedom/6.0.0/system.codedom.6.0.0.nupkg.sha512",
     "/Users/randyrivera/.nuget/packages/system.collections.immutable/7.0.0/system.collections.immutable.7.0.0.nupkg.sha512",

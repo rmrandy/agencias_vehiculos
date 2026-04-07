@@ -96,7 +96,11 @@ public class OrderService
     }
 
     /// <summary>Catálogo local + líneas de N fábricas: primero crea pedidos en cada fábrica, luego orden maestro aquí.</summary>
-    public async Task<OrderHeader> CreateMultiSourceOrderAsync(long userId, List<PedidoItemRequest> items, CancellationToken ct = default)
+    public async Task<OrderHeader> CreateMultiSourceOrderAsync(
+        long userId,
+        List<PedidoItemRequest> items,
+        PaymentRequest? payment,
+        CancellationToken ct = default)
     {
         if (items == null || items.Count == 0)
             throw new ArgumentException("El pedido debe tener al menos un artículo");
@@ -145,6 +149,7 @@ public class OrderService
                 prov.ApiBaseUrl,
                 prov.FabricaEnterpriseUserId.Value,
                 merged,
+                payment,
                 ct);
             fabricaOrderIds[g.Key] = oid;
         }

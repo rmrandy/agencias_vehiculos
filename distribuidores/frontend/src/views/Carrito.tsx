@@ -67,6 +67,9 @@ export function Carrito() {
                 )}
               </Link>
               <div className="carrito-item-info">
+                {part.source === 'fabrica' && (
+                  <span className="carrito-fabrica-pill">Fábrica</span>
+                )}
                 {part.source === 'fabrica' ? (
                   <span className="carrito-item-title">{part.title}</span>
                 ) : (
@@ -75,7 +78,7 @@ export function Carrito() {
                   </Link>
                 )}
                 {part.source === 'fabrica' && part.proveedorNombre && (
-                  <p className="carrito-item-code">Fábrica: {part.proveedorNombre}</p>
+                  <p className="carrito-item-code">{part.proveedorNombre}</p>
                 )}
                 {part.partNumber && (
                   <p className="carrito-item-code">Código: {part.partNumber}</p>

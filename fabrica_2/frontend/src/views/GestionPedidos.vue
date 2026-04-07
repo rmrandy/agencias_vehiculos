@@ -23,6 +23,14 @@
         <label>Hasta</label>
         <input v-model="filters.to" type="date" />
       </div>
+      <div class="filter-group">
+        <label>Origen</label>
+        <select v-model="filters.orderOrigin">
+          <option value="">Todos</option>
+          <option value="FABRICA_WEB">Tienda fábrica</option>
+          <option value="DISTRIBUIDORA">Distribuidora</option>
+        </select>
+      </div>
       <button class="btn btn-primary" @click="loadOrders">Filtrar</button>
     </div>
 
@@ -34,6 +42,7 @@
         <thead>
           <tr>
             <th>Nº Pedido</th>
+            <th>Origen</th>
             <th>Fecha</th>
             <th>Total</th>
             <th>Estado</th>
@@ -46,6 +55,11 @@
               <router-link :to="`/mis-pedidos/${row.order.orderId}`" class="order-link">
                 {{ row.order.orderNumber }}
               </router-link>
+            </td>
+            <td>
+              <span class="origin-pill" :class="originClass(row.order.orderOrigin)">
+                {{ originLabel(row.order.orderOrigin) }}
+              </span>
             </td>
             <td>{{ formatDate(row.order.createdAt) }}</td>
             <td>${{ row.order.total?.toFixed(2) }}</td>
@@ -124,7 +138,7 @@ const orders = ref([])
 const statusFlow = ref([])
 const loading = ref(true)
 const error = ref('')
-const filters = ref({ status: '', from: '', to: '' })
+const filters = ref({ status: '', from: '', to: '', orderOrigin: '' })
 const selectedStatus = ref({})
 const commentByOrder = ref({})
 const trackingByOrder = ref({})
@@ -170,6 +184,17 @@ function formatDate(d) {
   return date.toLocaleDateString('es-GT', { dateStyle: 'short' })
 }
 
+function originLabel(origin) {
+  if (!origin || origin === 'FABRICA_WEB') return 'Fábrica'
+  if (origin === 'DISTRIBUIDORA') return 'Distribuidora'
+  return origin
+}
+
+function originClass(origin) {
+  if (origin === 'DISTRIBUIDORA') return 'origin-distributor'
+  return 'origin-factory'
+}
+
 async function loadOrders() {
   loading.value = true
   error.value = ''
@@ -178,7 +203,8 @@ async function loadOrders() {
       getAllOrders({
         status: filters.value.status || undefined,
         from: filters.value.from || undefined,
-        to: filters.value.to || undefined
+        to: filters.value.to || undefined,
+        orderOrigin: filters.value.orderOrigin || undefined
       }),
       getOrderStatusFlow()
     ])
@@ -382,6 +408,23 @@ onMounted(loadOrders)
 .badge-info {
   background: #dbeafe;
   color: #1e40af;
+}
+
+.origin-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.origin-factory {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+.origin-distributor {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .status-select {

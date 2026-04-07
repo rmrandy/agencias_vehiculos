@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -62,9 +63,26 @@ public class OrderService {
         this.partService = new PartService(emf, this.mailService);
     }
 
-    public OrderHeader createOrder(Long userId, List<Map<String, Object>> items) {
+    private static String normalizeOrderOrigin(String header) {
+        if (header == null || header.isBlank()) {
+            return "FABRICA_WEB";
+        }
+        String u = header.trim().toLowerCase(Locale.ROOT);
+        if (u.contains("distributor") || u.contains("distribuidor")) {
+            return "DISTRIBUIDORA";
+        }
+        return "FABRICA_WEB";
+    }
+
+    public OrderHeader createOrder(Long userId, List<Map<String, Object>> items, String xOrderOriginHeader) {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("El pedido debe tener al menos un artículo");
+        }
+
+        if (userRepo.findById(userId).isEmpty()) {
+            throw new IllegalArgumentException(
+                "El userId " + userId + " no existe en APP_USER de esta fábrica. "
+                    + "Use un usuario válido o configure fabricaEnterpriseUserId en el proveedor de la distribuidora.");
         }
 
         // 1. Validar disponibilidad de stock para todos los items
@@ -122,6 +140,7 @@ public class OrderService {
         order.setOrderNumber(generateOrderNumber());
         order.setUserId(userId);
         order.setOrderType(orderType);
+        order.setOrderOrigin(normalizeOrderOrigin(xOrderOriginHeader));
         order.setSubtotal(subtotal);
         order.setShippingTotal(BigDecimal.ZERO); // Por ahora sin envío
         order.setTotal(total);
@@ -304,8 +323,8 @@ public class OrderService {
         return orderRepo.findAll();
     }
 
-    public List<OrderHeader> getAllOrdersFiltered(String status, Long userId, java.util.Date fromDate, java.util.Date toDate) {
-        return orderRepo.findAllFiltered(status, userId, fromDate, toDate);
+    public List<OrderHeader> getAllOrdersFiltered(String status, Long userId, java.util.Date fromDate, java.util.Date toDate, String orderOrigin) {
+        return orderRepo.findAllFiltered(status, userId, fromDate, toDate, orderOrigin);
     }
 
     private String generateOrderNumber() {

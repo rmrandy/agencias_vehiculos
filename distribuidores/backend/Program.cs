@@ -21,6 +21,7 @@ builder.Services.AddHttpClient("FabricaIntegration", client =>
 });
 builder.Services.AddScoped<BackendDistribuidores.Services.FabricaIntegrationService>();
 builder.Services.AddScoped<BackendDistribuidores.Services.UnifiedCatalogService>();
+builder.Services.AddScoped<BackendDistribuidores.Services.PedidoReciboPdfService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

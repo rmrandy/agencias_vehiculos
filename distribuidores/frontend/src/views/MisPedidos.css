@@ -1,15 +1,107 @@
-.mis-pedidos-page { max-width: 640px; margin: 0 auto; }
-.mis-pedidos-page h1 { font-size: 1.5rem; margin-bottom: 1rem; }
-.pedidos-list { list-style: none; padding: 0; margin: 0; }
-.pedido-item { margin-bottom: 0.5rem; }
-.pedido-item a {
-  display: flex;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  background: #f8fafc;
-  border-radius: 8px;
-  text-decoration: none;
-  color: #0f172a;
-  border: 1px solid #e2e8f0;
+.mis-pedidos-page {
+  max-width: 720px;
+  margin: 0 auto;
 }
-.pedido-item a:hover { background: #f1f5f9; }
+.mis-pedidos-page h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.35rem;
+}
+.mis-pedidos-sub {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  margin: 0 0 1.25rem;
+}
+.pedidos-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pedido-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 0.85rem;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+}
+.pedido-card-main {
+  min-width: 0;
+  flex: 1;
+}
+.pedido-number {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--primary);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+.pedido-number:hover {
+  text-decoration: underline;
+}
+.pedido-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+.pedido-sync-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  background: #fef3c7;
+  color: #92400e;
+}
+.pedido-status {
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+.pedido-status--shipped,
+.pedido-status--delivered {
+  background: #d1fae5;
+  color: #065f46;
+}
+.pedido-status--cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.pedido-tracking {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0.5rem 0 0;
+}
+.pedido-card-side {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+.pedido-total {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+.pedido-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+.btn-sm {
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.65rem;
+}

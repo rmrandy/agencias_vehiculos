@@ -22,6 +22,10 @@ public class OrderHeader {
     @Column(name = "ORDER_TYPE", length = 20)
     private String orderType = "WEB";
 
+    /** Origen: FABRICA_WEB (tienda propia) o DISTRIBUIDORA (integración distribuidora). */
+    @Column(name = "ORDER_ORIGIN", length = 24)
+    private String orderOrigin = "FABRICA_WEB";
+
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal subtotal;
 
@@ -46,6 +50,9 @@ public class OrderHeader {
         if (orderType == null) {
             orderType = "WEB";
         }
+        if (orderOrigin == null) {
+            orderOrigin = "FABRICA_WEB";
+        }
         if (currency == null) {
             currency = "USD";
         }
@@ -65,6 +72,8 @@ public class OrderHeader {
     public void setUserId(Long userId) { this.userId = userId; }
     public String getOrderType() { return orderType; }
     public void setOrderType(String orderType) { this.orderType = orderType; }
+    public String getOrderOrigin() { return orderOrigin; }
+    public void setOrderOrigin(String orderOrigin) { this.orderOrigin = orderOrigin; }
     public BigDecimal getSubtotal() { return subtotal; }
     public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
     public BigDecimal getShippingTotal() { return shippingTotal; }

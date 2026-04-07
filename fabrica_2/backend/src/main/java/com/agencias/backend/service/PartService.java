@@ -31,11 +31,15 @@ public class PartService {
 
     private void checkLowStockAndNotify(Part p) {
         if (mailService == null) return;
-        int stock = p.getStockQuantity() != null ? p.getStockQuantity() : 0;
-        int reserved = p.getReservedQuantity() != null ? p.getReservedQuantity() : 0;
-        int threshold = p.getLowStockThreshold() != null ? p.getLowStockThreshold() : 5;
-        if (stock - reserved <= threshold) {
-            mailService.sendLowStockAlert(p);
+        try {
+            int stock = p.getStockQuantity() != null ? p.getStockQuantity() : 0;
+            int reserved = p.getReservedQuantity() != null ? p.getReservedQuantity() : 0;
+            int threshold = p.getLowStockThreshold() != null ? p.getLowStockThreshold() : 5;
+            if (stock - reserved <= threshold) {
+                mailService.sendLowStockAlert(p);
+            }
+        } catch (Exception e) {
+            System.err.println("checkLowStockAndNotify (no se cancela el pedido): " + e.getMessage());
         }
     }
 

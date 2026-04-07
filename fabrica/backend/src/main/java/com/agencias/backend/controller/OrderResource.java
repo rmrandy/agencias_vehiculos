@@ -9,6 +9,8 @@ import com.agencias.backend.service.ReciboPdfService;
 import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -42,7 +44,7 @@ public class OrderResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createOrder(Map<String, Object> body) {
+    public Response createOrder(Map<String, Object> body, @Context HttpHeaders headers) {
         try {
             Long userId = body.get("userId") != null ? ((Number) body.get("userId")).longValue() : null;
             @SuppressWarnings("unchecked")
@@ -62,7 +64,8 @@ public class OrderResource {
                 }
             }
 
-            OrderHeader order = service.createOrder(userId, items);
+            String originHdr = headers.getHeaderString("X-Order-Origin");
+            OrderHeader order = service.createOrder(userId, items, originHdr);
 
             // Enviar correo de confirmación si se enviaron datos de pago
             if (payment != null) {
@@ -78,7 +81,14 @@ public class OrderResource {
         } catch (IllegalArgumentException e) {
             return Response.status(400).entity(new ErrorResponse(400, e.getMessage())).build();
         } catch (Exception e) {
-            return Response.status(500).entity(new ErrorResponse(500, e.getMessage())).build();
+            Throwable root = e;
+            while (root.getCause() != null && root.getCause() != root) {
+                root = root.getCause();
+            }
+            String detail = root.getMessage() != null ? root.getMessage() : e.getMessage();
+            System.err.println("createOrder: " + e.getClass().getName() + ": " + detail);
+            e.printStackTrace();
+            return Response.status(500).entity(new ErrorResponse(500, detail)).build();
         }
     }
 
@@ -254,12 +264,14 @@ public class OrderResource {
             @QueryParam("status") String status,
             @QueryParam("userId") Long userId,
             @QueryParam("from") String fromDate,
-            @QueryParam("to") String toDate) {
+            @QueryParam("to") String toDate,
+            @QueryParam("orderOrigin") String orderOrigin) {
         try {
             Date from = parseDate(fromDate, false);
             Date to = parseDate(toDate, true);
-            List<OrderHeader> orders = (status != null || userId != null || from != null || to != null)
-                ? service.getAllOrdersFiltered(status, userId, from, to)
+            List<OrderHeader> orders = (status != null || userId != null || from != null || to != null
+                || (orderOrigin != null && !orderOrigin.isBlank()))
+                ? service.getAllOrdersFiltered(status, userId, from, to, orderOrigin)
                 : service.getAllOrders();
             // Enriquecer con último estado para gestión admin
             List<Map<String, Object>> result = new java.util.ArrayList<>();

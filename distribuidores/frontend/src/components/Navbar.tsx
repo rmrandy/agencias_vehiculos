@@ -58,11 +58,18 @@ export function Navbar() {
               </li>
             )}
             {user?.roles?.includes('ADMIN') && (
-              <li>
-                <Link to="/usuarios" className={`nav-link ${isActive('/usuarios') ? 'active' : ''}`}>
-                  <span className="nav-icon">👥</span> Usuarios
-                </Link>
-              </li>
+              <>
+                <li>
+                  <Link to="/fabricas" className={`nav-link ${isActive('/fabricas') ? 'active' : ''}`}>
+                    <span className="nav-icon">🏭</span> Fábricas
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/usuarios" className={`nav-link ${isActive('/usuarios') ? 'active' : ''}`}>
+                    <span className="nav-icon">👥</span> Usuarios
+                  </Link>
+                </li>
+              </>
             )}
           </>
         )}

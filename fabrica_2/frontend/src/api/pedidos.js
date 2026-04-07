@@ -53,6 +53,7 @@ export async function getAllOrders(filters = {}) {
   if (filters.userId) params.set('userId', filters.userId)
   if (filters.from) params.set('from', filters.from)
   if (filters.to) params.set('to', filters.to)
+  if (filters.orderOrigin) params.set('orderOrigin', filters.orderOrigin)
   const qs = params.toString()
   return apiFetch('/api/pedidos' + (qs ? '?' + qs : ''))
 }

@@ -10,15 +10,104 @@
   padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 600;
 }
 .detalle-pedido-status .tracking, .detalle-pedido-status .eta { font-size: 0.875rem; color: var(--text-muted); }
+.detalle-sync-hint {
+  width: 100%;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem;
+}
+.detalle-local-status {
+  width: 100%;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0.5rem 0 0;
+}
+.detalle-fabrica-multi {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+.detalle-fabrica-multi ul { margin: 0.35rem 0 0; padding-left: 1.25rem; }
+.item-fabrica-remote {
+  font-size: 0.78rem;
+  color: #92400e;
+  background: #fffbeb;
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 0.15rem;
+}
 .detalle-pedido-page h2 { font-size: 1.0625rem; margin: 0 0 0.75rem; font-weight: 600; color: var(--text-secondary); }
 .detalle-pedido-items { background: var(--card-bg); padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1rem; border: 1px solid var(--border); box-shadow: var(--card-shadow); }
 .detalle-items { list-style: none; padding: 0; margin: 0; }
-.detalle-item-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 0.5rem 1rem; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-light); font-size: 0.9375rem; }
+.detalle-item-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto auto auto;
+  gap: 0.65rem 1rem;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.9375rem;
+}
+@media (max-width: 640px) {
+  .detalle-item-row {
+    grid-template-columns: 48px 1fr;
+    grid-template-rows: auto auto;
+  }
+  .detalle-item-row .item-qty,
+  .detalle-item-row .item-price,
+  .detalle-item-row .item-total {
+    grid-column: 2;
+  }
+  .detalle-item-row .item-qty { justify-self: start; }
+  .detalle-item-row .item-price,
+  .detalle-item-row .item-total { justify-self: end; display: inline; margin-left: 0.5rem; }
+}
 .detalle-item-row:last-child { border-bottom: none; }
+.item-thumb-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.item-thumb { width: 100%; height: 100%; object-fit: cover; }
+.item-thumb-placeholder { font-size: 1.35rem; opacity: 0.75; }
+.item-detail { min-width: 0; display: flex; flex-direction: column; gap: 0.25rem; }
 .detalle-item-row .item-name { font-weight: 500; color: var(--text-secondary); }
+.item-part-no { font-size: 0.8125rem; color: var(--text-muted); }
+.item-recibo-link { font-size: 0.8125rem; color: var(--primary); text-decoration: none; }
+.item-recibo-link:hover { text-decoration: underline; }
 .detalle-item-row .item-qty { color: var(--text-muted); }
 .detalle-item-row .item-price { color: var(--text-muted); font-size: 0.875rem; }
 .detalle-item-row .item-total { font-weight: 600; justify-self: end; color: var(--primary); }
+
+.detalle-pedido-documents {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+.fabrica-recibos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.fabrica-recibos-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-right: 0.25rem;
+}
+.btn-sm { font-size: 0.8125rem; padding: 0.35rem 0.65rem; }
 .detalle-pedido-totals { background: var(--bg-subtle); padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1.5rem; border: 1px solid var(--border); }
 .detalle-pedido-totals .totals-row { display: flex; justify-content: space-between; margin-bottom: 0.35rem; font-size: 0.9375rem; }
 .detalle-pedido-totals .totals-row.total { font-size: 1.25rem; font-weight: 700; margin-top: 0.5rem; margin-bottom: 0; padding-top: 0.5rem; border-top: 1px solid var(--border); color: var(--primary); }

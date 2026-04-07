@@ -1,0 +1,96 @@
+.proveedor-form-page {
+  max-width: 560px;
+  margin: 0 auto;
+}
+.proveedor-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.proveedor-form-header h1 {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+.proveedor-form-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  padding: 1.5rem;
+}
+.proveedor-form-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+  font-size: 0.9375rem;
+}
+.proveedor-form-card fieldset {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.1rem;
+  margin: 0 0 1.25rem;
+}
+.proveedor-form-card legend {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  padding: 0 0.35rem;
+}
+.proveedor-form-card label {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.proveedor-form-card label input[type='text'],
+.proveedor-form-card label input[type='url'],
+.proveedor-form-card label input[type='email'] {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+.proveedor-form-card .hint {
+  display: block;
+  margin-top: 0.35rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+.proveedor-form-card .req {
+  color: #b91c1c;
+}
+.proveedor-form-card .fieldset-hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+.proveedor-form-card .checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0;
+  font-weight: 500;
+}
+.proveedor-form-card .checkbox-row input {
+  width: auto;
+}
+.proveedor-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}

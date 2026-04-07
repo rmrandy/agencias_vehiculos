@@ -67,25 +67,38 @@ public class OrderRepository {
     }
 
     public List<OrderHeader> findAll() {
-        return findAllFiltered(null, null, null, null);
+        return findAllFiltered(null, null, null, null, null);
     }
 
     /**
      * Lista pedidos con filtros opcionales. Si status no es null, solo pedidos cuyo último estado sea ese.
+     * @param orderOrigin ej. FABRICA_WEB o DISTRIBUIDORA; null = sin filtro
      */
-    public List<OrderHeader> findAllFiltered(String status, Long userId, Date fromDate, Date toDate) {
+    public List<OrderHeader> findAllFiltered(String status, Long userId, Date fromDate, Date toDate, String orderOrigin) {
         EntityManager em = emf.createEntityManager();
         try {
             StringBuilder jpql = new StringBuilder("SELECT o FROM OrderHeader o WHERE 1=1 ");
             if (userId != null) jpql.append("AND o.userId = :userId ");
             if (fromDate != null) jpql.append("AND o.createdAt >= :fromDate ");
             if (toDate != null) jpql.append("AND o.createdAt <= :toDate ");
+            if (orderOrigin != null && !orderOrigin.isBlank()) {
+                String o = orderOrigin.trim();
+                if ("FABRICA_WEB".equalsIgnoreCase(o)) {
+                    jpql.append("AND (o.orderOrigin = :orderOrigin OR o.orderOrigin IS NULL) ");
+                } else {
+                    jpql.append("AND o.orderOrigin = :orderOrigin ");
+                }
+            }
             jpql.append("ORDER BY o.createdAt DESC");
 
             var q = em.createQuery(jpql.toString(), OrderHeader.class);
             if (userId != null) q.setParameter("userId", userId);
             if (fromDate != null) q.setParameter("fromDate", fromDate);
             if (toDate != null) q.setParameter("toDate", toDate);
+            if (orderOrigin != null && !orderOrigin.isBlank()) {
+                String o = orderOrigin.trim();
+                q.setParameter("orderOrigin", "FABRICA_WEB".equalsIgnoreCase(o) ? "FABRICA_WEB" : o);
+            }
             List<OrderHeader> list = q.getResultList();
 
             if (status != null && !status.isBlank()) {

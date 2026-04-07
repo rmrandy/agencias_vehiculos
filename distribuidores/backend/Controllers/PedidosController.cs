@@ -16,13 +16,23 @@ public class PedidosController : ControllerBase
     private readonly OrderService _orderService;
     private readonly PartService _partService;
     private readonly MailService _mailService;
+    private readonly PedidoReciboPdfService _reciboPdf;
+    private readonly FabricaIntegrationService _fabricaIntegration;
     private readonly AppDbContext _db;
 
-    public PedidosController(OrderService orderService, PartService partService, MailService mailService, AppDbContext db)
+    public PedidosController(
+        OrderService orderService,
+        PartService partService,
+        MailService mailService,
+        PedidoReciboPdfService reciboPdf,
+        FabricaIntegrationService fabricaIntegration,
+        AppDbContext db)
     {
         _orderService = orderService;
         _partService = partService;
         _mailService = mailService;
+        _reciboPdf = reciboPdf;
+        _fabricaIntegration = fabricaIntegration;
         _db = db;
     }
 
@@ -45,7 +55,8 @@ public class PedidosController : ControllerBase
             OrderHeader order;
             if (request.Items.Any(PedidoItemRequest.IsFabricLine))
             {
-                order = await _orderService.CreateMultiSourceOrderAsync(request.UserId.Value, request.Items, ct);
+                order = await _orderService.CreateMultiSourceOrderAsync(
+                    request.UserId.Value, request.Items, request.Payment, ct);
             }
             else
             {
@@ -136,17 +147,70 @@ public class PedidosController : ControllerBase
     public async Task<IActionResult> GetByUser(long userId, CancellationToken ct)
     {
         var list = await _orderService.GetByUserIdAsync(userId, ct);
-        return Ok(list.Select(o => new
+        if (list.Count == 0)
+            return Ok(Array.Empty<object>());
+
+        var ids = list.Select(o => o.OrderId).ToList();
+        var statusRows = await _db.OrderStatusHistories.AsNoTracking()
+            .Where(s => ids.Contains(s.OrderId))
+            .ToListAsync(ct);
+        var latestByOrder = statusRows
+            .GroupBy(s => s.OrderId)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(x => x.ChangedAt).First());
+
+        var lineCounts = await _db.OrderItems.AsNoTracking()
+            .Where(i => ids.Contains(i.OrderId))
+            .GroupBy(i => i.OrderId)
+            .Select(g => new { OrderId = g.Key, Count = g.Count() })
+            .ToListAsync(ct);
+        var countByOrder = lineCounts.ToDictionary(x => x.OrderId, x => x.Count);
+
+        var fabricLinks = await _db.OrderItems.AsNoTracking()
+            .Where(i => ids.Contains(i.OrderId)
+                && string.Equals(i.LineSource, "FABRICA")
+                && i.FabricaOrderId != null
+                && i.ProveedorId != null)
+            .Select(i => new FabricLinkRow(i.OrderId, i.ProveedorId!.Value, i.FabricaOrderId!.Value))
+            .ToListAsync(ct);
+
+        var (snapCache, provEntities) = await BuildFabricaSnapshotCacheAsync(fabricLinks, ct);
+
+        var keysByOrder = fabricLinks
+            .GroupBy(x => x.OrderId)
+            .ToDictionary(g => g.Key, g => g.Select(x => (x.ProveedorId, x.FabricaOrderId)).Distinct().ToList());
+
+        return Ok(list.Select(o =>
         {
-            orderId = o.OrderId,
-            orderNumber = o.OrderNumber,
-            userId = o.UserId,
-            orderType = o.OrderType,
-            subtotal = o.Subtotal,
-            shippingTotal = o.ShippingTotal,
-            total = o.Total,
-            createdAt = o.CreatedAt
+            latestByOrder.TryGetValue(o.OrderId, out var st);
+            var fabList = BuildFabricaStatusListForOrder(o.OrderId, keysByOrder, snapCache, provEntities);
+            return new
+            {
+                orderId = o.OrderId,
+                orderNumber = o.OrderNumber,
+                userId = o.UserId,
+                orderType = o.OrderType,
+                subtotal = o.Subtotal,
+                shippingTotal = o.ShippingTotal,
+                total = o.Total,
+                createdAt = o.CreatedAt,
+                lineCount = countByOrder.GetValueOrDefault(o.OrderId, 0),
+                status = st?.Status ?? "INITIATED",
+                trackingNumber = st?.TrackingNumber,
+                etaDays = st?.EtaDays,
+                fabricaStatuses = fabList
+            };
         }));
+    }
+
+    /// <summary>Recibo PDF del pedido consolidado en la distribuidora.</summary>
+    [HttpGet("{orderId:long}/recibo")]
+    public async Task<IActionResult> GetReciboPdf(long orderId, CancellationToken ct)
+    {
+        var pdf = await _reciboPdf.GenerateAsync(orderId, ct);
+        if (pdf == null) return NotFound();
+        var order = await _orderService.GetByIdAsync(orderId, ct);
+        var filename = order == null ? $"recibo-{orderId}.pdf" : $"recibo-{order.OrderNumber}.pdf";
+        return File(pdf, "application/pdf", filename);
     }
 
     /// <summary>Listar todos los pedidos (solo ADMIN).</summary>
@@ -267,6 +331,26 @@ public class PedidosController : ControllerBase
         var items = await _orderService.GetItemsAsync(orderId, ct);
         var status = await _orderService.GetLatestStatusAsync(orderId, ct);
 
+        var proveedorIds = items.Where(i => i.ProveedorId != null).Select(i => i.ProveedorId!.Value).Distinct().ToList();
+        var proveedorUrls = proveedorIds.Count == 0
+            ? new Dictionary<long, string?>()
+            : await _db.Proveedores.AsNoTracking()
+                .Where(p => proveedorIds.Contains(p.ProveedorId))
+                .ToDictionaryAsync(p => p.ProveedorId, p => p.ApiBaseUrl, ct);
+
+        var fabricDetailLinks = items
+            .Where(i => string.Equals(i.LineSource, "FABRICA", StringComparison.OrdinalIgnoreCase)
+                && i.FabricaOrderId != null
+                && i.ProveedorId != null)
+            .Select(i => new FabricLinkRow(orderId, i.ProveedorId!.Value, i.FabricaOrderId!.Value))
+            .ToList();
+        var (snapCacheDetail, provEntitiesDetail) = await BuildFabricaSnapshotCacheAsync(fabricDetailLinks, ct);
+        var keysSingleOrder = new Dictionary<long, List<(long ProveedorId, long FabricaOrderId)>>
+        {
+            [orderId] = fabricDetailLinks.Select(x => (x.ProveedorId, x.FabricaOrderId)).Distinct().ToList()
+        };
+        var fabricaStatusesDetail = BuildFabricaStatusListForOrder(orderId, keysSingleOrder, snapCacheDetail, provEntitiesDetail);
+
         var itemsWithTitle = new List<object>();
         foreach (var i in items)
         {
@@ -279,6 +363,15 @@ public class PedidosController : ControllerBase
                 partTitle = part?.Title ?? $"Repuesto #{i.PartId}";
             }
 
+            string? fabricaBase = null;
+            if (i.ProveedorId != null && proveedorUrls.TryGetValue(i.ProveedorId.Value, out var u))
+                fabricaBase = string.IsNullOrWhiteSpace(u) ? null : u.Trim().TrimEnd('/');
+
+            FabricaPedidoRemoteSnapshot? lineSnap = null;
+            if (i.ProveedorId != null && i.FabricaOrderId != null
+                && snapCacheDetail.TryGetValue((i.ProveedorId.Value, i.FabricaOrderId.Value), out var s))
+                lineSnap = s;
+
             itemsWithTitle.Add(new
             {
                 lineSource = i.LineSource,
@@ -286,10 +379,15 @@ public class PedidosController : ControllerBase
                 fabricaPartId = i.FabricaPartId,
                 proveedorId = i.ProveedorId,
                 fabricaOrderId = i.FabricaOrderId,
+                fabricaBaseUrl = fabricaBase,
+                partNumber = i.PartNumberSnapshot,
                 partTitle,
                 qty = i.Qty,
                 unitPrice = i.UnitPrice,
-                lineTotal = i.LineTotal
+                lineTotal = i.LineTotal,
+                fabricaRemoteStatus = lineSnap == null
+                    ? null
+                    : new { status = lineSnap.Status, trackingNumber = lineSnap.TrackingNumber, etaDays = lineSnap.EtaDays }
             });
         }
 
@@ -307,7 +405,75 @@ public class PedidosController : ControllerBase
                 createdAt = order.CreatedAt
             },
             items = itemsWithTitle,
-            status = status == null ? null : new { status = status.Status, trackingNumber = status.TrackingNumber, etaDays = status.EtaDays }
+            status = status == null ? null : new { status = status.Status, trackingNumber = status.TrackingNumber, etaDays = status.EtaDays },
+            fabricaStatuses = fabricaStatusesDetail
         });
+    }
+
+    private sealed record FabricLinkRow(long OrderId, long ProveedorId, long FabricaOrderId);
+
+    private async Task<(
+        Dictionary<(long ProveedorId, long FabricaOrderId), FabricaPedidoRemoteSnapshot?> SnapCache,
+        Dictionary<long, Proveedor> ProvDict)> BuildFabricaSnapshotCacheAsync(
+        IReadOnlyList<FabricLinkRow> fabricLinks,
+        CancellationToken ct)
+    {
+        var uniqueFab = fabricLinks.Select(f => (f.ProveedorId, f.FabricaOrderId)).Distinct().ToList();
+        var provIdsFab = uniqueFab.Select(x => x.ProveedorId).Distinct().ToList();
+        var provEntities = provIdsFab.Count == 0
+            ? new Dictionary<long, Proveedor>()
+            : await _db.Proveedores.AsNoTracking()
+                .Where(p => provIdsFab.Contains(p.ProveedorId))
+                .ToDictionaryAsync(p => p.ProveedorId, p => p, ct);
+
+        var snapCache = new Dictionary<(long, long), FabricaPedidoRemoteSnapshot?>();
+        foreach (var (provId, foId) in uniqueFab)
+        {
+            if (snapCache.ContainsKey((provId, foId)))
+                continue;
+            if (!provEntities.TryGetValue(provId, out var prov) || string.IsNullOrWhiteSpace(prov.ApiBaseUrl))
+            {
+                snapCache[(provId, foId)] = null;
+                continue;
+            }
+
+            var snap = await _fabricaIntegration.GetPedidoRemoteStatusAsync(prov.ApiBaseUrl, foId, ct);
+            snapCache[(provId, foId)] = snap;
+        }
+
+        return (snapCache, provEntities);
+    }
+
+    private static List<object> BuildFabricaStatusListForOrder(
+        long orderId,
+        IReadOnlyDictionary<long, List<(long ProveedorId, long FabricaOrderId)>> keysByOrder,
+        IReadOnlyDictionary<(long ProveedorId, long FabricaOrderId), FabricaPedidoRemoteSnapshot?> snapCache,
+        IReadOnlyDictionary<long, Proveedor> provEntities)
+    {
+        var fabList = new List<object>();
+        if (!keysByOrder.TryGetValue(orderId, out var keys))
+            return fabList;
+
+        var seen = new HashSet<(long, long)>();
+        foreach (var (provId, foId) in keys)
+        {
+            if (!seen.Add((provId, foId)))
+                continue;
+            if (!snapCache.TryGetValue((provId, foId), out var snap) || snap == null)
+                continue;
+            if (!provEntities.TryGetValue(provId, out var prov))
+                continue;
+            fabList.Add(new
+            {
+                proveedorId = provId,
+                proveedorNombre = prov.Nombre,
+                fabricaOrderId = foId,
+                status = snap.Status,
+                trackingNumber = snap.TrackingNumber,
+                etaDays = snap.EtaDays
+            });
+        }
+
+        return fabList;
     }
 }

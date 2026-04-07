@@ -16,13 +16,12 @@ public class RepuestosController : ControllerBase
         _unifiedCatalog = unifiedCatalog;
     }
 
-    /// <summary>Catálogo local + resultados de todas las fábricas (proveedores con apiBaseUrl). Requiere texto de búsqueda.</summary>
+    /// <summary>Catálogo local + fábricas activas. Si q está vacío, lista todo lo activo (local + cada fábrica).</summary>
     [HttpGet("catalogo/unificado")]
     public async Task<IActionResult> CatalogoUnificado([FromQuery] string? q, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(q))
-            return BadRequest(new { message = "Indique q (texto de búsqueda)" });
-        var list = await _unifiedCatalog.SearchAsync(q.Trim(), ct);
+        var term = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
+        var list = await _unifiedCatalog.SearchAsync(term, ct);
         return Ok(list);
     }
 

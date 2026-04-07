@@ -81,11 +81,13 @@ export async function buscarRepuestos(params?: {
   return apiFetch(`/api/repuestos/busqueda${qs ? '?' + qs : ''}`)
 }
 
-/** Local + N fábricas (proveedores con API). Requiere texto de búsqueda. */
-export async function buscarCatalogoUnificado(q: string): Promise<CatalogPart[]> {
-  const term = q.trim()
-  if (!term) return []
-  return apiFetch(`/api/repuestos/catalogo/unificado?q=${encodeURIComponent(term)}`)
+/** Local + N fábricas. Sin texto: todo el catálogo activo local y de cada fábrica; con texto: filtra. */
+export async function buscarCatalogoUnificado(q?: string): Promise<CatalogPart[]> {
+  const term = (q ?? '').trim()
+  const url = term
+    ? `/api/repuestos/catalogo/unificado?q=${encodeURIComponent(term)}`
+    : '/api/repuestos/catalogo/unificado'
+  return apiFetch(url)
 }
 
 export async function getRepuesto(id: number): Promise<Part> {
@@ -114,8 +116,15 @@ export async function getGaleria(partId: number): Promise<{ count: number }> {
   return apiFetch(`/api/repuestos/${partId}/galeria`)
 }
 
+/**
+ * URL de imagen de repuesto. La API Java de la fábrica solo expone GET /api/images/part/{id};
+ * el backend .NET de la distribuidora admite además /imagen/{índice} para galería local.
+ */
 export function getPartImageUrl(partId: number, index: number, fabricaBaseUrl?: string | null): string {
   const base = (fabricaBaseUrl || import.meta.env.VITE_API_URL || 'http://localhost:5080').replace(/\/$/, '')
+  if (fabricaBaseUrl) {
+    return `${base}/api/images/part/${partId}`
+  }
   return `${base}/api/images/part/${partId}/imagen/${index}`
 }
 

@@ -170,7 +170,7 @@ public class PartResource {
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/{id: \\d+}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getById(@PathParam("id") Long id) {
         Part p = service.getById(id);
@@ -192,7 +192,7 @@ public class PartResource {
     }
 
     @PUT
-    @Path("/{id}")
+    @Path("/{id: \\d+}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response update(@PathParam("id") Long id, Map<String, Object> body) {
@@ -239,7 +239,7 @@ public class PartResource {
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/{id: \\d+}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@PathParam("id") Long id) {
         try {
@@ -255,7 +255,7 @@ public class PartResource {
      * PUT /api/repuestos/{id}/inventario
      */
     @PUT
-    @Path("/{id}/inventario")
+    @Path("/{id: \\d+}/inventario")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateInventory(@PathParam("id") Long id, Map<String, Object> body) {
@@ -278,7 +278,7 @@ public class PartResource {
      * Body: { userId, cantidad }
      */
     @POST
-    @Path("/{id}/inventario/alta")
+    @Path("/{id: \\d+}/inventario/alta")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addInventory(@PathParam("id") Long id, Map<String, Object> body) {
@@ -305,7 +305,7 @@ public class PartResource {
      * GET /api/repuestos/{id}/disponibilidad?cantidad=5
      */
     @GET
-    @Path("/{id}/disponibilidad")
+    @Path("/{id: \\d+}/disponibilidad")
     @Produces(MediaType.APPLICATION_JSON)
     public Response checkAvailability(@PathParam("id") Long id, @QueryParam("cantidad") Integer cantidad) {
         try {

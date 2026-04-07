@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { listRepuestos, buscarCatalogoUnificado, catalogLineKey, type CatalogPart } from '../api/repuestos'
+import { buscarCatalogoUnificado, catalogLineKey, type CatalogPart } from '../api/repuestos'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
@@ -24,17 +24,10 @@ export function Tienda() {
     const asCatalog = (rows: CatalogPart[]): CatalogPart[] =>
       rows.map((p) => ({ ...p, source: p.source ?? 'local' }))
 
-    if (search.trim()) {
-      buscarCatalogoUnificado(search.trim())
-        .then((r) => { if (!cancelled) setParts(asCatalog(Array.isArray(r) ? r : [])) })
-        .catch(() => { if (!cancelled) setParts([]) })
-        .finally(() => { if (!cancelled) setLoading(false) })
-    } else {
-      listRepuestos()
-        .then((r) => { if (!cancelled) setParts(asCatalog(Array.isArray(r) ? r : [])) })
-        .catch(() => { if (!cancelled) setParts([]) })
-        .finally(() => { if (!cancelled) setLoading(false) })
-    }
+    buscarCatalogoUnificado(search.trim())
+      .then((r) => { if (!cancelled) setParts(asCatalog(Array.isArray(r) ? r : [])) })
+      .catch(() => { if (!cancelled) setParts([]) })
+      .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
   }, [search])
 
@@ -52,12 +45,15 @@ export function Tienda() {
       <LoadingModal open={loading} message="Cargando catálogo..." />
       <header className="page-header">
         <h1>Catálogo de repuestos</h1>
-        <p className="page-subtitle">Busca en catálogo local y en las fábricas configuradas como proveedores</p>
+        <p className="page-subtitle">
+          Catálogo local y fábricas conectadas. Usa el buscador para acotar por nombre; si está vacío se muestra todo lo
+          activo.
+        </p>
       </header>
       <div className="search-bar">
         <input
           type="text"
-          placeholder="Buscar por nombre..."
+          placeholder="Filtrar por nombre (opcional)…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

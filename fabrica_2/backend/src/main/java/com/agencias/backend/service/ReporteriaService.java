@@ -71,7 +71,7 @@ public class ReporteriaService {
     public List<VentaReporteDto> reporteVentas(Date from, Date to) {
         Date fromDate = from != null ? from : startOfDay(0);
         Date toDate = to != null ? endOfDay(to) : endOfDay(new Date());
-        List<OrderHeader> orders = orderRepository.findAllFiltered(null, null, fromDate, toDate);
+        List<OrderHeader> orders = orderRepository.findAllFiltered(null, null, fromDate, toDate, null);
         List<Long> userIds = orders.stream().map(OrderHeader::getUserId).distinct().toList();
         Map<Long, String> userNames = loadUserDisplayNames(userIds);
 

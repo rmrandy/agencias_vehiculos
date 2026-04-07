@@ -17,6 +17,8 @@ import { DetalleProducto } from './views/DetalleProducto'
 import { Gracias } from './views/Gracias'
 import { GestionPedidos } from './views/GestionPedidos'
 import { UsuariosAdmin } from './views/UsuariosAdmin'
+import { ProveedoresAdmin } from './views/ProveedoresAdmin'
+import { ProveedorForm } from './views/ProveedorForm'
 import './App.css'
 
 function App() {
@@ -42,6 +44,9 @@ function App() {
                 <Route path="/productos/editar/:id" element={<ProductoForm />} />
                 <Route path="/pedidos-admin" element={<GestionPedidos />} />
                 <Route path="/usuarios" element={<UsuariosAdmin />} />
+                <Route path="/fabricas" element={<ProveedoresAdmin />} />
+                <Route path="/fabricas/nuevo" element={<ProveedorForm />} />
+                <Route path="/fabricas/editar/:id" element={<ProveedorForm />} />
                 <Route path="/producto/:id" element={<DetalleProducto />} />
                 <Route path="/gracias" element={<Gracias />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

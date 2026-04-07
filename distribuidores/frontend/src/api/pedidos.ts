@@ -1,4 +1,4 @@
-import { apiFetch } from './config'
+import { apiFetch, API_URL } from './config'
 
 export interface OrderHeader {
   orderId: number
@@ -9,6 +9,25 @@ export interface OrderHeader {
   shippingTotal: number
   total: number
   createdAt: string
+}
+
+/** Estado leído en tiempo real desde el API de la fábrica (sincronización). */
+export interface FabricaPedidoStatusRow {
+  proveedorId?: number
+  proveedorNombre?: string
+  fabricaOrderId?: number
+  status?: string | null
+  trackingNumber?: string | null
+  etaDays?: number | null
+}
+
+/** Respuesta de GET /api/pedidos/usuario/{userId} (incluye estado e ítems). */
+export interface OrderListRow extends OrderHeader {
+  lineCount?: number
+  status?: string
+  trackingNumber?: string
+  etaDays?: number
+  fabricaStatuses?: FabricaPedidoStatusRow[]
 }
 
 export interface PaymentParams {
@@ -51,8 +70,13 @@ export async function createPedido(
   })
 }
 
-export async function getPedidosByUser(userId: number): Promise<OrderHeader[]> {
+export async function getPedidosByUser(userId: number): Promise<OrderListRow[]> {
   return apiFetch(`/api/pedidos/usuario/${userId}`)
+}
+
+/** Descarga del recibo PDF generado en el backend de la distribuidora. */
+export function getPedidoReciboPdfUrl(orderId: number): string {
+  return `${API_URL}/api/pedidos/${orderId}/recibo`
 }
 
 export async function getPedido(orderId: number): Promise<{
@@ -63,12 +87,20 @@ export async function getPedido(orderId: number): Promise<{
     fabricaPartId?: number | null
     proveedorId?: number | null
     fabricaOrderId?: number | null
+    fabricaBaseUrl?: string | null
+    partNumber?: string | null
     partTitle?: string
     qty: number
     unitPrice: number
     lineTotal: number
+    fabricaRemoteStatus?: {
+      status?: string | null
+      trackingNumber?: string | null
+      etaDays?: number | null
+    } | null
   }[]
   status: { status: string; trackingNumber?: string; etaDays?: number }
+  fabricaStatuses?: FabricaPedidoStatusRow[]
 }> {
   return apiFetch(`/api/pedidos/${orderId}`)
 }

@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
+import { catalogLineKey } from '../api/repuestos'
 import { createPedido } from '../api/pedidos'
 import { LoadingModal } from '../components/LoadingModal'
 import './Checkout.css'
@@ -14,10 +15,15 @@ export function Checkout() {
   const [error, setError] = useState('')
   const [cardNumber, setCardNumber] = useState('')
   const [expiry, setExpiry] = useState('')
+  /** Evita que, tras vaciar el carrito al confirmar, el efecto redirija a /carrito en lugar de /gracias. */
+  const skipEmptyCartRedirectRef = useRef(false)
 
   useEffect(() => {
-    if (!isLoggedIn || !user) navigate('/login')
-    else if (items.length === 0) navigate('/carrito')
+    if (!isLoggedIn || !user) {
+      navigate('/login')
+      return
+    }
+    if (items.length === 0 && !skipEmptyCartRedirectRef.current) navigate('/carrito')
   }, [isLoggedIn, user, items.length, navigate])
 
   const orderItems = items.map((x) => {
@@ -68,6 +74,7 @@ export function Checkout() {
           }
         : undefined
       const order = await createPedido(user.userId, orderItems, payment)
+      skipEmptyCartRedirectRef.current = true
       clear()
       navigate(`/gracias?orderId=${order.orderId}&orderNumber=${encodeURIComponent(order.orderNumber)}`, { replace: true })
     } catch (err) {
@@ -87,8 +94,13 @@ export function Checkout() {
         <strong>Resumen</strong>
         <ul>
           {items.map(({ part, qty }) => (
-            <li key={part.partId}>
-              {part.title} × {qty} = ${(part.price * qty).toFixed(2)}
+            <li key={catalogLineKey(part)}>
+              {part.source === 'fabrica' && (
+                <span className="checkout-line-meta">Pedido en fábrica · {part.proveedorNombre ?? 'Proveedor'}</span>
+              )}
+              <span>
+                {part.title} × {qty} = ${(part.price * qty).toFixed(2)}
+              </span>
             </li>
           ))}
         </ul>
