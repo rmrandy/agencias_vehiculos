@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>
+/// ABM de proveedores (fábricas): URL base del API, usuario empresarial en fábrica y parámetros de precio internacional.
+/// </summary>
 [ApiController]
 [Route("api/proveedores")]
 public class ProveedoresController : ControllerBase
@@ -16,6 +19,7 @@ public class ProveedoresController : ControllerBase
         _db = db;
     }
 
+    /// <summary>Lista proveedores; por defecto incluye inactivos.</summary>
     [HttpGet]
     public async Task<IActionResult> List([FromQuery] bool incluirInactivos = true, CancellationToken ct = default)
     {
@@ -31,6 +35,7 @@ public class ProveedoresController : ControllerBase
         return Ok(proveedores);
     }
 
+    /// <summary>Obtiene un proveedor por id.</summary>
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id, CancellationToken ct)
     {
@@ -39,6 +44,7 @@ public class ProveedoresController : ControllerBase
         return Ok(ToDto(proveedor));
     }
 
+    /// <summary>Alta de proveedor con validación de reglas internacionales.</summary>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] SaveProveedorRequest body, CancellationToken ct)
     {
@@ -65,6 +71,7 @@ public class ProveedoresController : ControllerBase
         return StatusCode(201, ToDto(proveedor));
     }
 
+    /// <summary>Actualiza datos del proveedor.</summary>
     [HttpPut("{id:long}")]
     public async Task<IActionResult> Update(long id, [FromBody] SaveProveedorRequest body, CancellationToken ct)
     {
@@ -89,6 +96,7 @@ public class ProveedoresController : ControllerBase
         return Ok(ToDto(proveedor));
     }
 
+    /// <summary>Elimina el proveedor.</summary>
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id, CancellationToken ct)
     {
@@ -154,6 +162,7 @@ public class ProveedoresController : ControllerBase
     }
 }
 
+/// <summary>Cuerpo para crear o actualizar proveedor.</summary>
 public class SaveProveedorRequest
 {
     public string? Nombre { get; set; }

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src"],
+  "entryPointStrategy": "expand",
+  "tsconfig": "./tsconfig.typedoc.json",
+  "out": "docs/_site",
+  "name": "Frontend Distribuidores",
+  "readme": "docs/index-docs.md",
+  "skipErrorChecking": true,
+  "excludePrivate": true,
+  "excludeInternal": true
+}

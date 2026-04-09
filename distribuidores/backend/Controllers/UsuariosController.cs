@@ -5,6 +5,7 @@ using BackendDistribuidores.Models;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>Administración de usuarios del portal (listado y actualización de estado/roles; requiere administrador).</summary>
 [ApiController]
 [Route("api/usuarios")]
 public class UsuariosController : ControllerBase
@@ -75,6 +76,7 @@ public class UsuariosController : ControllerBase
     }
 }
 
+/// <summary>Parches de estado y roles enviados por un administrador.</summary>
 public class UpdateUsuarioRequest
 {
     public long? AdminUserId { get; set; }

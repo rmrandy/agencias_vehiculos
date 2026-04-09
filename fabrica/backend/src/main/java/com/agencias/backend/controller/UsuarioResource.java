@@ -18,6 +18,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Usuarios del sistema ({@code /api/usuarios}): registro, listado administrativo,
+ * perfiles y asignación de roles.
+ */
 @Path("/usuarios")
 @jakarta.inject.Singleton
 public class UsuarioResource {

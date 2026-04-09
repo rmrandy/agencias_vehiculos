@@ -5,6 +5,7 @@ using BackendDistribuidores.Models;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>Comentarios y respuestas anidadas (árbol) asociados a un repuesto local.</summary>
 [ApiController]
 [Route("api/repuestos/{partId:long}/comentarios")]
 public class ComentariosController : ControllerBase
@@ -43,6 +44,7 @@ public class ComentariosController : ControllerBase
         return Ok(tree);
     }
 
+    /// <summary>Crea un comentario o respuesta bajo el repuesto indicado.</summary>
     [HttpPost]
     public async Task<IActionResult> Create(long partId, [FromBody] CreateComentarioRequest body, CancellationToken ct)
     {
@@ -100,6 +102,7 @@ public class ComentariosController : ControllerBase
     }
 }
 
+/// <summary>Nodo de comentario en la respuesta JSON (incluye hijos anidados).</summary>
 public class ComentarioDto
 {
     public long reviewId { get; set; }
@@ -114,6 +117,7 @@ public class ComentarioDto
     public List<ComentarioDto> children { get; set; } = new();
 }
 
+/// <summary>Cuerpo para crear comentario o respuesta.</summary>
 public class CreateComentarioRequest
 {
     public long? UserId { get; set; }

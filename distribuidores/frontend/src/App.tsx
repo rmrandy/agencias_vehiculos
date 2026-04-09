@@ -21,6 +21,10 @@ import { ProveedoresAdmin } from './views/ProveedoresAdmin'
 import { ProveedorForm } from './views/ProveedorForm'
 import './App.css'
 
+/**
+ * Aplicación React del portal distribuidor: proveedores de autenticación, carrito y toasts;
+ * rutas públicas (tienda, login) y de administración (productos, pedidos, fábricas/proveedores).
+ */
 function App() {
   return (
     <AuthProvider>

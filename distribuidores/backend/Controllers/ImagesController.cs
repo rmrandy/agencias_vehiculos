@@ -3,6 +3,7 @@ using BackendDistribuidores.Services;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>Sirve imágenes de repuestos (principal y galería) y valida payloads base64.</summary>
 [ApiController]
 [Route("api/images")]
 public class ImagesController : ControllerBase
@@ -14,6 +15,7 @@ public class ImagesController : ControllerBase
         _partService = partService;
     }
 
+    /// <summary>Imagen principal del repuesto (índice 0).</summary>
     [HttpGet("part/{id:long}")]
     public async Task<IActionResult> GetPartImage(long id, CancellationToken ct)
     {
@@ -52,6 +54,7 @@ public class ImagesController : ControllerBase
     }
 }
 
+/// <summary>DTO para <c>POST /api/images/validate</c>.</summary>
 public class ValidateImageRequest
 {
     public string? ImageData { get; set; }

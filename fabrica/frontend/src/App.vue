@@ -1,4 +1,7 @@
 <script setup>
+/**
+ * Raíz del SPA de la fábrica (Vue 3): barra de navegación, `router-view` y contenedor de toasts.
+ */
 import Navbar from './components/Navbar.vue'
 import ToastContainer from './components/ToastContainer.vue'
 </script>

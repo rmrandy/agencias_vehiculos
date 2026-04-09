@@ -7,6 +7,10 @@ using BackendDistribuidores.Services;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>
+/// Pedidos de la distribuidora: creación local o multi-fuente (fábricas), listados, detalle con estado remoto,
+/// recibo PDF y transiciones de estado (admin/empleado).
+/// </summary>
 [ApiController]
 [Route("api/pedidos")]
 public class PedidosController : ControllerBase
@@ -36,7 +40,9 @@ public class PedidosController : ControllerBase
         _db = db;
     }
 
-    /// <summary>Crear pedido. Opcional: payment (validación tarjeta, misma lógica que fábrica).</summary>
+    /// <summary>Crea un pedido; admite ítems solo locales o mezcla con líneas de fábrica según el cuerpo.</summary>
+    /// <param name="request">Usuario, líneas (<c>partId</c> / identificadores de fábrica) y datos de pago opcionales.</param>
+    /// <param name="ct">Token de cancelación.</param>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreatePedidoRequest request, CancellationToken ct)
     {
@@ -143,6 +149,7 @@ public class PedidosController : ControllerBase
         return null;
     }
 
+    /// <summary>Lista pedidos del usuario con resumen de estado local y enlaces a estados en fábrica cuando aplica.</summary>
     [HttpGet("usuario/{userId:long}")]
     public async Task<IActionResult> GetByUser(long userId, CancellationToken ct)
     {
@@ -322,6 +329,7 @@ public class PedidosController : ControllerBase
         return names.Contains("ADMIN") || names.Contains("EMPLOYEE");
     }
 
+    /// <summary>Detalle completo del pedido: cabecera, ítems enriquecidos, estado y snapshots remotos de fábrica.</summary>
     [HttpGet("{orderId:long}")]
     public async Task<IActionResult> GetById(long orderId, CancellationToken ct)
     {

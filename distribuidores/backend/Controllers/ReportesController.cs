@@ -56,6 +56,7 @@ public class ReportesController : ControllerBase
     }
 }
 
+/// <summary>Eventos de engagement reenviados a la reportería de la fábrica.</summary>
 public class ReporteEventRequest
 {
     public long? PartId { get; set; }

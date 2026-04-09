@@ -11,6 +11,9 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * CRUD de categorías de catálogo ({@code /api/categorias}), con soporte opcional de imagen en JSON.
+ */
 @Path("/categorias")
 @jakarta.inject.Singleton
 public class CategoryResource {

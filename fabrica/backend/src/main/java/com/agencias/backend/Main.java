@@ -10,7 +10,20 @@ import org.glassfish.jersey.servlet.ServletContainer;
 
 import java.util.Properties;
 
+/**
+ * Punto de entrada del backend de la fábrica.
+ * <p>
+ * Inicializa JPA ({@link com.agencias.backend.config.DatabaseConfig}), monta Jetty y expone
+ * Jersey bajo el path {@code /api/*}. El puerto se toma de la variable de entorno {@code PORT}
+ * o de {@code application.properties} (por defecto 8080).
+ * </p>
+ */
 public class Main {
+    /**
+     * Arranca el servidor HTTP embebido y bloquea hasta apagado.
+     *
+     * @param args argumentos de línea de comandos (no utilizados)
+     */
     public static void main(String[] args) {
         try {
             // Cargar configuración

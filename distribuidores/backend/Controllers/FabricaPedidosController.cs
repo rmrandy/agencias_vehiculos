@@ -3,6 +3,7 @@ using BackendDistribuidores.Services;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>Proxy de pedidos hacia el API de la fábrica (crear y consultar por usuario o id).</summary>
 [ApiController]
 [Route("api/fabrica/pedidos")]
 public class FabricaPedidosController : ControllerBase
@@ -14,6 +15,7 @@ public class FabricaPedidosController : ControllerBase
         _fabrica = fabrica;
     }
 
+    /// <summary>Crea pedido en la fábrica (cuerpo transparente al backend remoto).</summary>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] object body, CancellationToken ct)
     {
@@ -22,6 +24,7 @@ public class FabricaPedidosController : ControllerBase
         return StatusCode((int)res.StatusCode, Content(content, "application/json"));
     }
 
+    /// <summary>Pedidos del usuario en la fábrica.</summary>
     [HttpGet("usuario/{userId:long}")]
     public async Task<IActionResult> GetByUser(long userId, CancellationToken ct)
     {
@@ -30,6 +33,7 @@ public class FabricaPedidosController : ControllerBase
         return StatusCode((int)res.StatusCode, Content(content, "application/json"));
     }
 
+    /// <summary>Detalle de pedido en la fábrica.</summary>
     [HttpGet("{orderId:long}")]
     public async Task<IActionResult> GetById(long orderId, CancellationToken ct)
     {

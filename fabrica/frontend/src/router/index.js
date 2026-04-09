@@ -1,5 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+/**
+ * Rutas del SPA Vue de la fábrica.
+ *
+ * Metadatos:
+ * - `requiresAuth`: exige usuario en `localStorage` bajo la clave `fabrica_user`.
+ * - `requiresAdmin`: exige rol `ADMIN` en `user.roles`.
+ * - `guest`: login/registro; redirige si ya hay sesión.
+ *
+ * El guard global valida roles y el acceso al perfil empresarial (`ENTERPRISE`).
+ */
 const routes = [
   // Página principal: Tienda (público)
   { path: '/', name: 'Tienda', component: () => import('../views/Tienda.vue'), meta: { title: 'Tienda' } },

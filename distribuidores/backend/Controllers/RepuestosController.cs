@@ -3,6 +3,10 @@ using BackendDistribuidores.Services;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>
+/// API de catálogo de repuestos de la distribuidora: listado, búsqueda, CRUD, imágenes y
+/// <see cref="CatalogoUnificado"/> (agregación con proveedores/fábricas activas).
+/// </summary>
 [ApiController]
 [Route("api/repuestos")]
 public class RepuestosController : ControllerBase
@@ -16,7 +20,11 @@ public class RepuestosController : ControllerBase
         _unifiedCatalog = unifiedCatalog;
     }
 
-    /// <summary>Catálogo local + fábricas activas. Si q está vacío, lista todo lo activo (local + cada fábrica).</summary>
+    /// <summary>
+    /// Catálogo local más catálogos de fábricas activas. Si <paramref name="q"/> está vacío, devuelve todo lo activo agregado.
+    /// </summary>
+    /// <param name="q">Término de búsqueda opcional.</param>
+    /// <param name="ct">Token de cancelación.</param>
     [HttpGet("catalogo/unificado")]
     public async Task<IActionResult> CatalogoUnificado([FromQuery] string? q, CancellationToken ct)
     {
@@ -25,6 +33,10 @@ public class RepuestosController : ControllerBase
         return Ok(list);
     }
 
+    /// <summary>Listado paginable lógico de repuestos locales con filtros opcionales.</summary>
+    /// <param name="categoryId">Filtrar por categoría.</param>
+    /// <param name="brandId">Filtrar por marca.</param>
+    /// <param name="includeInactive">Incluir repuestos inactivos.</param>
     [HttpGet]
     public async Task<IActionResult> List([FromQuery] long? categoryId, [FromQuery] long? brandId, [FromQuery] bool includeInactive = false, CancellationToken ct = default)
     {
@@ -32,6 +44,7 @@ public class RepuestosController : ControllerBase
         return Ok(list.Select(p => ToDto(p)));
     }
 
+    /// <summary>Búsqueda de texto en nombre, descripción o especificaciones (primer parámetro no nulo entre <paramref name="q"/>, <paramref name="nombre"/>, etc.).</summary>
     [HttpGet("busqueda")]
     public async Task<IActionResult> Busqueda(
         [FromQuery] string? q,
@@ -45,6 +58,7 @@ public class RepuestosController : ControllerBase
         return Ok(list.Select(p => ToDto(p)));
     }
 
+    /// <summary>Obtiene un repuesto por su número de parte (<c>partNumber</c>).</summary>
     [HttpGet("numero/{partNumber}")]
     public async Task<IActionResult> GetByPartNumber(string partNumber, CancellationToken ct)
     {
@@ -53,6 +67,7 @@ public class RepuestosController : ControllerBase
         return Ok(ToDto(part));
     }
 
+    /// <summary>Obtiene un repuesto por identificador numérico local.</summary>
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id, CancellationToken ct)
     {
@@ -156,6 +171,7 @@ public class RepuestosController : ControllerBase
         catch (ArgumentException e) { return BadRequest(new { message = e.Message }); }
     }
 
+    /// <summary>Actualiza stock y umbral de alerta del repuesto.</summary>
     [HttpPut("{id:long}/inventario")]
     public async Task<IActionResult> UpdateInventory(long id, [FromBody] UpdateInventarioRequest body, CancellationToken ct)
     {
@@ -167,6 +183,7 @@ public class RepuestosController : ControllerBase
         catch (ArgumentException e) { return BadRequest(new { message = e.Message }); }
     }
 
+    /// <summary>Elimina (o desactiva según implementación del servicio) el repuesto indicado.</summary>
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> Delete(long id, CancellationToken ct)
     {
@@ -201,6 +218,7 @@ public class RepuestosController : ControllerBase
     }
 }
 
+/// <summary>Cuerpo JSON para crear repuesto (campos alineados con la fábrica).</summary>
 public class CreateRepuestoRequest
 {
     public long? CategoryId { get; set; }
@@ -216,6 +234,7 @@ public class CreateRepuestoRequest
     public string? ImageType { get; set; }
 }
 
+/// <summary>Cuerpo JSON para actualizar repuesto; todos los campos son opcionales salvo uso en lógica de negocio.</summary>
 public class UpdateRepuestoRequest
 {
     public long? CategoryId { get; set; }
@@ -231,12 +250,14 @@ public class UpdateRepuestoRequest
     public string? ImageType { get; set; }
 }
 
+/// <summary>Actualización parcial de inventario.</summary>
 public class UpdateInventarioRequest
 {
     public int? StockQuantity { get; set; }
     public int? LowStockThreshold { get; set; }
 }
 
+/// <summary>Imagen en base64 y tipo MIME opcional para la galería.</summary>
 public class AddImagenRequest
 {
     public string? ImageData { get; set; }

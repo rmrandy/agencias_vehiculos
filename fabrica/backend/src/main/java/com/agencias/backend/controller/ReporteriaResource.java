@@ -111,7 +111,7 @@ public class ReporteriaResource {
 
     /**
      * Reporte de ventas por período.
-     * GET /api/reporteria/ventas?from=yyyy-MM-dd&to=yyyy-MM-dd
+     * {@code GET /api/reporteria/ventas?from=yyyy-MM-dd&to=yyyy-MM-dd}
      */
     @GET
     @Path("/ventas")
@@ -129,7 +129,7 @@ public class ReporteriaResource {
 
     /**
      * Reporte repuestos consultados (búsquedas) en el período.
-     * GET /api/reporteria/repuestos-consultados?from=&to=&limit=
+     * {@code GET /api/reporteria/repuestos-consultados?from=&to=&limit=}
      */
     @GET
     @Path("/repuestos-consultados")
@@ -150,7 +150,7 @@ public class ReporteriaResource {
 
     /**
      * Reporte repuestos vistos en detalle en el período.
-     * GET /api/reporteria/repuestos-vistos?from=&to=&limit=
+     * {@code GET /api/reporteria/repuestos-vistos?from=&to=&limit=}
      */
     @GET
     @Path("/repuestos-vistos")
@@ -171,7 +171,7 @@ public class ReporteriaResource {
 
     /**
      * Reporte repuestos agregados al carrito en el período.
-     * GET /api/reporteria/repuestos-carrito?from=&to=&limit=
+     * {@code GET /api/reporteria/repuestos-carrito?from=&to=&limit=}
      */
     @GET
     @Path("/repuestos-carrito")

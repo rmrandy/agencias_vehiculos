@@ -12,6 +12,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
+/**
+ * Consulta de roles del sistema ({@code /api/roles}) para paneles de administración.
+ */
 @Path("/roles")
 @jakarta.inject.Singleton
 public class RoleResource {

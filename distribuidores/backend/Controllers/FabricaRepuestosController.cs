@@ -3,6 +3,7 @@ using BackendDistribuidores.Services;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>Reenvía peticiones de catálogo al API configurado como fábrica (<see cref="FabricaProxyService"/>).</summary>
 [ApiController]
 [Route("api/fabrica/repuestos")]
 public class FabricaRepuestosController : ControllerBase
@@ -14,6 +15,7 @@ public class FabricaRepuestosController : ControllerBase
         _fabrica = fabrica;
     }
 
+    /// <summary>Lista repuestos en la fábrica con filtros opcionales.</summary>
     [HttpGet]
     public async Task<IActionResult> List([FromQuery] long? categoryId, [FromQuery] long? brandId, CancellationToken ct)
     {
@@ -26,6 +28,7 @@ public class FabricaRepuestosController : ControllerBase
         return StatusCode((int)res.StatusCode, Content(content, "application/json"));
     }
 
+    /// <summary>Búsqueda de repuestos en la fábrica por nombre, descripción o especificaciones.</summary>
     [HttpGet("busqueda")]
     public async Task<IActionResult> Busqueda(
         [FromQuery] string? nombre,
@@ -43,6 +46,7 @@ public class FabricaRepuestosController : ControllerBase
         return StatusCode((int)res.StatusCode, Content(content, "application/json"));
     }
 
+    /// <summary>Obtiene un repuesto por id en el sistema de la fábrica.</summary>
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id, CancellationToken ct)
     {

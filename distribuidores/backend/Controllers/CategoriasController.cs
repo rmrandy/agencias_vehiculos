@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>Consulta de categorías de catálogo (<c>GET /api/categorias</c>).</summary>
 [ApiController]
 [Route("api/categorias")]
 public class CategoriasController : ControllerBase
@@ -15,6 +16,7 @@ public class CategoriasController : ControllerBase
         _db = db;
     }
 
+    /// <summary>Lista todas las categorías ordenadas por nombre.</summary>
     [HttpGet]
     public async Task<IActionResult> List(CancellationToken ct)
     {
@@ -22,6 +24,7 @@ public class CategoriasController : ControllerBase
         return Ok(list.Select(c => new { categoryId = c.CategoryId, name = c.Name, parentId = c.ParentId }));
     }
 
+    /// <summary>Obtiene una categoría por id.</summary>
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id, CancellationToken ct)
     {

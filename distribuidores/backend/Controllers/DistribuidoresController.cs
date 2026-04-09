@@ -5,6 +5,9 @@ using BackendDistribuidores.Models;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>
+/// CRUD sobre la entidad legacy <see cref="Distribuidor"/> (tabla propia, distinta del resto del dominio e-commerce).
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class DistribuidoresController : ControllerBase
@@ -16,6 +19,7 @@ public class DistribuidoresController : ControllerBase
         _db = db;
     }
 
+    /// <summary>Lista todos los registros de distribuidores legacy.</summary>
     [HttpGet]
     public async Task<ActionResult<List<Distribuidor>>> GetAll(CancellationToken ct)
     {
@@ -23,6 +27,7 @@ public class DistribuidoresController : ControllerBase
         return Ok(list);
     }
 
+    /// <summary>Obtiene un distribuidor por id entero.</summary>
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Distribuidor>> GetById(int id, CancellationToken ct)
     {
@@ -32,6 +37,7 @@ public class DistribuidoresController : ControllerBase
         return Ok(item);
     }
 
+    /// <summary>Crea un distribuidor; el nombre es obligatorio.</summary>
     [HttpPost]
     public async Task<ActionResult<Distribuidor>> Create([FromBody] Distribuidor input, CancellationToken ct)
     {
@@ -44,6 +50,7 @@ public class DistribuidoresController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = input.Id }, input);
     }
 
+    /// <summary>Actualiza campos del distribuidor existente.</summary>
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Distribuidor>> Update(int id, [FromBody] Distribuidor input, CancellationToken ct)
     {
@@ -62,6 +69,7 @@ public class DistribuidoresController : ControllerBase
         return Ok(existing);
     }
 
+    /// <summary>Elimina el distribuidor indicado.</summary>
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {

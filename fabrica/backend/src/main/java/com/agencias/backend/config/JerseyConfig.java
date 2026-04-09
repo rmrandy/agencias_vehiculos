@@ -6,6 +6,12 @@ import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
+/**
+ * Aplicación JAX-RS raíz ({@code /api}). Descubre recursos en
+ * {@code com.agencias.backend.controller}, registra JSON (Jackson), carga de archivos
+ * ({@link org.glassfish.jersey.media.multipart.MultiPartFeature}), CORS y
+ * {@link com.agencias.backend.config.DistributorApiKeyFilter} para llamadas del distribuidor.
+ */
 @ApplicationPath("/api")
 public class JerseyConfig extends ResourceConfig {
     public JerseyConfig() {

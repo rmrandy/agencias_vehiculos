@@ -10,6 +10,9 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * CRUD de vehículos compatibles ({@code /api/vehiculos}) para el catálogo de repuestos.
+ */
 @Path("/vehiculos")
 @jakarta.inject.Singleton
 public class VehicleResource {

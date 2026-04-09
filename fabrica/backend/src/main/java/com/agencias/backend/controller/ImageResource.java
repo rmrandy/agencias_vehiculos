@@ -12,6 +12,9 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Validación y utilidades de imágenes en base64 ({@code /api/images}), alineadas con límites de tamaño y tipo MIME.
+ */
 @Path("/images")
 @Singleton
 public class ImageResource {

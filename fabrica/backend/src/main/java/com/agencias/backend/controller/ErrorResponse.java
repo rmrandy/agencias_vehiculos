@@ -1,5 +1,8 @@
 package com.agencias.backend.controller;
 
+/**
+ * Cuerpo JSON estándar para errores HTTP devueltos por los recursos JAX-RS ({@code status}, {@code message}).
+ */
 public class ErrorResponse {
     private int status;
     private String message;

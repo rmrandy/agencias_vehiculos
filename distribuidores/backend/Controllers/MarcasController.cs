@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>Consulta de marcas de repuestos (<c>GET /api/marcas</c>).</summary>
 [ApiController]
 [Route("api/marcas")]
 public class MarcasController : ControllerBase
@@ -15,6 +16,7 @@ public class MarcasController : ControllerBase
         _db = db;
     }
 
+    /// <summary>Lista todas las marcas ordenadas por nombre.</summary>
     [HttpGet]
     public async Task<IActionResult> List(CancellationToken ct)
     {
@@ -22,6 +24,7 @@ public class MarcasController : ControllerBase
         return Ok(list.Select(b => new { brandId = b.BrandId, name = b.Name }));
     }
 
+    /// <summary>Obtiene una marca por id.</summary>
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id, CancellationToken ct)
     {

@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * Gestión de pedidos de la fábrica ({@code /api/pedidos}): creación con validación de pago opcional,
+ * consultas por usuario o id, PDF de recibo y actualización de estados.
+ */
 @Path("/pedidos")
 @Singleton
 public class OrderResource {
@@ -256,7 +260,7 @@ public class OrderResource {
 
     /**
      * Listar todos los pedidos (admin/empleados) con filtros opcionales.
-     * GET /api/pedidos?status=CONFIRMED&userId=1&from=2025-01-01&to=2025-12-31
+     * {@code GET /api/pedidos?status=CONFIRMED&userId=1&from=2025-01-01&to=2025-12-31}
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)

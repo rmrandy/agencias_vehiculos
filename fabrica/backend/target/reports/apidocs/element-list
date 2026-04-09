@@ -1,0 +1,7 @@
+com.agencias.backend
+com.agencias.backend.config
+com.agencias.backend.controller
+com.agencias.backend.controller.dto
+com.agencias.backend.model
+com.agencias.backend.repository
+com.agencias.backend.service

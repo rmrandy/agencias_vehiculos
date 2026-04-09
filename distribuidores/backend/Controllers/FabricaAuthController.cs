@@ -3,6 +3,9 @@ using BackendDistribuidores.Services;
 
 namespace BackendDistribuidores.Controllers;
 
+/// <summary>
+/// Proxy de autenticación hacia el API de la fábrica (Jetty/Jersey); útil para usuarios empresariales en flujos B2B.
+/// </summary>
 [ApiController]
 [Route("api/fabrica/auth")]
 public class FabricaAuthController : ControllerBase
@@ -31,6 +34,7 @@ public class FabricaAuthController : ControllerBase
     }
 }
 
+/// <summary>DTO enviado al proxy; se reenvía como JSON al <c>/api/auth/login</c> de la fábrica.</summary>
 public class FabricaLoginRequest
 {
     public string Email { get; set; } = "";

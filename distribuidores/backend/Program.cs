@@ -1,6 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using BackendDistribuidores.Data;
 
+// -----------------------------------------------------------------------------
+// <summary>
+// Host ASP.NET Core del sistema distribuidores (.NET 9): EF Core (SQL Server),
+// controladores REST bajo /api, CORS abierto para desarrollo, EnsureCreated + seed al arrancar.
+// Puerto: variable de entorno <c>PORT</c>, configuración <c>Server:Port</c> o 5080 por defecto.
+// </summary>
+// -----------------------------------------------------------------------------
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Connection string: puede sobrescribirse con variable de entorno ConnectionStrings__DefaultConnection

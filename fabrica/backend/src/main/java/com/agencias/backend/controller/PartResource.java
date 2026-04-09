@@ -14,6 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collections;
 
+/**
+ * API REST del catálogo de repuestos ({@code /api/repuestos}): alta, listados, filtros,
+ * inventario, imágenes y búsquedas. La lógica de negocio está en
+ * {@link com.agencias.backend.service.PartService}.
+ */
 @Path("/repuestos")
 @jakarta.inject.Singleton
 public class PartResource {
@@ -90,7 +95,7 @@ public class PartResource {
     /**
      * Servicio de búsqueda. Recibe nombre, descripción, especificaciones.
      * Responde: lista de repuestos con código (partNumber).
-     * GET /api/repuestos/busqueda?nombre=&descripcion=&especificaciones=
+     * {@code GET /api/repuestos/busqueda?nombre=&descripcion=&especificaciones=}
      */
     @GET
     @Path("/busqueda")

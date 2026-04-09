@@ -11,6 +11,9 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * CRUD de marcas ({@code /api/marcas}), con soporte opcional de imagen en JSON.
+ */
 @Path("/marcas")
 @jakarta.inject.Singleton
 public class BrandResource {

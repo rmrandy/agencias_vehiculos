@@ -10,6 +10,9 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * Autenticación de usuarios del sistema fábrica ({@code /api/auth}).
+ */
 @Path("/auth")
 @jakarta.inject.Singleton
 public class AuthResource {
@@ -21,7 +24,11 @@ public class AuthResource {
     }
 
     /**
-     * Login con email y contraseña. Devuelve el usuario (sin contraseña) si las credenciales son correctas.
+     * Autenticación por email y contraseña.
+     *
+     * @param req credenciales; no debe ser nula y debe incluir email y password
+     * @return 200 y cuerpo {@link com.agencias.backend.controller.dto.UsuarioResponse} si es válido;
+     *         400 si faltan datos; 401 si las credenciales no coinciden
      */
     @POST
     @Path("/login")
