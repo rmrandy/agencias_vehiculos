@@ -1,0 +1,32 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "..",
+          "files": ["BackendDistribuidores.csproj"]
+        }
+      ],
+      "dest": "api",
+      "disableGitFeatures": true,
+      "properties": {
+        "TargetFramework": "net9.0"
+      }
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": ["**/*.{md,yml}"],
+        "exclude": ["_site/**", "obj/**"]
+      }
+    ],
+    "resource": [],
+    "dest": "_site",
+    "globalMetadata": {
+      "_appTitle": "Backend Distribuidores API",
+      "_enableSearch": true
+    },
+    "template": ["default", "modern"]
+  }
+}

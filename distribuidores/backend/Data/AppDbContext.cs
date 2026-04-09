@@ -25,6 +25,9 @@ public class AppDbContext : DbContext
     public DbSet<OrderStatusHistory> OrderStatusHistories => Set<OrderStatusHistory>();
     public DbSet<PartReview> PartReviews => Set<PartReview>();
     public DbSet<Proveedor> Proveedores => Set<Proveedor>();
+    public DbSet<ArancelPais> ArancelPaises => Set<ArancelPais>();
+    public DbSet<EnvioConfig> EnvioConfigs => Set<EnvioConfig>();
+    public DbSet<Moneda> Monedas => Set<Moneda>();
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
@@ -107,7 +110,35 @@ public class AppDbContext : DbContext
             e.Property(x => x.Currency).HasMaxLength(3);
             e.Property(x => x.Subtotal).HasPrecision(12, 2);
             e.Property(x => x.ShippingTotal).HasPrecision(12, 2);
+            e.Property(x => x.TariffTotal).HasPrecision(12, 2);
             e.Property(x => x.Total).HasPrecision(12, 2);
+            e.Property(x => x.ShippingCountryCode).HasMaxLength(2).IsFixedLength(false);
+        });
+
+        mb.Entity<ArancelPais>(e =>
+        {
+            e.ToTable("ARANCEL_PAIS");
+            e.HasKey(x => x.CountryCode);
+            e.Property(x => x.CountryCode).HasMaxLength(2).IsFixedLength(false);
+            e.Property(x => x.CountryName).HasMaxLength(80).IsRequired();
+            e.Property(x => x.TariffPercent).HasPrecision(7, 4);
+        });
+
+        mb.Entity<EnvioConfig>(e =>
+        {
+            e.ToTable("ENVIO_CONFIG");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.UsdPerLb).HasPrecision(12, 4);
+        });
+
+        mb.Entity<Moneda>(e =>
+        {
+            e.ToTable("MONEDA");
+            e.HasKey(x => x.Code);
+            e.Property(x => x.Code).HasMaxLength(3).IsFixedLength(false);
+            e.Property(x => x.Name).HasMaxLength(80).IsRequired();
+            e.Property(x => x.Symbol).HasMaxLength(8).IsRequired();
+            e.Property(x => x.UnitsPerUsd).HasPrecision(14, 6);
         });
 
         // ORDER_ITEM

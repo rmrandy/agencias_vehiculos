@@ -76,6 +76,10 @@ public class Part {
     @Transient
     private Integer availableQuantity;
 
+    /** Cantidad total de imágenes (principal + filas en PART_IMAGE). Solo se rellena en detalle API. */
+    @Transient
+    private Integer imageGalleryCount;
+
     @PostLoad
     public void postLoad() {
         this.hasImage = (imageData != null && imageData.length > 0);
@@ -147,4 +151,6 @@ public class Part {
     public void setAvailableQuantity(Integer availableQuantity) { this.availableQuantity = availableQuantity; }
     public Integer getPartYear() { return partYear; }
     public void setPartYear(Integer partYear) { this.partYear = partYear; }
+    public Integer getImageGalleryCount() { return imageGalleryCount; }
+    public void setImageGalleryCount(Integer imageGalleryCount) { this.imageGalleryCount = imageGalleryCount; }
 }

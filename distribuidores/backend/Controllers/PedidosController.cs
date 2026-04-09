@@ -62,7 +62,12 @@ public class PedidosController : ControllerBase
             if (request.Items.Any(PedidoItemRequest.IsFabricLine))
             {
                 order = await _orderService.CreateMultiSourceOrderAsync(
-                    request.UserId.Value, request.Items, request.Payment, ct);
+                    request.UserId.Value,
+                    request.Items,
+                    request.Payment,
+                    request.ShippingCountryCode,
+                    ct,
+                    request.CurrencyCode);
             }
             else
             {
@@ -75,7 +80,7 @@ public class PedidosController : ControllerBase
                 var items = request.Items
                     .Select(i => new OrderItemDto { PartId = i.PartId!.Value, Qty = i.Qty })
                     .ToList();
-                order = await _orderService.CreateOrderAsync(request.UserId.Value, items, ct);
+                order = await _orderService.CreateOrderAsync(request.UserId.Value, items, ct, request.CurrencyCode);
             }
 
             if (request.Payment != null)
@@ -118,6 +123,9 @@ public class PedidosController : ControllerBase
                 orderType = order.OrderType,
                 subtotal = order.Subtotal,
                 shippingTotal = order.ShippingTotal,
+                tariffTotal = order.TariffTotal,
+                shippingCountryCode = order.ShippingCountryCode,
+                currency = order.Currency,
                 total = order.Total,
                 createdAt = order.CreatedAt
             });
@@ -198,6 +206,9 @@ public class PedidosController : ControllerBase
                 orderType = o.OrderType,
                 subtotal = o.Subtotal,
                 shippingTotal = o.ShippingTotal,
+                tariffTotal = o.TariffTotal,
+                shippingCountryCode = o.ShippingCountryCode,
+                currency = o.Currency,
                 total = o.Total,
                 createdAt = o.CreatedAt,
                 lineCount = countByOrder.GetValueOrDefault(o.OrderId, 0),
@@ -235,6 +246,9 @@ public class PedidosController : ControllerBase
             orderType = o.OrderType,
             subtotal = o.Subtotal,
             shippingTotal = o.ShippingTotal,
+            tariffTotal = o.TariffTotal,
+            shippingCountryCode = o.ShippingCountryCode,
+            currency = o.Currency,
             total = o.Total,
             createdAt = o.CreatedAt
         }));
@@ -353,6 +367,8 @@ public class PedidosController : ControllerBase
             .Select(i => new FabricLinkRow(orderId, i.ProveedorId!.Value, i.FabricaOrderId!.Value))
             .ToList();
         var (snapCacheDetail, provEntitiesDetail) = await BuildFabricaSnapshotCacheAsync(fabricDetailLinks, ct);
+        var histCacheDetail = await BuildFabricaHistorialCacheAsync(fabricDetailLinks, ct);
+        var fabricaHistorialesDetail = BuildFabricaHistorialList(fabricDetailLinks, histCacheDetail, provEntitiesDetail);
         var keysSingleOrder = new Dictionary<long, List<(long ProveedorId, long FabricaOrderId)>>
         {
             [orderId] = fabricDetailLinks.Select(x => (x.ProveedorId, x.FabricaOrderId)).Distinct().ToList()
@@ -409,12 +425,16 @@ public class PedidosController : ControllerBase
                 orderType = order.OrderType,
                 subtotal = order.Subtotal,
                 shippingTotal = order.ShippingTotal,
+                tariffTotal = order.TariffTotal,
+                shippingCountryCode = order.ShippingCountryCode,
+                currency = order.Currency,
                 total = order.Total,
                 createdAt = order.CreatedAt
             },
             items = itemsWithTitle,
             status = status == null ? null : new { status = status.Status, trackingNumber = status.TrackingNumber, etaDays = status.EtaDays },
-            fabricaStatuses = fabricaStatusesDetail
+            fabricaStatuses = fabricaStatusesDetail,
+            fabricaHistoriales = fabricaHistorialesDetail
         });
     }
 
@@ -450,6 +470,71 @@ public class PedidosController : ControllerBase
         }
 
         return (snapCache, provEntities);
+    }
+
+    private async Task<Dictionary<(long ProveedorId, long FabricaOrderId), IReadOnlyList<FabricaHistorialEntry>>> BuildFabricaHistorialCacheAsync(
+        IReadOnlyList<FabricLinkRow> fabricLinks,
+        CancellationToken ct)
+    {
+        var uniqueFab = fabricLinks.Select(f => (f.ProveedorId, f.FabricaOrderId)).Distinct().ToList();
+        var provIdsFab = uniqueFab.Select(x => x.ProveedorId).Distinct().ToList();
+        var provEntities = provIdsFab.Count == 0
+            ? new Dictionary<long, Proveedor>()
+            : await _db.Proveedores.AsNoTracking()
+                .Where(p => provIdsFab.Contains(p.ProveedorId))
+                .ToDictionaryAsync(p => p.ProveedorId, p => p, ct);
+
+        var cache = new Dictionary<(long, long), IReadOnlyList<FabricaHistorialEntry>>();
+        foreach (var (provId, foId) in uniqueFab)
+        {
+            if (cache.ContainsKey((provId, foId)))
+                continue;
+            if (!provEntities.TryGetValue(provId, out var prov) || string.IsNullOrWhiteSpace(prov.ApiBaseUrl))
+            {
+                cache[(provId, foId)] = Array.Empty<FabricaHistorialEntry>();
+                continue;
+            }
+
+            var hist = await _fabricaIntegration.GetPedidoHistorialRemoteAsync(prov.ApiBaseUrl, foId, ct);
+            cache[(provId, foId)] = hist;
+        }
+
+        return cache;
+    }
+
+    private static List<object> BuildFabricaHistorialList(
+        IReadOnlyList<FabricLinkRow> fabricLinks,
+        IReadOnlyDictionary<(long ProveedorId, long FabricaOrderId), IReadOnlyList<FabricaHistorialEntry>> histCache,
+        IReadOnlyDictionary<long, Proveedor> provEntities)
+    {
+        var seen = new HashSet<(long, long)>();
+        var list = new List<object>();
+        foreach (var row in fabricLinks)
+        {
+            var key = (row.ProveedorId, row.FabricaOrderId);
+            if (!seen.Add(key))
+                continue;
+            if (!histCache.TryGetValue(key, out var entries) || entries.Count == 0)
+                continue;
+            if (!provEntities.TryGetValue(row.ProveedorId, out var prov))
+                continue;
+            list.Add(new
+            {
+                proveedorId = row.ProveedorId,
+                proveedorNombre = prov.Nombre,
+                fabricaOrderId = row.FabricaOrderId,
+                entries = entries.Select(e => new
+                {
+                    status = e.Status,
+                    commentText = e.CommentText,
+                    trackingNumber = e.TrackingNumber,
+                    etaDays = e.EtaDays,
+                    changedAt = e.ChangedAt
+                }).ToList()
+            });
+        }
+
+        return list;
     }
 
     private static List<object> BuildFabricaStatusListForOrder(

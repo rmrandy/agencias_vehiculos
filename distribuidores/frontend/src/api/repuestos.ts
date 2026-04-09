@@ -24,6 +24,8 @@ export type CatalogPart = Part & {
   proveedorId?: number
   proveedorNombre?: string
   fabricaBaseUrl?: string
+  /** Fábrica: principal + galería (respuesta de detalle). */
+  imageGalleryCount?: number
 }
 
 export function catalogLineKey(p: CatalogPart): string {
@@ -123,7 +125,10 @@ export async function getGaleria(partId: number): Promise<{ count: number }> {
 export function getPartImageUrl(partId: number, index: number, fabricaBaseUrl?: string | null): string {
   const base = (fabricaBaseUrl || import.meta.env.VITE_API_URL || 'http://localhost:5080').replace(/\/$/, '')
   if (fabricaBaseUrl) {
-    return `${base}/api/images/part/${partId}`
+    if (index <= 0) {
+      return `${base}/api/images/part/${partId}`
+    }
+    return `${base}/api/images/part/${partId}/gallery/${index}`
   }
   return `${base}/api/images/part/${partId}/imagen/${index}`
 }

@@ -1,0 +1,86 @@
+.aranceles-admin {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.aranceles-header h1 {
+  margin-bottom: 0.35rem;
+}
+
+.aranceles-sub {
+  color: var(--color-text-muted, #5c6570);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.aranceles-envio-card {
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.25rem 1.5rem;
+  border: 1px solid var(--color-border, #e2e6ea);
+  border-radius: 10px;
+  background: var(--color-surface-alt, #f9fafb);
+}
+
+.aranceles-envio-title {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+
+.aranceles-envio-card .aranceles-sub {
+  margin-bottom: 1rem;
+}
+
+.aranceles-envio-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.aranceles-envio-row .aranceles-input {
+  width: 7rem;
+}
+
+.moneda-input-wide {
+  width: 7rem;
+}
+
+.aranceles-section-title {
+  font-size: 1.05rem;
+  margin: 0 0 0.75rem;
+}
+
+.aranceles-table-wrap {
+  overflow-x: auto;
+}
+
+.aranceles-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.aranceles-table th,
+.aranceles-table td {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--color-border, #e2e6ea);
+}
+
+.aranceles-table th {
+  font-weight: 600;
+  background: var(--color-surface-alt, #f4f6f8);
+}
+
+.aranceles-input {
+  width: 5rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--color-border, #cfd4d9);
+  border-radius: 6px;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+}

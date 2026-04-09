@@ -48,9 +48,10 @@ const repuestoForm = ref({
   partYear: null,
   stockQuantity: 0,
   lowStockThreshold: 5,
-  imageData: null,
-  imageType: null,
 })
+
+/** Entradas { imageData, imageType } para el backend (2–5 al crear; opcional al editar). */
+const repuestoGalleryImages = ref([null, null])
 
 const editingRepuesto = ref(null)
 
@@ -113,6 +114,24 @@ async function submitMarca() {
   }
 }
 
+function setGalleryAt(index, value) {
+  const next = [...repuestoGalleryImages.value]
+  next[index] = value
+  repuestoGalleryImages.value = next
+}
+
+function addGallerySlot() {
+  if (repuestoGalleryImages.value.length < 5) {
+    repuestoGalleryImages.value = [...repuestoGalleryImages.value, null]
+  }
+}
+
+function removeGallerySlot(index) {
+  if (repuestoGalleryImages.value.length <= 2) return
+  const next = repuestoGalleryImages.value.filter((_, i) => i !== index)
+  repuestoGalleryImages.value = next
+}
+
 async function submitRepuesto() {
   try {
     const data = {
@@ -125,14 +144,29 @@ async function submitRepuesto() {
       stockQuantity: Number(repuestoForm.value.stockQuantity) || 0,
       lowStockThreshold: Number(repuestoForm.value.lowStockThreshold) || 5,
     }
-    // Si hay imagen, extraer solo el base64 sin el prefijo data:
-    if (data.imageData?.imageData) {
-      const imgData = data.imageData.imageData
-      const imgType = data.imageData.imageType
-      data.imageData = imgData
-      data.imageType = imgType
+
+    const filled = repuestoGalleryImages.value.filter((x) => x?.imageData)
+    const images = filled.map((x) => ({
+      imageData: x.imageData,
+      imageType: x.imageType || 'image/jpeg',
+    }))
+
+    if (!editingRepuesto.value) {
+      if (images.length < 2 || images.length > 5) {
+        showError('Añade entre 2 y 5 imágenes del repuesto')
+        return
+      }
+      data.images = images
+    } else {
+      if (filled.length > 0) {
+        if (images.length < 2 || images.length > 5) {
+          showError('Para cambiar la galería, carga entre 2 y 5 imágenes (o deja todas vacías para no modificarlas)')
+          return
+        }
+        data.images = images
+      }
     }
-    
+
     if (editingRepuesto.value) {
       // Actualizar
       await updateRepuesto(editingRepuesto.value.partId, data)
@@ -151,20 +185,19 @@ async function submitRepuesto() {
 }
 
 function resetRepuestoForm() {
-  repuestoForm.value = { 
-    categoryId: null, 
-    brandId: null, 
-    partNumber: '', 
-    title: '', 
-    description: '', 
-    weightLb: null, 
+  repuestoForm.value = {
+    categoryId: null,
+    brandId: null,
+    partNumber: '',
+    title: '',
+    description: '',
+    weightLb: null,
     price: null,
     partYear: null,
     stockQuantity: 0,
     lowStockThreshold: 5,
-    imageData: null, 
-    imageType: null 
   }
+  repuestoGalleryImages.value = [null, null]
   editingRepuesto.value = null
   showRepuestoForm.value = false
 }
@@ -182,9 +215,8 @@ function editRepuesto(repuesto) {
     partYear: repuesto.partYear ?? null,
     stockQuantity: repuesto.stockQuantity || 0,
     lowStockThreshold: repuesto.lowStockThreshold || 5,
-    imageData: null,
-    imageType: null,
   }
+  repuestoGalleryImages.value = [null, null]
   showRepuestoForm.value = true
   // Scroll to form
   setTimeout(() => {
@@ -435,9 +467,35 @@ async function submitInventario() {
             <small>Se mostrará alerta cuando el stock sea menor o igual a este valor</small>
           </div>
           
-          <div class="form-group full-width">
-            <label>Imagen {{ editingRepuesto ? '(dejar vacío para mantener actual)' : '(opcional)' }}</label>
-            <ImageUpload v-model="repuestoForm.imageData" />
+          <div class="form-group full-width repuesto-gallery-block">
+            <label>
+              Imágenes del repuesto ({{ editingRepuesto ? 'deja vacío para no cambiar; si subes, entre 2 y 5' : 'entre 2 y 5 obligatorias' }})
+            </label>
+            <div class="repuesto-gallery-grid">
+              <div v-for="(_, idx) in repuestoGalleryImages" :key="idx" class="repuesto-gallery-item">
+                <span class="repuesto-gallery-label">Foto {{ idx + 1 }}</span>
+                <ImageUpload
+                  :model-value="repuestoGalleryImages[idx]"
+                  @update:model-value="(v) => setGalleryAt(idx, v)"
+                />
+                <button
+                  v-if="repuestoGalleryImages.length > 2"
+                  type="button"
+                  class="btn btn-secondary btn-sm gallery-remove"
+                  @click="removeGallerySlot(idx)"
+                >
+                  Quitar ranura
+                </button>
+              </div>
+            </div>
+            <button
+              v-if="repuestoGalleryImages.length < 5"
+              type="button"
+              class="btn btn-secondary"
+              @click="addGallerySlot"
+            >
+              + Añadir otra imagen (máx. 5)
+            </button>
           </div>
           <div class="form-actions full-width">
             <button type="button" class="btn btn-secondary" @click="resetRepuestoForm">Cancelar</button>
@@ -934,5 +992,35 @@ async function submitInventario() {
   margin-top: 4px;
   font-size: 0.8rem;
   color: #6b7280;
+}
+.repuesto-gallery-block {
+  margin-top: 0.5rem;
+}
+.repuesto-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 0.75rem 0;
+}
+.repuesto-gallery-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: #fafafa;
+}
+.repuesto-gallery-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.5rem;
+}
+.gallery-remove {
+  margin-top: 0.5rem;
+  width: 100%;
+}
+.btn-sm {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
 }
 </style>

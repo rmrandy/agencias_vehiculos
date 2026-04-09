@@ -1,0 +1,937 @@
+{
+  "source_base_path": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/docs",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.AddImagenRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.AddImagenRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.AddImagenRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.AddImagenRequest.yml\" sourcestartlinenumber=\"1\">Imagen en base64 y tipo MIME opcional para la galería.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.ApiController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.ApiController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.ApiController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ApiController.yml\" sourcestartlinenumber=\"1\">Raíz del API REST (<code>GET /api</code>): enlaces a health, diagnóstico de BD y recurso legacy de distribuidores.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.AuthController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.AuthController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.AuthController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.AuthController.yml\" sourcestartlinenumber=\"1\">Autenticación y registro de usuarios del portal de la distribuidora (credenciales en BD local, hash BCrypt).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.CategoriasController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.CategoriasController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.CategoriasController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.CategoriasController.yml\" sourcestartlinenumber=\"1\">Consulta de categorías de catálogo (<code>GET /api/categorias</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.ComentarioDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.ComentarioDto.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.ComentarioDto",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ComentarioDto.yml\" sourcestartlinenumber=\"1\">Nodo de comentario en la respuesta JSON (incluye hijos anidados).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.ComentariosController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.ComentariosController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.ComentariosController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ComentariosController.yml\" sourcestartlinenumber=\"1\">Comentarios y respuestas anidadas (árbol) asociados a un repuesto local.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.CreateComentarioRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.CreateComentarioRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.CreateComentarioRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.CreateComentarioRequest.yml\" sourcestartlinenumber=\"1\">Cuerpo para crear comentario o respuesta.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.CreateRepuestoRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.CreateRepuestoRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.CreateRepuestoRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.CreateRepuestoRequest.yml\" sourcestartlinenumber=\"1\">Cuerpo JSON para crear repuesto (campos alineados con la fábrica).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.DbController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.DbController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.DbController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.DbController.yml\" sourcestartlinenumber=\"1\">Diagnóstico de conectividad a SQL Server (<code>GET /api/db</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.DistribuidoresController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.DistribuidoresController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.DistribuidoresController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.DistribuidoresController.yml\" sourcestartlinenumber=\"1\">CRUD sobre la entidad legacy <xref href=\"BackendDistribuidores.Models.Distribuidor\" data-throw-if-not-resolved=\"false\"></xref> (tabla propia, distinta del resto del dominio e-commerce).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.FabricaAuthController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.FabricaAuthController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.FabricaAuthController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.FabricaAuthController.yml\" sourcestartlinenumber=\"1\">Proxy de autenticación hacia el API de la fábrica (Jetty/Jersey); útil para usuarios empresariales en flujos B2B.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.FabricaLoginRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.FabricaLoginRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.FabricaLoginRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.FabricaLoginRequest.yml\" sourcestartlinenumber=\"1\">DTO enviado al proxy; se reenvía como JSON al <code>/api/auth/login</code> de la fábrica.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.FabricaPedidosController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.FabricaPedidosController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.FabricaPedidosController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.FabricaPedidosController.yml\" sourcestartlinenumber=\"1\">Proxy de pedidos hacia el API de la fábrica (crear y consultar por usuario o id).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.FabricaRepuestosController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.FabricaRepuestosController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.FabricaRepuestosController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.FabricaRepuestosController.yml\" sourcestartlinenumber=\"1\">Reenvía peticiones de catálogo al API configurado como fábrica (<xref href=\"BackendDistribuidores.Services.FabricaProxyService\" data-throw-if-not-resolved=\"false\"></xref>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.HealthController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.HealthController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.HealthController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.HealthController.yml\" sourcestartlinenumber=\"1\">Comprobación de vida del servicio (<code>GET /api/health</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.ImagesController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.ImagesController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.ImagesController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ImagesController.yml\" sourcestartlinenumber=\"1\">Sirve imágenes de repuestos (principal y galería) y valida payloads base64.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.LoginRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.LoginRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.LoginRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.LoginRequest.yml\" sourcestartlinenumber=\"1\">DTO de entrada para <code>POST /api/auth/login</code>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.MarcasController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.MarcasController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.MarcasController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.MarcasController.yml\" sourcestartlinenumber=\"1\">Consulta de marcas de repuestos (<code>GET /api/marcas</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.PedidosController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.PedidosController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.PedidosController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.PedidosController.yml\" sourcestartlinenumber=\"1\">Pedidos de la distribuidora: creación local o multi-fuente (fábricas), listados, detalle con estado remoto,\nrecibo PDF y transiciones de estado (admin/empleado).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.ProveedoresController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.ProveedoresController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.ProveedoresController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ProveedoresController.yml\" sourcestartlinenumber=\"1\">ABM de proveedores (fábricas): URL base del API, usuario empresarial en fábrica y parámetros de precio internacional.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.RegisterRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.RegisterRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.RegisterRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.RegisterRequest.yml\" sourcestartlinenumber=\"1\">DTO de entrada para <code>POST /api/auth/register</code>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.ReporteEventRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.ReporteEventRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.ReporteEventRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ReporteEventRequest.yml\" sourcestartlinenumber=\"1\">Eventos de engagement reenviados a la reportería de la fábrica.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.ReportesController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.ReportesController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.ReportesController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ReportesController.yml\" sourcestartlinenumber=\"1\">Envía eventos de engagement a la fábrica (visto en detalle, agregado al carrito).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.RepuestosController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.RepuestosController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.RepuestosController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.RepuestosController.yml\" sourcestartlinenumber=\"1\">API de catálogo de repuestos de la distribuidora: listado, búsqueda, CRUD, imágenes y\n<xref href=\"BackendDistribuidores.Controllers.RepuestosController.CatalogoUnificado(System.String%2cSystem.Threading.CancellationToken)\" data-throw-if-not-resolved=\"false\"></xref> (agregación con proveedores/fábricas activas).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.SaveProveedorRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.SaveProveedorRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.SaveProveedorRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.SaveProveedorRequest.yml\" sourcestartlinenumber=\"1\">Cuerpo para crear o actualizar proveedor.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.UpdateInventarioRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.UpdateInventarioRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.UpdateInventarioRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.UpdateInventarioRequest.yml\" sourcestartlinenumber=\"1\">Actualización parcial de inventario.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.UpdateRepuestoRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.UpdateRepuestoRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.UpdateRepuestoRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.UpdateRepuestoRequest.yml\" sourcestartlinenumber=\"1\">Cuerpo JSON para actualizar repuesto; todos los campos son opcionales salvo uso en lógica de negocio.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.UpdateUsuarioRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.UpdateUsuarioRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.UpdateUsuarioRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.UpdateUsuarioRequest.yml\" sourcestartlinenumber=\"1\">Parches de estado y roles enviados por un administrador.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.UsuariosController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.UsuariosController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.UsuariosController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.UsuariosController.yml\" sourcestartlinenumber=\"1\">Administración de usuarios del portal (listado y actualización de estado/roles; requiere administrador).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.ValidateImageRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.ValidateImageRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.ValidateImageRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ValidateImageRequest.yml\" sourcestartlinenumber=\"1\">DTO para <code>POST /api/images/validate</code>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Data.AppDbContext.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Data.AppDbContext.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Data.AppDbContext",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Data.AppDbContext.yml\" sourcestartlinenumber=\"1\">Base de datos de la distribuidora (SQL Server). Misma estructura lógica que la fábrica:\ncatálogo (Category, Brand, Part), usuarios (AppUser, Role), pedidos (OrderHeader, OrderItem, OrderStatusHistory),\ncomentarios (PartReview), proveedores (Proveedor). Tabla Distribuidores se mantiene por compatibilidad.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Data.SeedData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Data.SeedData.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Data.SeedData",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Data.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Data.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Data",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.AppUser.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.AppUser.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.AppUser",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.AppUser.yml\" sourcestartlinenumber=\"1\">Usuario del portal (misma lógica que fábrica AppUser).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.Brand.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.Brand.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.Brand",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.Brand.yml\" sourcestartlinenumber=\"1\">Marca de repuestos (misma lógica que fábrica).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.Category.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.Category.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.Category",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.Category.yml\" sourcestartlinenumber=\"1\">Categoría de repuestos (misma lógica que fábrica).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.CreatePedidoRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.CreatePedidoRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.CreatePedidoRequest",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.Distribuidor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.Distribuidor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.Distribuidor",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.OrderHeader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.OrderHeader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.OrderHeader",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.OrderHeader.yml\" sourcestartlinenumber=\"1\">Cabecera de pedido (misma lógica que fábrica OrderHeader).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.OrderItem.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.OrderItem.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.OrderItem",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.OrderItem.yml\" sourcestartlinenumber=\"1\">Línea de pedido local o remota (fábrica vía API).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.OrderStatusHistory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.OrderStatusHistory.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.OrderStatusHistory",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.OrderStatusHistory.yml\" sourcestartlinenumber=\"1\">Historial de estado del pedido (misma lógica que fábrica).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.Part.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.Part.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.Part",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.Part.yml\" sourcestartlinenumber=\"1\">Repuesto del catálogo local (misma lógica que fábrica Part).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.PartImage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.PartImage.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.PartImage",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.PartImage.yml\" sourcestartlinenumber=\"1\">Imagen adicional del repuesto (galería: varias fotos por producto).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.PartReview.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.PartReview.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.PartReview",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.PartReview.yml\" sourcestartlinenumber=\"1\">Comentario o valoración sobre un repuesto (misma lógica que fábrica PartReview).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.PaymentRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.PaymentRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.PaymentRequest",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.PedidoItemRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.PedidoItemRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.PedidoItemRequest",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.Proveedor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.Proveedor.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.Proveedor",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.Proveedor.yml\" sourcestartlinenumber=\"1\">Proveedor (DOC2: agregar/eliminar dinámicamente; internacional con tipo de cambio).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.Role.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.Role.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.Role",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.Role.yml\" sourcestartlinenumber=\"1\">Rol de usuario (misma lógica que fábrica).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.UpdateEstadoRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.UpdateEstadoRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.UpdateEstadoRequest",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.UserRole.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.UserRole.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.UserRole",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.UserRole.yml\" sourcestartlinenumber=\"1\">Relación usuario-rol (tabla USER_ROLE como en fábrica).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.AuthService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.AuthService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.AuthService",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.AuthService.yml\" sourcestartlinenumber=\"1\">Autenticación local (misma lógica que fábrica: email + BCrypt).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.FabricaIntegrationService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.FabricaIntegrationService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.FabricaIntegrationService",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.FabricaIntegrationService.yml\" sourcestartlinenumber=\"1\">HTTP hacia APIs de fábrica (cada proveedor con su propia base URL).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.FabricaPedidoRemoteSnapshot.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.FabricaPedidoRemoteSnapshot.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.FabricaPedidoRemoteSnapshot",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.FabricaPedidoRemoteSnapshot.yml\" sourcestartlinenumber=\"1\">Último estado del pedido en la fábrica (GET /api/pedidos/{id}).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.FabricaProxyService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.FabricaProxyService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.FabricaProxyService",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.FabricaProxyService.yml\" sourcestartlinenumber=\"1\">Proxy hacia la API de la Fábrica (usuarios empresariales, repuestos, pedidos).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.MailService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.MailService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.MailService",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.MailService.yml\" sourcestartlinenumber=\"1\">Envío de correo. Si no hay SMTP configurado, simula el envío (log). Igual que fábrica.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.OrderItemDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.OrderItemDto.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.OrderItemDto",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.OrderService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.OrderService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.OrderService",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.OrderService.yml\" sourcestartlinenumber=\"1\">Pedidos locales y multi-fábrica (orden maestro en distribuidora + POST /api/pedidos por proveedor).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.PartService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.PartService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.PartService",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.PartService.yml\" sourcestartlinenumber=\"1\">Catálogo local y stock (misma lógica que fábrica: CRUD, imagen BLOB, reserva, confirmar venta).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.PedidoReciboPdfService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.PedidoReciboPdfService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.PedidoReciboPdfService",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.PedidoReciboPdfService.yml\" sourcestartlinenumber=\"1\">PDF de recibo del pedido en la distribuidora (resumen unificado).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.UnifiedCatalogService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.UnifiedCatalogService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.UnifiedCatalogService",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.UnifiedCatalogService.yml\" sourcestartlinenumber=\"1\">Catálogo local + N fábricas (proveedores con ApiBaseUrl activo).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services",
+      "Summary": null
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

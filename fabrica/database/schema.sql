@@ -145,8 +145,10 @@ CREATE TABLE part (
 CREATE TABLE part_image (
   image_id   NUMBER(19) PRIMARY KEY,
   part_id    NUMBER(19) NOT NULL,
-  url_path   VARCHAR2(500) NOT NULL,
+  url_path   VARCHAR2(500),
   sort_order NUMBER(5) DEFAULT 0,
+  image_data BLOB,
+  image_type VARCHAR2(50),
   CONSTRAINT fk_part_image_part FOREIGN KEY (part_id) REFERENCES part(part_id)
 );
 

@@ -7,10 +7,146 @@ public static class SeedData
 {
     public static async Task EnsureSeedAsync(AppDbContext db, CancellationToken ct = default)
     {
+        await EnsureArancelSchemaAsync(db, ct);
+        await EnsureMonedaSchemaAsync(db, ct);
+        await EnsureEnvioConfigSchemaAsync(db, ct);
         await EnsurePartImageTableAsync(db, ct);
         await EnsureMultisourceSchemaAsync(db, ct);
+        await SeedArancelPaisesAsync(db, ct);
+        await SeedMonedasAsync(db, ct);
+        await SeedEnvioConfigAsync(db, ct);
         await SeedRolesAndUserAsync(db, ct);
         await SeedCatalogAsync(db, ct);
+    }
+
+    /// <summary>Tabla ARANCEL_PAIS y columnas de arancel en ORDER_HEADER (BD existente).</summary>
+    static async Task EnsureArancelSchemaAsync(AppDbContext db, CancellationToken ct)
+    {
+        try
+        {
+            await db.Database.ExecuteSqlRawAsync(
+                @"IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ARANCEL_PAIS')
+                  CREATE TABLE ARANCEL_PAIS (
+                    CountryCode nvarchar(2) NOT NULL PRIMARY KEY,
+                    CountryName nvarchar(80) NOT NULL,
+                    TariffPercent decimal(7,4) NOT NULL CONSTRAINT DF_ARANCEL_Tariff DEFAULT 0
+                  );
+                IF COL_LENGTH(N'ORDER_HEADER', N'TariffTotal') IS NULL
+                  ALTER TABLE ORDER_HEADER ADD TariffTotal decimal(12,2) NOT NULL CONSTRAINT DF_ORDER_HEADER_TariffTotal DEFAULT 0;
+                IF COL_LENGTH(N'ORDER_HEADER', N'ShippingCountryCode') IS NULL
+                  ALTER TABLE ORDER_HEADER ADD ShippingCountryCode nvarchar(2) NULL;", ct);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[SeedData] EnsureArancelSchema: " + ex.Message);
+        }
+    }
+
+    /// <summary>Tabla MONEDA (tipo de cambio por 1 USD).</summary>
+    static async Task EnsureMonedaSchemaAsync(AppDbContext db, CancellationToken ct)
+    {
+        try
+        {
+            await db.Database.ExecuteSqlRawAsync(
+                @"IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'MONEDA')
+                  CREATE TABLE MONEDA (
+                    Code nvarchar(3) NOT NULL PRIMARY KEY,
+                    Name nvarchar(80) NOT NULL,
+                    Symbol nvarchar(8) NOT NULL,
+                    UnitsPerUsd decimal(14,6) NOT NULL CONSTRAINT DF_MONEDA_Units DEFAULT 1,
+                    Activo bit NOT NULL CONSTRAINT DF_MONEDA_Activo DEFAULT 1,
+                    SortOrder int NOT NULL CONSTRAINT DF_MONEDA_Sort DEFAULT 0
+                  );", ct);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[SeedData] EnsureMonedaSchema: " + ex.Message);
+        }
+    }
+
+    static async Task SeedMonedasAsync(AppDbContext db, CancellationToken ct)
+    {
+        var seed = new[]
+        {
+            new Moneda { Code = "USD", Name = "Dólar estadounidense", Symbol = "US$", UnitsPerUsd = 1m, Activo = true, SortOrder = 0 },
+            new Moneda { Code = "GTQ", Name = "Quetzal guatemalteco", Symbol = "Q", UnitsPerUsd = 7.85m, Activo = true, SortOrder = 1 },
+            new Moneda { Code = "MXN", Name = "Peso mexicano", Symbol = "MX$", UnitsPerUsd = 17.20m, Activo = true, SortOrder = 2 },
+            new Moneda { Code = "EUR", Name = "Euro", Symbol = "€", UnitsPerUsd = 0.92m, Activo = true, SortOrder = 3 },
+        };
+
+        foreach (var m in seed)
+        {
+            if (await db.Monedas.AnyAsync(x => x.Code == m.Code, ct))
+                continue;
+            try
+            {
+                db.Monedas.Add(m);
+                await db.SaveChangesAsync(ct);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[SeedData] SeedMoneda " + m.Code + ": " + ex.Message);
+            }
+        }
+    }
+
+    /// <summary>Tabla ENVIO_CONFIG y fila por defecto (BD existente sin migraciones).</summary>
+    static async Task EnsureEnvioConfigSchemaAsync(AppDbContext db, CancellationToken ct)
+    {
+        try
+        {
+            await db.Database.ExecuteSqlRawAsync(
+                @"IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ENVIO_CONFIG')
+                  CREATE TABLE ENVIO_CONFIG (
+                    Id int NOT NULL PRIMARY KEY,
+                    UsdPerLb decimal(12,4) NOT NULL CONSTRAINT DF_ENVIO_UsdPerLb DEFAULT 0
+                  );
+                IF NOT EXISTS (SELECT 1 FROM ENVIO_CONFIG WHERE Id = 1)
+                  INSERT INTO ENVIO_CONFIG (Id, UsdPerLb) VALUES (1, 0);", ct);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[SeedData] EnsureEnvioConfigSchema: " + ex.Message);
+        }
+    }
+
+    static async Task SeedEnvioConfigAsync(AppDbContext db, CancellationToken ct)
+    {
+        if (await db.EnvioConfigs.AnyAsync(e => e.Id == EnvioConfig.SingletonId, ct))
+            return;
+        try
+        {
+            db.EnvioConfigs.Add(new EnvioConfig { Id = EnvioConfig.SingletonId, UsdPerLb = 0 });
+            await db.SaveChangesAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[SeedData] SeedEnvioConfig: " + ex.Message);
+        }
+    }
+
+    static async Task SeedArancelPaisesAsync(AppDbContext db, CancellationToken ct)
+    {
+        foreach (var kv in LatamCountries.All)
+        {
+            if (await db.ArancelPaises.AnyAsync(a => a.CountryCode == kv.Key, ct))
+                continue;
+            db.ArancelPaises.Add(new ArancelPais
+            {
+                CountryCode = kv.Key,
+                CountryName = kv.Value,
+                TariffPercent = 0
+            });
+        }
+
+        try
+        {
+            await db.SaveChangesAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[SeedData] SeedArancelPaises: " + ex.Message);
+        }
     }
 
     /// <summary>Columnas para pedidos multi-fábrica y usuario de integración en PROVEEDOR (BD creada antes de este cambio).</summary>

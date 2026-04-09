@@ -10,15 +10,31 @@ public class OrderService
     private readonly AppDbContext _db;
     private readonly PartService _partService;
     private readonly FabricaIntegrationService _fabrica;
+    private readonly ArancelService _arancel;
+    private readonly ShippingRateService _shippingRate;
+    private readonly MonedaService _moneda;
 
-    public OrderService(AppDbContext db, PartService partService, FabricaIntegrationService fabrica)
+    public OrderService(
+        AppDbContext db,
+        PartService partService,
+        FabricaIntegrationService fabrica,
+        ArancelService arancel,
+        ShippingRateService shippingRate,
+        MonedaService moneda)
     {
         _db = db;
         _partService = partService;
         _fabrica = fabrica;
+        _arancel = arancel;
+        _shippingRate = shippingRate;
+        _moneda = moneda;
     }
 
-    public async Task<OrderHeader> CreateOrderAsync(long userId, List<OrderItemDto> items, CancellationToken ct = default)
+    public async Task<OrderHeader> CreateOrderAsync(
+        long userId,
+        List<OrderItemDto> items,
+        CancellationToken ct = default,
+        string? currencyCode = null)
     {
         if (items == null || items.Count == 0)
             throw new ArgumentException("El pedido debe tener al menos un artículo");
@@ -42,13 +58,20 @@ public class OrderService
         }
 
         decimal subtotal = 0;
+        decimal totalWeightLb = 0;
         foreach (var item in items)
         {
             var part = (await _db.Parts.FindAsync(new object[] { item.PartId }, ct))!;
             subtotal += part.Price * item.Qty;
+            var w = part.WeightLb ?? 0;
+            if (w > 0)
+                totalWeightLb += w * item.Qty;
         }
 
-        decimal shippingTotal = 0;
+        var rate = await _shippingRate.GetUsdPerLbAsync(ct);
+        decimal shippingTotal = rate > 0 && totalWeightLb > 0
+            ? Math.Round(totalWeightLb * rate, 2)
+            : 0;
         decimal total = subtotal + shippingTotal;
         string orderNumber = GenerateOrderNumber();
 
@@ -59,28 +82,42 @@ public class OrderService
             OrderType = "WEB",
             Subtotal = subtotal,
             ShippingTotal = shippingTotal,
+            TariffTotal = 0,
             Total = total,
             Currency = "USD",
+            ShippingCountryCode = null,
             CreatedAt = DateTime.UtcNow
         };
-        _db.OrderHeaders.Add(header);
-        await _db.SaveChangesAsync(ct);
 
+        var pendingLines = new List<OrderItem>();
         foreach (var item in items)
         {
             var part = (await _db.Parts.FindAsync(new object[] { item.PartId }, ct))!;
             decimal lineTotal = part.Price * item.Qty;
-            _db.OrderItems.Add(new OrderItem
+            pendingLines.Add(new OrderItem
             {
-                OrderId = header.OrderId,
                 PartId = item.PartId,
                 Qty = item.Qty,
                 UnitPrice = part.Price,
                 LineTotal = lineTotal
             });
-            _partService.ConfirmSale(item.PartId, item.Qty);
         }
+
+        await ApplyOrderCurrencyAsync(header, pendingLines, currencyCode, ct);
+
+        _db.OrderHeaders.Add(header);
         await _db.SaveChangesAsync(ct);
+
+        foreach (var line in pendingLines)
+        {
+            line.OrderId = header.OrderId;
+            _db.OrderItems.Add(line);
+        }
+
+        await _db.SaveChangesAsync(ct);
+
+        foreach (var item in items)
+            _partService.ConfirmSale(item.PartId, item.Qty);
 
         _db.OrderStatusHistories.Add(new OrderStatusHistory
         {
@@ -100,7 +137,9 @@ public class OrderService
         long userId,
         List<PedidoItemRequest> items,
         PaymentRequest? payment,
-        CancellationToken ct = default)
+        string? shippingCountryCode,
+        CancellationToken ct = default,
+        string? currencyCode = null)
     {
         if (items == null || items.Count == 0)
             throw new ArgumentException("El pedido debe tener al menos un artículo");
@@ -124,6 +163,20 @@ public class OrderService
                 throw new ArgumentException("Cantidad inválida");
             if (!i.UnitPrice.HasValue || i.UnitPrice.Value < 0)
                 throw new ArgumentException("Cada línea de fábrica requiere unitPrice");
+        }
+
+        string? shipCountry = null;
+        decimal tariffTotal = 0;
+        if (fabricLines.Count > 0)
+        {
+            var cc = LatamCountries.Normalize(shippingCountryCode);
+            if (!LatamCountries.IsValidCode(cc))
+                throw new ArgumentException(
+                    "País de destino obligatorio para pedidos con repuestos de fábrica (código ISO2 LATAM en shippingCountryCode).");
+            shipCountry = cc;
+            decimal importSubtotal = fabricLines.Sum(i => i.UnitPrice!.Value * i.Qty);
+            var pct = await _arancel.GetTariffPercentAsync(cc, ct);
+            tariffTotal = Math.Round(importSubtotal * pct / 100m, 2);
         }
 
         var fabricByProv = fabricLines.GroupBy(x => x.ProveedorId!.Value).ToList();
@@ -182,8 +235,27 @@ public class OrderService
         foreach (var item in fabricLines)
             subtotal += item.UnitPrice!.Value * item.Qty;
 
-        decimal shippingTotal = 0;
-        decimal total = subtotal + shippingTotal;
+        decimal totalWeightLb = 0;
+        foreach (var item in localLines)
+        {
+            var part = (await _db.Parts.FindAsync(new object[] { item.PartId!.Value }, ct))!;
+            var w = part.WeightLb ?? 0;
+            if (w > 0)
+                totalWeightLb += w * item.Qty;
+        }
+
+        foreach (var item in fabricLines)
+        {
+            var w = item.WeightLb ?? 0;
+            if (w > 0)
+                totalWeightLb += w * item.Qty;
+        }
+
+        var shipRate = await _shippingRate.GetUsdPerLbAsync(ct);
+        decimal shippingTotal = shipRate > 0 && totalWeightLb > 0
+            ? Math.Round(totalWeightLb * shipRate, 2)
+            : 0;
+        decimal total = subtotal + shippingTotal + tariffTotal;
         string orderNumber = GenerateOrderNumber();
 
         var header = new OrderHeader
@@ -193,35 +265,34 @@ public class OrderService
             OrderType = "WEB",
             Subtotal = subtotal,
             ShippingTotal = shippingTotal,
+            TariffTotal = tariffTotal,
             Total = total,
             Currency = "USD",
+            ShippingCountryCode = shipCountry,
             CreatedAt = DateTime.UtcNow
         };
-        _db.OrderHeaders.Add(header);
-        await _db.SaveChangesAsync(ct);
+
+        var pendingLines = new List<OrderItem>();
 
         foreach (var item in localLines)
         {
             var part = (await _db.Parts.FindAsync(new object[] { item.PartId!.Value }, ct))!;
             decimal lineTotal = part.Price * item.Qty;
-            _db.OrderItems.Add(new OrderItem
+            pendingLines.Add(new OrderItem
             {
-                OrderId = header.OrderId,
                 LineSource = "LOCAL",
                 PartId = item.PartId,
                 Qty = item.Qty,
                 UnitPrice = part.Price,
                 LineTotal = lineTotal
             });
-            _partService.ConfirmSale(item.PartId.Value, item.Qty);
         }
 
         foreach (var item in fabricLines)
         {
             long fabricOid = fabricaOrderIds[item.ProveedorId!.Value];
-            _db.OrderItems.Add(new OrderItem
+            pendingLines.Add(new OrderItem
             {
-                OrderId = header.OrderId,
                 LineSource = "FABRICA",
                 PartId = null,
                 ProveedorId = item.ProveedorId,
@@ -235,7 +306,21 @@ public class OrderService
             });
         }
 
+        await ApplyOrderCurrencyAsync(header, pendingLines, currencyCode, ct);
+
+        _db.OrderHeaders.Add(header);
         await _db.SaveChangesAsync(ct);
+
+        foreach (var line in pendingLines)
+        {
+            line.OrderId = header.OrderId;
+            _db.OrderItems.Add(line);
+        }
+
+        await _db.SaveChangesAsync(ct);
+
+        foreach (var item in localLines)
+            _partService.ConfirmSale(item.PartId!.Value, item.Qty);
 
         _db.OrderStatusHistories.Add(new OrderStatusHistory
         {
@@ -310,6 +395,28 @@ public class OrderService
     private static string GenerateOrderNumber()
     {
         return "ORD-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N")[..8];
+    }
+
+    private async Task ApplyOrderCurrencyAsync(
+        OrderHeader header,
+        List<OrderItem> lines,
+        string? currencyCode,
+        CancellationToken ct)
+    {
+        var (mult, code) = await _moneda.ResolveMultiplierAsync(currencyCode, ct);
+        header.Currency = code;
+        if (mult == 1m)
+            return;
+
+        header.Subtotal = Math.Round(header.Subtotal * mult, 2);
+        header.ShippingTotal = Math.Round(header.ShippingTotal * mult, 2);
+        header.TariffTotal = Math.Round(header.TariffTotal * mult, 2);
+        header.Total = Math.Round(header.Total * mult, 2);
+        foreach (var line in lines)
+        {
+            line.UnitPrice = Math.Round(line.UnitPrice * mult, 2);
+            line.LineTotal = Math.Round(line.LineTotal * mult, 2);
+        }
     }
 
     private void RollbackReservations(List<OrderItemDto> items)

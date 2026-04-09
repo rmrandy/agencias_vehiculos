@@ -30,6 +30,85 @@
   font-size: 0.875rem;
 }
 .detalle-fabrica-multi ul { margin: 0.35rem 0 0; padding-left: 1.25rem; }
+
+.detalle-fabrica-historial {
+  margin-bottom: 1.5rem;
+}
+.fabrica-historial-intro {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+  line-height: 1.45;
+}
+.fabrica-historial-block {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+}
+.fabrica-historial-block:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+.fabrica-historial-block-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  color: var(--text-secondary);
+}
+.fabrica-historial-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 2px solid #bae6fd;
+  padding-left: 1rem;
+}
+.fabrica-historial-entry {
+  position: relative;
+  padding-bottom: 1rem;
+  margin-bottom: 0.25rem;
+}
+.fabrica-historial-entry::before {
+  content: '';
+  position: absolute;
+  left: calc(-1rem - 5px);
+  top: 0.35rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0369a1;
+}
+.fabrica-historial-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.35rem;
+}
+.fabrica-historial-time {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+.fabrica-historial-status-pill {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #0369a1;
+  background: #e0f2fe;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+.fabrica-historial-comment {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+.fabrica-historial-extra {
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
 .item-fabrica-remote {
   font-size: 0.78rem;
   color: #92400e;
@@ -80,6 +159,8 @@
 .item-thumb-placeholder { font-size: 1.35rem; opacity: 0.75; }
 .item-detail { min-width: 0; display: flex; flex-direction: column; gap: 0.25rem; }
 .detalle-item-row .item-name { font-weight: 500; color: var(--text-secondary); }
+.detalle-item-row .item-name-link { color: var(--primary); text-decoration: none; font-weight: 600; }
+.detalle-item-row .item-name-link:hover { text-decoration: underline; }
 .item-part-no { font-size: 0.8125rem; color: var(--text-muted); }
 .item-recibo-link { font-size: 0.8125rem; color: var(--primary); text-decoration: none; }
 .item-recibo-link:hover { text-decoration: underline; }

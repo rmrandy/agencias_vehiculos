@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useCurrency } from '../context/CurrencyContext'
 import { getPedidosTodos, updatePedidoEstado, type OrderHeader } from '../api/pedidos'
 import { LoadingModal } from '../components/LoadingModal'
 import { useToast } from '../context/ToastContext'
@@ -25,6 +26,7 @@ function formatDate(iso: string) {
 
 export function GestionPedidos() {
   const { user, isLoggedIn } = useAuth()
+  const { formatOrder } = useCurrency()
   const toast = useToast()
   const [orders, setOrders] = useState<OrderHeader[]>([])
   const [loading, setLoading] = useState(true)
@@ -121,7 +123,9 @@ export function GestionPedidos() {
                   </td>
                   <td>{formatDate(o.createdAt)}</td>
                   <td>{o.orderType === 'ENTERPRISE_API' ? 'Empresarial' : 'Web'}</td>
-                  <td className="total-cell">${Number(o.total).toFixed(2)}</td>
+                  <td className="total-cell">
+                    {formatOrder(Number(o.total), o.currency ?? 'USD')}
+                  </td>
                   <td>
                     <button
                       type="button"

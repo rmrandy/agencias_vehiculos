@@ -1,0 +1,583 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BackendDistribuidores</name>
+    </assembly>
+    <members>
+        <member name="T:BackendDistribuidores.Controllers.ApiController">
+            <summary>
+            Raíz del API REST (<c>GET /api</c>): enlaces a health, diagnóstico de BD y recurso legacy de distribuidores.
+            </summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ApiController.Get">
+            <summary>Devuelve un objeto JSON con rutas útiles del servicio.</summary>
+            <returns>200 con propiedades <c>api</c>, <c>health</c>, <c>db</c>, <c>distribuidores</c>.</returns>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.ArancelesController">
+            <summary>Aranceles por país LATAM (destino del envío). Lectura pública; edición solo ADMIN.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ArancelesController.List(System.Threading.CancellationToken)">
+            <summary>Lista países LATAM con su porcentaje de arancel actual.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ArancelesController.GetTarifaEnvioPorLibra(System.Threading.CancellationToken)">
+            <summary>Tarifa global de envío (USD por libra de peso total del pedido). Lectura pública.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ArancelesController.PutTarifaEnvioPorLibra(BackendDistribuidores.Controllers.UpdateTarifaEnvioRequest,System.Threading.CancellationToken)">
+            <summary>Actualiza la tarifa de envío por libra (solo ADMIN).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ArancelesController.PaisesLatam">
+            <summary>Catálogo de países válidos (sin porcentajes) para formularios.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ArancelesController.Update(System.String,BackendDistribuidores.Controllers.UpdateArancelRequest,System.Threading.CancellationToken)">
+            <summary>Actualiza el arancel de un país (solo ADMIN).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.AuthController">
+            <summary>
+            Autenticación y registro de usuarios del portal de la distribuidora (credenciales en BD local, hash BCrypt).
+            </summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.AuthController.Login(BackendDistribuidores.Controllers.LoginRequest,System.Threading.CancellationToken)">
+            <summary>Autentica por email y contraseña contra la base local.</summary>
+            <param name="request">Credenciales del usuario.</param>
+            <param name="ct">Token de cancelación.</param>
+            <returns>200 con datos de usuario y roles; 401 si falla la autenticación.</returns>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.AuthController.Register(BackendDistribuidores.Controllers.RegisterRequest,System.Threading.CancellationToken)">
+            <summary>Crea una cuenta de usuario en la distribuidora.</summary>
+            <param name="request">Email, contraseña y datos de perfil opcionales.</param>
+            <param name="ct">Token de cancelación.</param>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.LoginRequest">
+            <summary>DTO de entrada para <c>POST /api/auth/login</c>.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.RegisterRequest">
+            <summary>DTO de entrada para <c>POST /api/auth/register</c>.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.CategoriasController">
+            <summary>Consulta de categorías de catálogo (<c>GET /api/categorias</c>).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.CategoriasController.List(System.Threading.CancellationToken)">
+            <summary>Lista todas las categorías ordenadas por nombre.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.CategoriasController.GetById(System.Int64,System.Threading.CancellationToken)">
+            <summary>Obtiene una categoría por id.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.ComentariosController">
+            <summary>Comentarios y respuestas anidadas (árbol) asociados a un repuesto local.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ComentariosController.GetTree(System.Int64,System.Threading.CancellationToken)">
+            <summary>Comentarios recursivos (árbol por parentId). Raíz: parentId null; respuestas: parentId = reviewId del padre.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ComentariosController.Create(System.Int64,BackendDistribuidores.Controllers.CreateComentarioRequest,System.Threading.CancellationToken)">
+            <summary>Crea un comentario o respuesta bajo el repuesto indicado.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.ComentarioDto">
+            <summary>Nodo de comentario en la respuesta JSON (incluye hijos anidados).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.CreateComentarioRequest">
+            <summary>Cuerpo para crear comentario o respuesta.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.DbController">
+            <summary>
+            Diagnóstico de conectividad a SQL Server (<c>GET /api/db</c>).
+            </summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.DbController.#ctor(BackendDistribuidores.Data.AppDbContext)">
+            <param name="db">Contexto EF Core inyectado.</param>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.DbController.Get(System.Threading.CancellationToken)">
+            <summary>Comprueba conectividad con SQL Server mediante el API de base de datos de Entity Framework Core.</summary>
+            <param name="ct">Token de cancelación.</param>
+            <returns>200 si hay conexión; 503 con mensaje de error en caso contrario.</returns>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.DistribuidoresController">
+            <summary>
+            CRUD sobre la entidad legacy <see cref="T:BackendDistribuidores.Models.Distribuidor"/> (tabla propia, distinta del resto del dominio e-commerce).
+            </summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.DistribuidoresController.GetAll(System.Threading.CancellationToken)">
+            <summary>Lista todos los registros de distribuidores legacy.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.DistribuidoresController.GetById(System.Int32,System.Threading.CancellationToken)">
+            <summary>Obtiene un distribuidor por id entero.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.DistribuidoresController.Create(BackendDistribuidores.Models.Distribuidor,System.Threading.CancellationToken)">
+            <summary>Crea un distribuidor; el nombre es obligatorio.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.DistribuidoresController.Update(System.Int32,BackendDistribuidores.Models.Distribuidor,System.Threading.CancellationToken)">
+            <summary>Actualiza campos del distribuidor existente.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.DistribuidoresController.Delete(System.Int32,System.Threading.CancellationToken)">
+            <summary>Elimina el distribuidor indicado.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.FabricaAuthController">
+            <summary>
+            Proxy de autenticación hacia el API de la fábrica (Jetty/Jersey); útil para usuarios empresariales en flujos B2B.
+            </summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.FabricaAuthController.Login(BackendDistribuidores.Controllers.FabricaLoginRequest,System.Threading.CancellationToken)">
+            <summary>Login contra la fábrica. Valida usuario empresarial (email + password).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.FabricaLoginRequest">
+            <summary>DTO enviado al proxy; se reenvía como JSON al <c>/api/auth/login</c> de la fábrica.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.FabricaPedidosController">
+            <summary>Proxy de pedidos hacia el API de la fábrica (crear y consultar por usuario o id).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.FabricaPedidosController.Create(System.Object,System.Threading.CancellationToken)">
+            <summary>Crea pedido en la fábrica (cuerpo transparente al backend remoto).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.FabricaPedidosController.GetByUser(System.Int64,System.Threading.CancellationToken)">
+            <summary>Pedidos del usuario en la fábrica.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.FabricaPedidosController.GetById(System.Int64,System.Threading.CancellationToken)">
+            <summary>Detalle de pedido en la fábrica.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.FabricaRepuestosController">
+            <summary>Reenvía peticiones de catálogo al API configurado como fábrica (<see cref="T:BackendDistribuidores.Services.FabricaProxyService"/>).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.FabricaRepuestosController.List(System.Nullable{System.Int64},System.Nullable{System.Int64},System.Threading.CancellationToken)">
+            <summary>Lista repuestos en la fábrica con filtros opcionales.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.FabricaRepuestosController.Busqueda(System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>Búsqueda de repuestos en la fábrica por nombre, descripción o especificaciones.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.FabricaRepuestosController.GetById(System.Int64,System.Threading.CancellationToken)">
+            <summary>Obtiene un repuesto por id en el sistema de la fábrica.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.HealthController">
+            <summary>
+            Comprobación de vida del servicio (<c>GET /api/health</c>).
+            </summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.HealthController.Get">
+            <summary>Indica que el proceso responde correctamente.</summary>
+            <returns>200 con <c>{"status":"ok"}</c>.</returns>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.ImagesController">
+            <summary>Sirve imágenes de repuestos (principal y galería) y valida payloads base64.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ImagesController.GetPartImage(System.Int64,System.Threading.CancellationToken)">
+            <summary>Imagen principal del repuesto (índice 0).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ImagesController.GetPartImageByIndex(System.Int64,System.Int32,System.Threading.CancellationToken)">
+            <summary>Imagen de la galería por índice (0 = principal, 1+ = adicionales).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ImagesController.Validate(BackendDistribuidores.Controllers.ValidateImageRequest)">
+            <summary>Validar imagen en base64 (misma lógica que fábrica: max 5MB, tipos válidos).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.ValidateImageRequest">
+            <summary>DTO para <c>POST /api/images/validate</c>.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.MarcasController">
+            <summary>Consulta de marcas de repuestos (<c>GET /api/marcas</c>).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.MarcasController.List(System.Threading.CancellationToken)">
+            <summary>Lista todas las marcas ordenadas por nombre.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.MarcasController.GetById(System.Int64,System.Threading.CancellationToken)">
+            <summary>Obtiene una marca por id.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.MonedasController">
+            <summary>Divisas de cobro y tipo de cambio (unidades de moneda por 1 USD). Lectura pública; tasas solo ADMIN.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.PedidosController">
+            <summary>
+            Pedidos de la distribuidora: creación local o multi-fuente (fábricas), listados, detalle con estado remoto,
+            recibo PDF y transiciones de estado (admin/empleado).
+            </summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.PedidosController.Create(BackendDistribuidores.Models.CreatePedidoRequest,System.Threading.CancellationToken)">
+            <summary>Crea un pedido; admite ítems solo locales o mezcla con líneas de fábrica según el cuerpo.</summary>
+            <param name="request">Usuario, líneas (<c>partId</c> / identificadores de fábrica) y datos de pago opcionales.</param>
+            <param name="ct">Token de cancelación.</param>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.PedidosController.ValidateCard(BackendDistribuidores.Models.PaymentRequest)">
+            <summary>Valida tarjeta (solo dígitos 13-19, vencimiento MM/YY en el futuro). Igual que fábrica.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.PedidosController.GetByUser(System.Int64,System.Threading.CancellationToken)">
+            <summary>Lista pedidos del usuario con resumen de estado local y enlaces a estados en fábrica cuando aplica.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.PedidosController.GetReciboPdf(System.Int64,System.Threading.CancellationToken)">
+            <summary>Recibo PDF del pedido consolidado en la distribuidora.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.PedidosController.GetAll(System.Int64,System.Threading.CancellationToken)">
+            <summary>Listar todos los pedidos (solo ADMIN).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.PedidosController.UpdateEstado(System.Int64,BackendDistribuidores.Models.UpdateEstadoRequest,System.Threading.CancellationToken)">
+            <summary>Actualizar estado del pedido (solo ADMIN/EMPLOYEE). Solo se puede avanzar, no retroceder. Envía correo al cliente.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.PedidosController.CanAdvanceTo(System.String,System.String)">
+            <summary>Orden de estados: solo se permite avanzar (no retroceder). CANCELLED y DELIVERED son finales.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.PedidosController.GetById(System.Int64,System.Threading.CancellationToken)">
+            <summary>Detalle completo del pedido: cabecera, ítems enriquecidos, estado y snapshots remotos de fábrica.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.ProveedoresController">
+            <summary>
+            ABM de proveedores (fábricas): URL base del API, usuario empresarial en fábrica y parámetros de precio internacional.
+            </summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ProveedoresController.List(System.Boolean,System.Threading.CancellationToken)">
+            <summary>Lista proveedores; por defecto incluye inactivos.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ProveedoresController.GetById(System.Int64,System.Threading.CancellationToken)">
+            <summary>Obtiene un proveedor por id.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ProveedoresController.Create(BackendDistribuidores.Controllers.SaveProveedorRequest,System.Threading.CancellationToken)">
+            <summary>Alta de proveedor con validación de reglas internacionales.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ProveedoresController.Update(System.Int64,BackendDistribuidores.Controllers.SaveProveedorRequest,System.Threading.CancellationToken)">
+            <summary>Actualiza datos del proveedor.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ProveedoresController.Delete(System.Int64,System.Threading.CancellationToken)">
+            <summary>Elimina el proveedor.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.SaveProveedorRequest">
+            <summary>Cuerpo para crear o actualizar proveedor.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.ReportesController">
+            <summary>Envía eventos de engagement a la fábrica (visto en detalle, agregado al carrito).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ReportesController.VistoDetalle(BackendDistribuidores.Controllers.ReporteEventRequest,System.Threading.CancellationToken)">
+            <summary>Registra en la fábrica que se vio el detalle de un repuesto. El frontend llama con partId (local); resolvemos partNumber para la fábrica.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ReportesController.AgregadoCarrito(BackendDistribuidores.Controllers.ReporteEventRequest,System.Threading.CancellationToken)">
+            <summary>Registra en la fábrica que se agregó un repuesto al carrito (sin compra).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.ReporteEventRequest">
+            <summary>Eventos de engagement reenviados a la reportería de la fábrica.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.RepuestosController">
+            <summary>
+            API de catálogo de repuestos de la distribuidora: listado, búsqueda, CRUD, imágenes y
+            <see cref="M:BackendDistribuidores.Controllers.RepuestosController.CatalogoUnificado(System.String,System.Threading.CancellationToken)"/> (agregación con proveedores/fábricas activas).
+            </summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.RepuestosController.CatalogoUnificado(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Catálogo local más catálogos de fábricas activas. Si <paramref name="q"/> está vacío, devuelve todo lo activo agregado.
+            </summary>
+            <param name="q">Término de búsqueda opcional.</param>
+            <param name="ct">Token de cancelación.</param>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.RepuestosController.List(System.Nullable{System.Int64},System.Nullable{System.Int64},System.Boolean,System.Threading.CancellationToken)">
+            <summary>Listado paginable lógico de repuestos locales con filtros opcionales.</summary>
+            <param name="categoryId">Filtrar por categoría.</param>
+            <param name="brandId">Filtrar por marca.</param>
+            <param name="includeInactive">Incluir repuestos inactivos.</param>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.RepuestosController.Busqueda(System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>Búsqueda de texto en nombre, descripción o especificaciones (primer parámetro no nulo entre <paramref name="q"/>, <paramref name="nombre"/>, etc.).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.RepuestosController.GetByPartNumber(System.String,System.Threading.CancellationToken)">
+            <summary>Obtiene un repuesto por su número de parte (<c>partNumber</c>).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.RepuestosController.GetById(System.Int64,System.Threading.CancellationToken)">
+            <summary>Obtiene un repuesto por identificador numérico local.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.RepuestosController.GetGaleria(System.Int64,System.Threading.CancellationToken)">
+            <summary>Galería: cantidad de imágenes (principal + adicionales) para construir URLs /api/images/part/{id}/imagen/0, 1, ...</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.RepuestosController.AddImagen(System.Int64,BackendDistribuidores.Controllers.AddImagenRequest,System.Threading.CancellationToken)">
+            <summary>Agregar imagen a la galería del producto (base64).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.RepuestosController.Create(BackendDistribuidores.Controllers.CreateRepuestoRequest,System.Threading.CancellationToken)">
+            <summary>Crear repuesto (misma lógica que fábrica). Opcional: imageData (base64), imageType.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.RepuestosController.Update(System.Int64,BackendDistribuidores.Controllers.UpdateRepuestoRequest,System.Threading.CancellationToken)">
+            <summary>Actualizar repuesto (misma lógica que fábrica). Opcional: imageData (base64), imageType.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.RepuestosController.UpdateInventory(System.Int64,BackendDistribuidores.Controllers.UpdateInventarioRequest,System.Threading.CancellationToken)">
+            <summary>Actualiza stock y umbral de alerta del repuesto.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.RepuestosController.Delete(System.Int64,System.Threading.CancellationToken)">
+            <summary>Elimina (o desactiva según implementación del servicio) el repuesto indicado.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.CreateRepuestoRequest">
+            <summary>Cuerpo JSON para crear repuesto (campos alineados con la fábrica).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.UpdateRepuestoRequest">
+            <summary>Cuerpo JSON para actualizar repuesto; todos los campos son opcionales salvo uso en lógica de negocio.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.UpdateInventarioRequest">
+            <summary>Actualización parcial de inventario.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.AddImagenRequest">
+            <summary>Imagen en base64 y tipo MIME opcional para la galería.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.RepuestosFabricaController">
+            <summary>Proxy de detalle y comentarios hacia la API de un proveedor (fábrica) por proveedorId.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.CreateComentarioFabricaRequest">
+            <summary>Crear comentario en fábrica (el backend reenvía userEmail con la API key configurada).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.UsuariosController">
+            <summary>Administración de usuarios del portal (listado y actualización de estado/roles; requiere administrador).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.UsuariosController.GetAll(System.Int64,System.Threading.CancellationToken)">
+            <summary>Listar todos los usuarios (solo ADMIN).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.UsuariosController.Update(System.Int64,BackendDistribuidores.Controllers.UpdateUsuarioRequest,System.Threading.CancellationToken)">
+            <summary>Actualizar estado o roles de un usuario (solo ADMIN).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Controllers.UpdateUsuarioRequest">
+            <summary>Parches de estado y roles enviados por un administrador.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Data.AppDbContext">
+            <summary>
+            Base de datos de la distribuidora (SQL Server). Misma estructura lógica que la fábrica:
+            catálogo (Category, Brand, Part), usuarios (AppUser, Role), pedidos (OrderHeader, OrderItem, OrderStatusHistory),
+            comentarios (PartReview), proveedores (Proveedor). Tabla Distribuidores se mantiene por compatibilidad.
+            </summary>
+        </member>
+        <member name="M:BackendDistribuidores.Data.SeedData.EnsureArancelSchemaAsync(BackendDistribuidores.Data.AppDbContext,System.Threading.CancellationToken)">
+            <summary>Tabla ARANCEL_PAIS y columnas de arancel en ORDER_HEADER (BD existente).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Data.SeedData.EnsureMonedaSchemaAsync(BackendDistribuidores.Data.AppDbContext,System.Threading.CancellationToken)">
+            <summary>Tabla MONEDA (tipo de cambio por 1 USD).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Data.SeedData.EnsureEnvioConfigSchemaAsync(BackendDistribuidores.Data.AppDbContext,System.Threading.CancellationToken)">
+            <summary>Tabla ENVIO_CONFIG y fila por defecto (BD existente sin migraciones).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Data.SeedData.EnsureMultisourceSchemaAsync(BackendDistribuidores.Data.AppDbContext,System.Threading.CancellationToken)">
+            <summary>Columnas para pedidos multi-fábrica y usuario de integración en PROVEEDOR (BD creada antes de este cambio).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Data.SeedData.EnsurePartImageTableAsync(BackendDistribuidores.Data.AppDbContext,System.Threading.CancellationToken)">
+            <summary>Crea la tabla PART_IMAGE si no existe (por si la BD se creó antes de añadir galería).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Data.SeedData.SeedCatalogAsync(BackendDistribuidores.Data.AppDbContext,System.Threading.CancellationToken)">
+            <summary>Catálogo local: categorías, marcas y repuestos (misma lógica que fábrica datos dummy).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.AppUser">
+            <summary>Usuario del portal (misma lógica que fábrica AppUser).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.AppUser.UserRoles">
+            <summary>Relación con roles (vía USER_ROLE). Cargar con Include(u => u.UserRoles).ThenInclude(ur => ur.Role).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.ArancelPais">
+            <summary>Arancel (%) aplicable a importaciones según país de destino en LATAM.</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.ArancelPais.CountryCode">
+            <summary>ISO 3166-1 alpha-2 (debe existir en <see cref="T:BackendDistribuidores.Models.LatamCountries"/>).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.ArancelPais.TariffPercent">
+            <summary>Porcentaje de arancel sobre el subtotal importado (0–100).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.Brand">
+            <summary>Marca de repuestos (misma lógica que fábrica).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.Category">
+            <summary>Categoría de repuestos (misma lógica que fábrica).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.EnvioConfig">
+            <summary>Configuración global de envío: tarifa en USD por libra de peso total del pedido.</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.EnvioConfig.UsdPerLb">
+            <summary>Precio de envío por libra (USD). 0 = sin cargo por peso.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.LatamCountries">
+            <summary>Catálogo fijo de países de América Latina y el Caribe (ISO 3166-1 alpha-2) para aranceles.</summary>
+        </member>
+        <member name="F:BackendDistribuidores.Models.LatamCountries.All">
+            <summary>Código ISO → nombre en español.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.Moneda">
+            <summary>Divisa de cobro. Los precios de catálogo se mantienen en USD; UnitsPerUsd convierte a esta moneda.</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.Moneda.Code">
+            <summary>ISO 4217 (3 letras).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.Moneda.Symbol">
+            <summary>Símbolo para mostrar (ej. Q, MX$, €).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.Moneda.UnitsPerUsd">
+            <summary>Cuántas unidades de esta moneda equivalen a 1 USD (ej. GTQ ≈ 7.85).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.OrderHeader">
+            <summary>Cabecera de pedido (misma lógica que fábrica OrderHeader).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.OrderHeader.TariffTotal">
+            <summary>Arancel sobre líneas importadas (fábrica), según país de destino LATAM.</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.OrderHeader.ShippingCountryCode">
+            <summary>País de destino del envío (ISO2 LATAM) cuando aplica arancel.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.OrderItem">
+            <summary>Línea de pedido local o remota (fábrica vía API).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.OrderItem.LineSource">
+            <summary>LOCAL o FABRICA.</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.OrderItem.PartId">
+            <summary>Repuesto del catálogo local; null si la línea es solo de fábrica.</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.OrderItem.FabricaOrderId">
+            <summary>ORDER_ID del pedido creado en la fábrica (mismo valor para todas las líneas de ese proveedor en este checkout).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.OrderStatusHistory">
+            <summary>Historial de estado del pedido (misma lógica que fábrica).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.Part">
+            <summary>Repuesto del catálogo local (misma lógica que fábrica Part).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.PartImage">
+            <summary>Imagen adicional del repuesto (galería: varias fotos por producto).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.PartReview">
+            <summary>Comentario o valoración sobre un repuesto (misma lógica que fábrica PartReview).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.PartReview.Rating">
+            <summary>Puntuación 1-5 estrellas. Solo en comentarios raíz.</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.CreatePedidoRequest.ShippingCountryCode">
+            <summary>País de destino (ISO2, LATAM). Obligatorio si el pedido incluye líneas de fábrica/importación.</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.CreatePedidoRequest.CurrencyCode">
+            <summary>Divisa de cobro (ISO 4217). Por defecto USD. El servidor aplica el tipo de cambio configurado.</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.PedidoItemRequest.Source">
+            <summary>local (catálogo distribuidora) o fabrica.</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.PedidoItemRequest.UnitPrice">
+            <summary>Obligatorio para líneas de fábrica (precio mostrado en catálogo unificado).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.PedidoItemRequest.WeightLb">
+            <summary>Peso unitario en libras (líneas de fábrica). Si falta, se considera 0 para el envío.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.Proveedor">
+            <summary>Proveedor (DOC2: agregar/eliminar dinámicamente; internacional con tipo de cambio).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.Proveedor.ApiBaseUrl">
+            <summary>Base URL del API REST del proveedor (ej. fábrica).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.Proveedor.FabricaEnterpriseUserId">
+            <summary>USER_ID en la fábrica para crear pedidos vía API (usuario empresarial / integración).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.Proveedor.TipoCambioAQuetzales">
+            <summary>Si es internacional: tipo de cambio a quetzales (GTQ).</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.Proveedor.PorcentajeGanancia">
+            <summary>Si es internacional: porcentaje de ganancia configurable.</summary>
+        </member>
+        <member name="P:BackendDistribuidores.Models.Proveedor.CostoEnvioPorLibra">
+            <summary>Costo de envío por libra (peso) para internacionales.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.Role">
+            <summary>Rol de usuario (misma lógica que fábrica).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.UserRole">
+            <summary>Relación usuario-rol (tabla USER_ROLE como en fábrica).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.ArancelService">
+            <summary>Aranceles por país de destino (solo LATAM), configurables desde el distribuidor.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.AuthService">
+            <summary>Autenticación local (misma lógica que fábrica: email + BCrypt).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.AuthService.LoginAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>Login con email y contraseña. Devuelve usuario con roles (nombres) o null.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.AuthService.RegisterAsync(System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>Registrar usuario (para portal local). Hash con BCrypt como fábrica.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.FabricaPedidoRemoteSnapshot">
+            <summary>Último estado del pedido en la fábrica (GET /api/pedidos/{id}).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.FabricaPedidoRemoteSnapshot.#ctor(System.String,System.String,System.Nullable{System.Int32})">
+            <summary>Último estado del pedido en la fábrica (GET /api/pedidos/{id}).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.FabricaHistorialEntry">
+            <summary>Entrada del historial de estados en fábrica (GET /api/pedidos/{id}/historial).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.FabricaHistorialEntry.#ctor(System.String,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.DateTimeOffset})">
+            <summary>Entrada del historial de estados en fábrica (GET /api/pedidos/{id}/historial).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.FabricaIntegrationService">
+            <summary>HTTP hacia APIs de fábrica (cada proveedor con su propia base URL).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.FabricaIntegrationService.GetBusquedaRepuestosJsonAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>GET /api/repuestos/busqueda?nombre=… — cuerpo JSON (array de repuestos).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.FabricaIntegrationService.GetRepuestoJsonAsync(System.String,System.Int64,System.Threading.CancellationToken)">
+            <summary>GET /api/repuestos/{partId} — detalle JSON (sin binarios de imagen en el modelo Java).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.FabricaIntegrationService.GetComentariosRepuestoJsonAsync(System.String,System.Int64,System.Threading.CancellationToken)">
+            <summary>GET /api/repuestos/{partId}/comentarios — cuerpo JSON (promedio + comentarios).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.FabricaIntegrationService.PostComentarioRepuestoJsonAsync(System.String,System.Int64,System.Object,System.Threading.CancellationToken)">
+            <summary>POST /api/repuestos/{partId}/comentarios — crea comentario (userEmail vía API key en fábrica).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.FabricaIntegrationService.CreatePedidoAsync(System.String,System.Int64,System.Collections.Generic.IReadOnlyList{System.ValueTuple{System.Int64,System.Int32}},BackendDistribuidores.Models.PaymentRequest,System.Threading.CancellationToken)">
+            <summary>POST /api/pedidos — devuelve orderId de la fábrica. Si hay payment, la fábrica valida tarjeta y puede enviar correo.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.FabricaIntegrationService.GetPedidoRemoteStatusAsync(System.String,System.Int64,System.Threading.CancellationToken)">
+            <summary>GET /api/pedidos/{fabricaOrderId} — último estado (para sincronizar la distribuidora).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.FabricaIntegrationService.GetPedidoHistorialRemoteAsync(System.String,System.Int64,System.Threading.CancellationToken)">
+            <summary>GET /api/pedidos/{fabricaOrderId}/historial — mensajes y estados registrados en la fábrica.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.FabricaProxyService">
+            <summary>
+            Proxy hacia la API de la Fábrica (usuarios empresariales, repuestos, pedidos).
+            </summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.MailService">
+            <summary>Envío de correo. Si no hay SMTP configurado, simula el envío (log). Igual que fábrica.</summary>
+        </member>
+        <member name="F:BackendDistribuidores.Services.MailService.DefaultSmtpHost">
+            <summary>Credenciales por defecto (mismas que fábrica mail.properties) para envío real de correos.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.MailService.SendOrderConfirmation(System.String,System.String,BackendDistribuidores.Models.OrderHeader,System.Collections.Generic.IReadOnlyList{System.ValueTuple{System.String,System.Int32,System.Decimal,System.Decimal}})">
+            <summary>Envía confirmación de pedido al comprador. Si SMTP no está configurado, escribe el contenido en consola.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.MailService.SendOrderStatusUpdate(System.String,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int32})">
+            <summary>Envía correo al cliente cuando se actualiza el estado del pedido (estado, comentario, tracking, ETA).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.MonedaService.ResolveMultiplierAsync(System.String,System.Threading.CancellationToken)">
+            <summary>Multiplicador para pasar de importes en USD a la divisa indicada. USD siempre 1.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.OrderService">
+            <summary>Pedidos locales y multi-fábrica (orden maestro en distribuidora + POST /api/pedidos por proveedor).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.OrderService.CreateMultiSourceOrderAsync(System.Int64,System.Collections.Generic.List{BackendDistribuidores.Models.PedidoItemRequest},BackendDistribuidores.Models.PaymentRequest,System.String,System.Threading.CancellationToken,System.String)">
+            <summary>Catálogo local + líneas de N fábricas: primero crea pedidos en cada fábrica, luego orden maestro aquí.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.OrderService.GetAllOrdersAsync(System.Threading.CancellationToken)">
+            <summary>Todos los pedidos (para admin).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.OrderService.AddOrderStatusAsync(System.Int64,System.String,System.String,System.String,System.Nullable{System.Int32},System.Int64,System.Threading.CancellationToken)">
+            <summary>Añade un nuevo estado al pedido (para admin/empleado).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.PartService">
+            <summary>Catálogo local y stock (misma lógica que fábrica: CRUD, imagen BLOB, reserva, confirmar venta).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.PartService.CreateAsync(System.Int64,System.Int64,System.String,System.String,System.String,System.Nullable{System.Decimal},System.Decimal,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>Crear repuesto (misma lógica que fábrica). Imagen se asigna después con UpdateImageAsync.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.PartService.UpdateAsync(System.Int64,System.Nullable{System.Int64},System.Nullable{System.Int64},System.String,System.String,System.Nullable{System.Decimal},System.Nullable{System.Decimal},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>Actualizar datos básicos (misma lógica que fábrica).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.PartService.UpdateImageAsync(System.Int64,System.Byte[],System.String,System.Threading.CancellationToken)">
+            <summary>Actualizar imagen BLOB (misma lógica que fábrica).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.PartService.DecodeImageBase64(System.String,System.String)">
+            <summary>Decodificar base64 (acepta data:image/...;base64,) y validar tamaño/tipo.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.PartService.GetGalleryCountAsync(System.Int64,System.Threading.CancellationToken)">
+            <summary>Cantidad total de imágenes (principal + galería). No carga el BLOB para evitar 500/timeouts.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.PartService.GetPartImageByIndexAsync(System.Int64,System.Int32,System.Threading.CancellationToken)">
+            <summary>Obtiene imagen por índice: 0 = principal (Part), 1+ = PartImages por SortOrder.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.PartService.AddPartImageAsync(System.Int64,System.Byte[],System.String,System.Threading.CancellationToken)">
+            <summary>Agrega una imagen a la galería del producto.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.PedidoReciboPdfService">
+            <summary>PDF de recibo del pedido en la distribuidora (resumen unificado).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.UnifiedCatalogService">
+            <summary>Catálogo local + N fábricas (proveedores con ApiBaseUrl activo).</summary>
+        </member>
+    </members>
+</doc>

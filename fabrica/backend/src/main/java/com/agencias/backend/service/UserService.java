@@ -7,6 +7,7 @@ import com.agencias.backend.repository.RoleRepository;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class UserService {
@@ -51,6 +52,28 @@ public class UserService {
 
     public AppUser getById(Long id) {
         return userRepo.findById(id).orElse(null);
+    }
+
+    /**
+     * Usuario para comentarios desde portal de distribuidora (API key válida).
+     * Reutiliza APP_USER por email o crea uno con contraseña aleatoria y rol REGISTERED.
+     */
+    public AppUser resolveOrCreatePortalUser(String rawEmail, String rawFullName) {
+        if (rawEmail == null || rawEmail.isBlank()) {
+            throw new IllegalArgumentException("userEmail es obligatorio");
+        }
+        return userRepo.findByEmailIgnoreCase(rawEmail).orElseGet(() -> {
+            String email = rawEmail.trim().toLowerCase();
+            String randomSecret = UUID.randomUUID().toString() + "Aa1!extra";
+            AppUser user = new AppUser();
+            user.setEmail(email);
+            user.setPasswordHash(PasswordEncoding.hash(randomSecret));
+            user.setFullName(rawFullName != null && !rawFullName.isBlank() ? rawFullName.trim() : null);
+            user.setStatus("ACTIVE");
+            Role role = ensureRole("REGISTERED");
+            user.getRoles().add(role);
+            return userRepo.save(user);
+        });
     }
 
     /**

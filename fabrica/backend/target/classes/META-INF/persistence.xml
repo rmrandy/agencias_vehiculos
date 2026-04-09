@@ -14,6 +14,7 @@
         <class>com.agencias.backend.model.Brand</class>
         <class>com.agencias.backend.model.Vehicle</class>
         <class>com.agencias.backend.model.Part</class>
+        <class>com.agencias.backend.model.PartImage</class>
         <class>com.agencias.backend.model.OrderHeader</class>
         <class>com.agencias.backend.model.OrderItem</class>
         <class>com.agencias.backend.model.OrderStatusHistory</class>

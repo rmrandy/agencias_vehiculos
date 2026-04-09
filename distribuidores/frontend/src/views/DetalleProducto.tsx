@@ -5,6 +5,7 @@ import { getComentarios, createComentario, type Comentario } from '../api/coment
 import { reportVistoDetalle, reportAgregadoCarrito } from '../api/reportes'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
+import { useCurrency } from '../context/CurrencyContext'
 import { useToast } from '../context/ToastContext'
 import { LoadingModal } from '../components/LoadingModal'
 import './DetalleProducto.css'
@@ -14,6 +15,7 @@ export function DetalleProducto() {
   const navigate = useNavigate()
   const { user, isLoggedIn } = useAuth()
   const { add } = useCart()
+  const { formatCatalog } = useCurrency()
   const toast = useToast()
   const [part, setPart] = useState<Part | null>(null)
   const [galleryCount, setGalleryCount] = useState(0)
@@ -160,7 +162,7 @@ export function DetalleProducto() {
         <section className="detalle-info">
           <h1 className="detalle-title">{part.title}</h1>
           <p className="detalle-code">Código: {part.partNumber}</p>
-          <p className="detalle-price">${Number(part.price).toFixed(2)}</p>
+          <p className="detalle-price">{formatCatalog(Number(part.price))}</p>
           {part.description && <p className="detalle-desc">{part.description}</p>}
           {part.weightLb != null && (
             <p className="detalle-meta">Peso: {Number(part.weightLb).toFixed(2)} lb</p>

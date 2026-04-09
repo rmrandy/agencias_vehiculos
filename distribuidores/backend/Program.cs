@@ -19,6 +19,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<BackendDistribuidores.Services.AuthService>();
+builder.Services.AddScoped<BackendDistribuidores.Services.ArancelService>();
+builder.Services.AddScoped<BackendDistribuidores.Services.MonedaService>();
+builder.Services.AddScoped<BackendDistribuidores.Services.ShippingRateService>();
 builder.Services.AddScoped<BackendDistribuidores.Services.PartService>();
 builder.Services.AddScoped<BackendDistribuidores.Services.OrderService>();
 builder.Services.AddScoped<BackendDistribuidores.Services.MailService>();

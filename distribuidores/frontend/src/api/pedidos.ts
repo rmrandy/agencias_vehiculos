@@ -7,6 +7,10 @@ export interface OrderHeader {
   orderType: string
   subtotal: number
   shippingTotal: number
+  tariffTotal?: number
+  shippingCountryCode?: string | null
+  /** ISO 4217; importes del pedido están expresados en esta divisa. */
+  currency?: string
   total: number
   createdAt: string
 }
@@ -19,6 +23,22 @@ export interface FabricaPedidoStatusRow {
   status?: string | null
   trackingNumber?: string | null
   etaDays?: number | null
+}
+
+/** Entrada del GET /api/pedidos/{id}/historial en la fábrica (expuesta vía distribuidora en detalle de pedido). */
+export interface FabricaHistorialEntryRow {
+  status?: string | null
+  commentText?: string | null
+  trackingNumber?: string | null
+  etaDays?: number | null
+  changedAt?: string | null
+}
+
+export interface FabricaHistorialBlock {
+  proveedorId: number
+  proveedorNombre?: string | null
+  fabricaOrderId: number
+  entries: FabricaHistorialEntryRow[]
 }
 
 /** Respuesta de GET /api/pedidos/usuario/{userId} (incluye estado e ítems). */
@@ -44,6 +64,7 @@ export type PedidoItemPayload =
       fabricaPartId: number
       qty: number
       unitPrice: number
+      weightLb?: number
       title?: string
       partNumber?: string
     }
@@ -51,11 +72,25 @@ export type PedidoItemPayload =
 export async function createPedido(
   userId: number,
   items: PedidoItemPayload[],
-  payment?: PaymentParams | null
+  payment?: PaymentParams | null,
+  shippingCountryCode?: string | null,
+  currencyCode?: string | null
 ): Promise<OrderHeader> {
-  const body: { userId: number; items: PedidoItemPayload[]; payment?: PaymentParams } = {
+  const body: {
+    userId: number
+    items: PedidoItemPayload[]
+    payment?: PaymentParams
+    shippingCountryCode?: string
+    currencyCode?: string
+  } = {
     userId,
     items,
+  }
+  if (shippingCountryCode) {
+    body.shippingCountryCode = shippingCountryCode
+  }
+  if (currencyCode && currencyCode.trim()) {
+    body.currencyCode = currencyCode.trim().toUpperCase()
   }
   if (payment) {
     body.payment = {
@@ -101,6 +136,7 @@ export async function getPedido(orderId: number): Promise<{
   }[]
   status: { status: string; trackingNumber?: string; etaDays?: number }
   fabricaStatuses?: FabricaPedidoStatusRow[]
+  fabricaHistoriales?: FabricaHistorialBlock[]
 }> {
   return apiFetch(`/api/pedidos/${orderId}`)
 }

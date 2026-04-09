@@ -201,3 +201,10 @@
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/bin/Debug/net9.0/runtimes/win-x86/native/libstdc++-6.dll
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/bin/Debug/net9.0/runtimes/win-x86/native/libwinpthread-1.dll
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/bin/Debug/net9.0/runtimes/win-x86/native/qpdf.dll
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/bin/Debug/net9.0/docs/docfx.json
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/bin/Debug/net9.0/docs/_site/api/toc.json
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/bin/Debug/net9.0/docs/_site/index.json
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/bin/Debug/net9.0/docs/_site/manifest.json
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/bin/Debug/net9.0/docs/_site/toc.json
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/bin/Debug/net9.0/BackendDistribuidores.xml
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/BackendDistribuidores.xml

@@ -3,14 +3,20 @@ package com.agencias.backend.controller;
 import com.agencias.backend.controller.dto.ComentariosResponse;
 import com.agencias.backend.service.PartReviewService;
 import com.agencias.backend.service.PartService;
+import com.agencias.backend.service.UserService;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import com.agencias.backend.config.ConfigLoader;
 import com.agencias.backend.config.DatabaseConfig;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Comentarios y valoraciones (1-5 estrellas) sobre repuestos.
@@ -21,13 +27,20 @@ import java.util.Map;
 @jakarta.inject.Singleton
 public class PartReviewResource {
 
+    private static final String DIST_API_KEY_HEADER = "X-Distributor-Api-Key";
+
     private final PartReviewService reviewService;
     private final PartService partService;
+    private final UserService userService;
+
+    @Context
+    private HttpHeaders headers;
 
     public PartReviewResource() {
         EntityManagerFactory emf = DatabaseConfig.getEntityManagerFactory();
         this.reviewService = new PartReviewService(emf);
         this.partService = new PartService(emf);
+        this.userService = new UserService(emf);
     }
 
     /**
@@ -59,7 +72,7 @@ public class PartReviewResource {
             return Response.status(404).entity(new ErrorResponse(404, "Repuesto no encontrado")).build();
         }
         try {
-            Long userId = body.get("userId") != null ? ((Number) body.get("userId")).longValue() : null;
+            Long userId = resolveUserIdForCreate(body);
             Long parentId = body.get("parentId") != null ? ((Number) body.get("parentId")).longValue() : null;
             Integer rating = body.get("rating") != null ? ((Number) body.get("rating")).intValue() : null;
             String commentBody = (String) body.get("body");
@@ -71,5 +84,32 @@ public class PartReviewResource {
         } catch (Exception e) {
             return Response.status(500).entity(new ErrorResponse(500, e.getMessage())).build();
         }
+    }
+
+    /**
+     * Si hay allowlist de API keys y la petición trae clave válida + {@code userEmail}, se usa (o crea) un usuario en APP_USER.
+     * Si no, se exige {@code userId} como hasta ahora.
+     */
+    private Long resolveUserIdForCreate(Map<String, Object> body) {
+        Properties props = ConfigLoader.loadProperties();
+        String allow = props.getProperty("distribuidoras.api.key.allowlist", "").trim();
+        if (!allow.isEmpty() && headers != null) {
+            Set<String> keys = new HashSet<>();
+            for (String s : allow.split(",")) {
+                String t = s.trim();
+                if (!t.isEmpty()) {
+                    keys.add(t);
+                }
+            }
+            String headerKey = headers.getHeaderString(DIST_API_KEY_HEADER);
+            if (headerKey != null && keys.contains(headerKey.trim())) {
+                Object rawEmail = body.get("userEmail");
+                if (rawEmail instanceof String ue && !ue.isBlank()) {
+                    String fullName = body.get("userFullName") instanceof String s ? s : null;
+                    return userService.resolveOrCreatePortalUser(ue, fullName).getUserId();
+                }
+            }
+        }
+        return body.get("userId") != null ? ((Number) body.get("userId")).longValue() : null;
     }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useCurrency } from '../context/CurrencyContext'
 import { getPedidosByUser, getPedidoReciboPdfUrl, type OrderListRow } from '../api/pedidos'
 import { LoadingModal } from '../components/LoadingModal'
 import './MisPedidos.css'
@@ -17,6 +18,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 export function MisPedidos() {
   const { user, isLoggedIn } = useAuth()
+  const { formatOrder } = useCurrency()
   const [orders, setOrders] = useState<OrderListRow[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -84,7 +86,9 @@ export function MisPedidos() {
                   )}
                 </div>
                 <div className="pedido-card-side">
-                  <span className="pedido-total">${Number(order.total).toFixed(2)}</span>
+                  <span className="pedido-total">
+                    {formatOrder(Number(order.total), order.currency ?? 'USD')}
+                  </span>
                   <div className="pedido-actions">
                     <Link to={`/pedidos/${order.orderId}`} className="btn btn-sm btn-secondary">
                       Ver detalle

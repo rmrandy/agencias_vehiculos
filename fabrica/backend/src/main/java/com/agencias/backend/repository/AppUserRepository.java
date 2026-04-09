@@ -55,6 +55,23 @@ public class AppUserRepository {
         }
     }
 
+    /** Email normalizado en minúsculas (usuarios portal / distribuidora). */
+    public Optional<AppUser> findByEmailIgnoreCase(String email) {
+        if (email == null || email.isBlank()) {
+            return Optional.empty();
+        }
+        String norm = email.trim().toLowerCase();
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<AppUser> q = em.createQuery(
+                "SELECT u FROM AppUser u WHERE LOWER(TRIM(u.email)) = :email", AppUser.class);
+            q.setParameter("email", norm);
+            return q.getResultList().stream().findFirst();
+        } finally {
+            em.close();
+        }
+    }
+
     public long count() {
         EntityManager em = emf.createEntityManager();
         try {

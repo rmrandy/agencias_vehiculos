@@ -1,11 +1,13 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
+import { useCurrency } from '../context/CurrencyContext'
 import './Navbar.css'
 
 export function Navbar() {
   const { user, isLoggedIn, logout } = useAuth()
   const { count } = useCart()
+  const { monedas, selectedCode, setSelectedCode, loading: monedasLoading } = useCurrency()
   const location = useLocation()
 
   function isActive(path: string) {
@@ -69,12 +71,38 @@ export function Navbar() {
                     <span className="nav-icon">👥</span> Usuarios
                   </Link>
                 </li>
+                <li>
+                  <Link to="/aranceles" className={`nav-link ${isActive('/aranceles') ? 'active' : ''}`}>
+                    <span className="nav-icon">🌎</span> Fiscal y divisas
+                  </Link>
+                </li>
               </>
             )}
           </>
         )}
       </ul>
       <div className="navbar-user">
+        <label className="nav-currency-label" htmlFor="nav-currency">
+          <span className="nav-currency-text">Divisa</span>
+          <select
+            id="nav-currency"
+            className="nav-currency-select"
+            value={selectedCode}
+            disabled={monedasLoading || monedas.length === 0}
+            onChange={(e) => setSelectedCode(e.target.value)}
+            aria-label="Divisa de visualización y pago"
+          >
+            {monedas.length === 0 ? (
+              <option value="USD">USD</option>
+            ) : (
+              monedas.map((m) => (
+                <option key={m.code} value={m.code}>
+                  {m.code} · {m.name}
+                </option>
+              ))
+            )}
+          </select>
+        </label>
         {isLoggedIn ? (
           <>
             <span className="user-email">{user?.email}</span>

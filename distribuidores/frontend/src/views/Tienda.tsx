@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { buscarCatalogoUnificado, catalogLineKey, type CatalogPart } from '../api/repuestos'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
+import { useCurrency } from '../context/CurrencyContext'
 import { useToast } from '../context/ToastContext'
 import { LoadingModal } from '../components/LoadingModal'
 import './Tienda.css'
@@ -15,6 +16,7 @@ export function Tienda() {
   const [search, setSearch] = useState('')
   const { isLoggedIn } = useAuth()
   const { add } = useCart()
+  const { formatCatalog } = useCurrency()
   const toast = useToast()
   const navigate = useNavigate()
 
@@ -46,7 +48,8 @@ export function Tienda() {
       <header className="page-header">
         <h1>Catálogo de repuestos</h1>
         <p className="page-subtitle">
-          Catálogo local y fábricas conectadas. Usa el buscador para acotar por nombre; si está vacío se muestra todo lo
+          Catálogo local y fábricas conectadas. Los precios de referencia están en USD; elige la divisa en la barra
+          lateral para ver el equivalente. Usa el buscador para acotar por nombre; si está vacío se muestra todo lo
           activo.
         </p>
       </header>
@@ -64,11 +67,12 @@ export function Tienda() {
           {parts.filter((p) => p.active !== 0).map((part) => (
             <div key={catalogLineKey(part)} className="product-card">
               <Link
-                to={part.source === 'fabrica' ? '#' : `/producto/${part.partId}`}
+                to={
+                  part.source === 'fabrica' && part.proveedorId != null
+                    ? `/producto/fabrica/${part.proveedorId}/${part.partId}`
+                    : `/producto/${part.partId}`
+                }
                 className="product-image"
-                onClick={(e) => {
-                  if (part.source === 'fabrica') e.preventDefault()
-                }}
               >
                 {part.hasImage ? (
                   <img
@@ -84,8 +88,13 @@ export function Tienda() {
                 )}
               </Link>
               <div className="product-info">
-                {part.source === 'fabrica' ? (
-                  <h3 className="product-title-link">{part.title}</h3>
+                {part.source === 'fabrica' && part.proveedorId != null ? (
+                  <Link
+                    to={`/producto/fabrica/${part.proveedorId}/${part.partId}`}
+                    className="product-title-link"
+                  >
+                    <h3>{part.title}</h3>
+                  </Link>
                 ) : (
                   <Link to={`/producto/${part.partId}`} className="product-title-link"><h3>{part.title}</h3></Link>
                 )}
@@ -93,7 +102,7 @@ export function Tienda() {
                   <p className="part-number">Fábrica: {part.proveedorNombre}</p>
                 )}
                 <p className="part-number">{part.partNumber}</p>
-                <p className="price">${Number(part.price).toFixed(2)}</p>
+                <p className="price">{formatCatalog(Number(part.price))}</p>
                 <button
                   type="button"
                   className="btn btn-primary"

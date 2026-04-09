@@ -9,6 +9,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -44,28 +45,35 @@ public class PartResource {
             Integer stockQuantity = body.get("stockQuantity") != null ? ((Number) body.get("stockQuantity")).intValue() : 0;
             Integer lowStockThreshold = body.get("lowStockThreshold") != null ? ((Number) body.get("lowStockThreshold")).intValue() : 5;
             Integer partYear = body.get("partYear") != null ? ((Number) body.get("partYear")).intValue() : null;
-            
-            // Procesar imagen si existe
-            byte[] imageData = null;
-            String imageType = null;
-            if (body.containsKey("imageData") && body.get("imageData") != null) {
-                String base64Data = (String) body.get("imageData");
-                imageType = (String) body.get("imageType");
-                
-                // Remover prefijo data:image/...;base64, si existe
-                if (base64Data.contains(",")) {
-                    base64Data = base64Data.split(",")[1];
+
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> images = (List<Map<String, Object>>) body.get("images");
+            if (images == null || images.size() < 2 || images.size() > 5) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(400, "Debe enviar entre 2 y 5 imágenes en el campo images"))
+                        .build();
+            }
+            List<byte[]> imageBytes = new ArrayList<>();
+            List<String> imageTypes = new ArrayList<>();
+            for (Map<String, Object> im : images) {
+                String base64Data = im.get("imageData") != null ? im.get("imageData").toString() : null;
+                String imageType = im.get("imageType") != null ? im.get("imageType").toString() : "image/jpeg";
+                if (base64Data == null || base64Data.isEmpty()) {
+                    return Response.status(Response.Status.BAD_REQUEST)
+                            .entity(new ErrorResponse(400, "Cada imagen requiere imageData"))
+                            .build();
                 }
-                imageData = Base64.getDecoder().decode(base64Data);
+                if (base64Data.contains(",")) {
+                    base64Data = base64Data.split(",", 2)[1];
+                }
+                imageBytes.add(Base64.getDecoder().decode(base64Data));
+                imageTypes.add(imageType);
             }
-            
+
             Part p = service.create(categoryId, brandId, partNumber, title, description, weightLb, price, stockQuantity, lowStockThreshold, partYear);
-            
-            // Agregar imagen si existe
-            if (imageData != null) {
-                p = service.updateImage(p.getPartId(), imageData, imageType);
-            }
-            
+            p = service.replacePartGallery(p.getPartId(), imageBytes, imageTypes);
+            fillImageGalleryCount(p);
+
             return Response.status(Response.Status.CREATED).entity(p).build();
         } catch (IllegalArgumentException e) {
             return Response.status(400).entity(new ErrorResponse(400, e.getMessage())).build();
@@ -182,6 +190,7 @@ public class PartResource {
         if (p == null) {
             return Response.status(404).entity(new ErrorResponse(404, "Repuesto no encontrado")).build();
         }
+        fillImageGalleryCount(p);
         return Response.ok(p).build();
     }
 
@@ -193,6 +202,7 @@ public class PartResource {
         if (p == null) {
             return Response.status(404).entity(new ErrorResponse(404, "Repuesto no encontrado")).build();
         }
+        fillImageGalleryCount(p);
         return Response.ok(p).build();
     }
 
@@ -222,19 +232,42 @@ public class PartResource {
                 p = service.updateInventory(id, stockQuantity, lowStockThreshold);
             }
             
-            // Actualizar imagen si se proporcionó
-            if (body.containsKey("imageData") && body.get("imageData") != null) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> images = (List<Map<String, Object>>) body.get("images");
+            if (images != null) {
+                if (images.size() < 2 || images.size() > 5) {
+                    return Response.status(Response.Status.BAD_REQUEST)
+                            .entity(new ErrorResponse(400, "Debe enviar entre 2 y 5 imágenes en images"))
+                            .build();
+                }
+                List<byte[]> imageBytes = new ArrayList<>();
+                List<String> imageTypes = new ArrayList<>();
+                for (Map<String, Object> im : images) {
+                    String base64Data = im.get("imageData") != null ? im.get("imageData").toString() : null;
+                    String imageType = im.get("imageType") != null ? im.get("imageType").toString() : "image/jpeg";
+                    if (base64Data == null || base64Data.isEmpty()) {
+                        return Response.status(Response.Status.BAD_REQUEST)
+                                .entity(new ErrorResponse(400, "Cada imagen requiere imageData"))
+                                .build();
+                    }
+                    if (base64Data.contains(",")) {
+                        base64Data = base64Data.split(",", 2)[1];
+                    }
+                    imageBytes.add(Base64.getDecoder().decode(base64Data));
+                    imageTypes.add(imageType);
+                }
+                p = service.replacePartGallery(id, imageBytes, imageTypes);
+            } else if (body.containsKey("imageData") && body.get("imageData") != null) {
                 String base64Data = (String) body.get("imageData");
                 String imageType = (String) body.get("imageType");
-                
-                // Remover prefijo data:image/...;base64, si existe
                 if (base64Data.contains(",")) {
-                    base64Data = base64Data.split(",")[1];
+                    base64Data = base64Data.split(",", 2)[1];
                 }
                 byte[] imageData = Base64.getDecoder().decode(base64Data);
                 p = service.updateImage(id, imageData, imageType);
             }
-            
+
+            fillImageGalleryCount(p);
             return Response.ok(p).build();
         } catch (IllegalArgumentException e) {
             return Response.status(400).entity(new ErrorResponse(400, e.getMessage())).build();
@@ -325,5 +358,14 @@ public class PartResource {
         } catch (Exception e) {
             return Response.status(500).entity(new ErrorResponse(500, e.getMessage())).build();
         }
+    }
+
+    private void fillImageGalleryCount(Part p) {
+        if (p == null || p.getPartId() == null) {
+            return;
+        }
+        int main = (p.getImageData() != null && p.getImageData().length > 0) ? 1 : 0;
+        int extras = service.countGalleryExtras(p.getPartId());
+        p.setImageGalleryCount(main + extras);
     }
 }

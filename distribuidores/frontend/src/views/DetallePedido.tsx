@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { getPedido, getPedidoReciboPdfUrl, type FabricaPedidoStatusRow } from '../api/pedidos'
+import {
+  getPedido,
+  getPedidoReciboPdfUrl,
+  type FabricaHistorialBlock,
+  type FabricaPedidoStatusRow,
+} from '../api/pedidos'
 import { getPartImageUrl } from '../api/repuestos'
 import { LoadingModal } from '../components/LoadingModal'
+import { useCurrency } from '../context/CurrencyContext'
 import './DetallePedido.css'
 
 function formatDate(iso: string) {
@@ -16,6 +22,10 @@ function formatDate(iso: string) {
   } catch {
     return iso
   }
+}
+
+function formatHistoryDate(iso: string) {
+  return formatDate(iso)
 }
 
 type LineItem = {
@@ -61,6 +71,7 @@ function fabricaReciboUrl(item: LineItem): string | null {
 }
 
 export function DetallePedido() {
+  const { formatOrder } = useCurrency()
   const { orderId } = useParams<{ orderId: string }>()
   const [data, setData] = useState<{
     order: {
@@ -68,13 +79,16 @@ export function DetallePedido() {
       orderNumber: string
       subtotal: number
       shippingTotal: number
+      tariffTotal?: number
       total: number
+      currency?: string
       orderType: string
       createdAt: string
     }
     items: LineItem[]
     status: { status: string; trackingNumber?: string; etaDays?: number }
     fabricaStatuses?: FabricaPedidoStatusRow[]
+    fabricaHistoriales?: FabricaHistorialBlock[]
   } | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -124,8 +138,9 @@ export function DetallePedido() {
       </div>
     )
 
-  const { order, items, status, fabricaStatuses } = data
+  const { order, items, status, fabricaStatuses, fabricaHistoriales } = data
   const idNum = order.orderId
+  const cur = order.currency ?? 'USD'
 
   const statusLabel: Record<string, string> = {
     INITIATED: 'Iniciado',
@@ -223,6 +238,60 @@ export function DetallePedido() {
         </div>
       </div>
 
+      {fabricaHistoriales != null && fabricaHistoriales.length > 0 && (
+        <section
+          className="detalle-pedido-card detalle-fabrica-historial"
+          aria-labelledby="fabrica-historial-title"
+        >
+          <h2 id="fabrica-historial-title">Actualizaciones desde la fábrica</h2>
+          <p className="fabrica-historial-intro">
+            Historial de estados y comentarios tal como los registró el proveedor en su sistema.
+          </p>
+          {fabricaHistoriales.map((block) => (
+            <div key={`${block.proveedorId}-${block.fabricaOrderId}`} className="fabrica-historial-block">
+              <h3 className="fabrica-historial-block-title">
+                {block.proveedorNombre ?? `Proveedor ${block.proveedorId}`} · Pedido fábrica #
+                {block.fabricaOrderId}
+              </h3>
+              <ol className="fabrica-historial-timeline">
+                {block.entries.map((e, idx) => (
+                  <li
+                    key={`${e.changedAt ?? ''}-${e.status ?? ''}-${idx}`}
+                    className="fabrica-historial-entry"
+                  >
+                    <div className="fabrica-historial-meta">
+                      {e.changedAt && (
+                        <time className="fabrica-historial-time" dateTime={e.changedAt}>
+                          {formatHistoryDate(e.changedAt)}
+                        </time>
+                      )}
+                      <span className="fabrica-historial-status-pill">
+                        {statusLabel[(e.status ?? '').toUpperCase()] ?? e.status ?? '—'}
+                      </span>
+                    </div>
+                    {e.commentText != null && e.commentText.trim() !== '' && (
+                      <p className="fabrica-historial-comment">{e.commentText.trim()}</p>
+                    )}
+                    {(e.trackingNumber || e.etaDays != null) && (
+                      <p className="fabrica-historial-extra">
+                        {e.trackingNumber != null && e.trackingNumber !== '' && (
+                          <>Seguimiento: {e.trackingNumber}</>
+                        )}
+                        {e.trackingNumber != null &&
+                          e.trackingNumber !== '' &&
+                          e.etaDays != null &&
+                          ' · '}
+                        {e.etaDays != null && <>ETA: {e.etaDays} días</>}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
+        </section>
+      )}
+
       <section className="detalle-pedido-items">
         <h2>Productos</h2>
         <ul className="detalle-items">
@@ -246,7 +315,18 @@ export function DetallePedido() {
                     {item.lineSource === 'FABRICA' && item.fabricaOrderId != null && (
                       <span className="item-fabrica-badge">Fábrica (pedido #{item.fabricaOrderId}) </span>
                     )}
-                    {item.partTitle ?? `Repuesto #${item.partId ?? item.fabricaPartId ?? '?'}`}
+                    {item.lineSource === 'FABRICA' &&
+                    item.proveedorId != null &&
+                    item.fabricaPartId != null ? (
+                      <Link
+                        to={`/producto/fabrica/${item.proveedorId}/${item.fabricaPartId}`}
+                        className="item-name-link"
+                      >
+                        {item.partTitle ?? `Repuesto #${item.fabricaPartId}`}
+                      </Link>
+                    ) : (
+                      item.partTitle ?? `Repuesto #${item.partId ?? item.fabricaPartId ?? '?'}`
+                    )}
                   </span>
                   {item.partNumber && <span className="item-part-no">Código: {item.partNumber}</span>}
                   {item.fabricaRemoteStatus?.status && (
@@ -266,8 +346,8 @@ export function DetallePedido() {
                   )}
                 </div>
                 <span className="item-qty">× {item.qty}</span>
-                <span className="item-price">${Number(item.unitPrice).toFixed(2)} c/u</span>
-                <span className="item-total">${Number(item.lineTotal).toFixed(2)}</span>
+                <span className="item-price">{formatOrder(Number(item.unitPrice), cur)} c/u</span>
+                <span className="item-total">{formatOrder(Number(item.lineTotal), cur)}</span>
               </li>
             )
           })}
@@ -277,17 +357,23 @@ export function DetallePedido() {
       <section className="detalle-pedido-totals">
         <div className="totals-row">
           <span>Subtotal</span>
-          <span>${Number(order.subtotal).toFixed(2)}</span>
+          <span>{formatOrder(Number(order.subtotal), cur)}</span>
         </div>
         {order.shippingTotal != null && Number(order.shippingTotal) > 0 && (
           <div className="totals-row">
             <span>Envío</span>
-            <span>${Number(order.shippingTotal).toFixed(2)}</span>
+            <span>{formatOrder(Number(order.shippingTotal), cur)}</span>
+          </div>
+        )}
+        {order.tariffTotal != null && Number(order.tariffTotal) > 0 && (
+          <div className="totals-row">
+            <span>Arancel (import.)</span>
+            <span>{formatOrder(Number(order.tariffTotal), cur)}</span>
           </div>
         )}
         <div className="totals-row total">
-          <span>Total</span>
-          <span>${Number(order.total).toFixed(2)}</span>
+          <span>Total ({cur})</span>
+          <span>{formatOrder(Number(order.total), cur)}</span>
         </div>
       </section>
 

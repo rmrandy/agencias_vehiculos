@@ -16,23 +16,26 @@
         <!-- Galería de imágenes -->
         <div class="producto-gallery">
           <div class="main-image">
-            <img 
-              v-if="producto.hasImage && !imageError" 
-              :src="imageUrl" 
+            <img
+              v-if="imageGalleryCount > 0 && !imageError"
+              :src="mainDisplayUrl"
               :alt="producto.title"
               @error="imageError = true"
             />
-            <div v-if="!producto.hasImage || imageError" class="no-image">📦</div>
+            <div v-if="imageGalleryCount === 0 || imageError" class="no-image">📦</div>
           </div>
-          
-          <!-- Thumbnails (por ahora solo una imagen, pero preparado para múltiples) -->
-          <div class="thumbnails">
-            <div 
-              v-if="producto.hasImage && !imageError" 
-              class="thumbnail active"
+
+          <div v-if="imageGalleryCount > 1" class="thumbnails">
+            <button
+              v-for="i in imageGalleryCount"
+              :key="i"
+              type="button"
+              class="thumbnail"
+              :class="{ active: selectedImageIndex === i - 1 }"
+              @click="selectedImageIndex = i - 1; imageError = false"
             >
-              <img :src="imageUrl" :alt="producto.title" />
-            </div>
+              <img :src="galleryUrl(i - 1)" :alt="`${producto.title} ${i}`" />
+            </button>
           </div>
         </div>
 
@@ -187,7 +190,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 import { useCart } from '../composables/useCart'
@@ -212,8 +215,32 @@ const loading = ref(true)
 const error = ref('')
 const qty = ref(1)
 const imageError = ref(false)
+const selectedImageIndex = ref(0)
 
-const imageUrl = computed(() => producto.value ? `${API_URL}/api/images/part/${producto.value.partId}` : '')
+const imageGalleryCount = computed(() => {
+  const p = producto.value
+  if (!p) return 0
+  const n = typeof p.imageGalleryCount === 'number' ? p.imageGalleryCount : 0
+  if (n > 0) return n
+  return p.hasImage ? 1 : 0
+})
+
+function galleryUrl(index) {
+  if (!producto.value) return ''
+  if (index === 0) return `${API_URL}/api/images/part/${producto.value.partId}`
+  return `${API_URL}/api/images/part/${producto.value.partId}/gallery/${index}`
+}
+
+const mainDisplayUrl = computed(() => {
+  if (imageGalleryCount.value === 0) return ''
+  const i = Math.min(Math.max(0, selectedImageIndex.value), imageGalleryCount.value - 1)
+  return galleryUrl(i)
+})
+
+watch(producto, () => {
+  selectedImageIndex.value = 0
+  imageError.value = false
+})
 
 const comentarios = ref([])
 const comentariosPromedio = ref(null)
@@ -378,12 +405,14 @@ function addToCart() {
 .thumbnail {
   width: 80px;
   height: 80px;
+  padding: 0;
   background: #f3f4f6;
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
   border: 2px solid transparent;
   transition: all 0.2s;
+  font: inherit;
 }
 
 .thumbnail:hover {

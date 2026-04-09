@@ -3,8 +3,10 @@ package com.agencias.backend.service;
 import com.agencias.backend.model.ImportExportLog;
 import com.agencias.backend.model.InventoryLog;
 import com.agencias.backend.model.Part;
+import com.agencias.backend.model.PartImage;
 import com.agencias.backend.repository.ImportExportLogRepository;
 import com.agencias.backend.repository.InventoryLogRepository;
+import com.agencias.backend.repository.PartImageRepository;
 import com.agencias.backend.repository.PartRepository;
 import jakarta.persistence.EntityManagerFactory;
 import java.math.BigDecimal;
@@ -14,6 +16,7 @@ import java.util.Map;
 
 public class PartService {
     private final PartRepository repo;
+    private final PartImageRepository partImageRepo;
     private final MailService mailService;
     private final InventoryLogRepository inventoryLogRepo;
     private final ImportExportLogRepository importExportLogRepo;
@@ -24,6 +27,7 @@ public class PartService {
 
     public PartService(EntityManagerFactory emf, MailService mailService) {
         this.repo = new PartRepository(emf);
+        this.partImageRepo = new PartImageRepository(emf);
         this.mailService = mailService;
         this.inventoryLogRepo = new InventoryLogRepository(emf);
         this.importExportLogRepo = new ImportExportLogRepository(emf);
@@ -94,6 +98,38 @@ public class PartService {
         return repo.save(p);
     }
 
+    /**
+     * Sustituye la galería: 2–5 imágenes. La primera se guarda en PART (compatibilidad);
+     * las demás en PART_IMAGE con sort_order 1..n-1.
+     */
+    public Part replacePartGallery(Long partId, List<byte[]> imageBytes, List<String> imageTypes) {
+        if (imageBytes == null || imageBytes.size() < 2 || imageBytes.size() > 5) {
+            throw new IllegalArgumentException("Debe haber entre 2 y 5 imágenes");
+        }
+        if (imageTypes == null || imageTypes.size() != imageBytes.size()) {
+            throw new IllegalArgumentException("Cada imagen requiere su imageType");
+        }
+        Part p = repo.findById(partId).orElseThrow(() -> new IllegalArgumentException("Repuesto no encontrado"));
+        p.setImageData(imageBytes.get(0));
+        p.setImageType(imageTypes.get(0));
+        repo.save(p);
+        partImageRepo.deleteByPartId(partId);
+        for (int i = 1; i < imageBytes.size(); i++) {
+            PartImage row = new PartImage();
+            row.setPartId(partId);
+            row.setSortOrder(i);
+            row.setImageData(imageBytes.get(i));
+            row.setImageType(imageTypes.get(i));
+            partImageRepo.save(row);
+        }
+        return repo.findById(partId).orElse(p);
+    }
+
+    /** Número de imágenes adicionales (excluye la principal en PART). */
+    public int countGalleryExtras(Long partId) {
+        return (int) partImageRepo.countByPartId(partId);
+    }
+
     public List<Part> listAll() {
         return repo.findAll();
     }
@@ -115,6 +151,7 @@ public class PartService {
     }
 
     public void delete(Long id) {
+        partImageRepo.deleteByPartId(id);
         repo.delete(id);
     }
 

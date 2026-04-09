@@ -88,8 +88,8 @@ public sealed class PedidoReciboPdfService
 
                             table.Cell().Element(CellStyle).Text(desc);
                             table.Cell().Element(CellStyle).AlignRight().Text(i.Qty.ToString());
-                            table.Cell().Element(CellStyle).AlignRight().Text($"${i.UnitPrice:F2}");
-                            table.Cell().Element(CellStyle).AlignRight().Text($"${i.LineTotal:F2}");
+                            table.Cell().Element(CellStyle).AlignRight().Text($"{i.UnitPrice:F2} {order.Currency}");
+                            table.Cell().Element(CellStyle).AlignRight().Text($"{i.LineTotal:F2} {order.Currency}");
                         }
                     });
 
@@ -98,17 +98,25 @@ public sealed class PedidoReciboPdfService
                         totals.Item().Row(r =>
                         {
                             r.RelativeItem();
-                            r.ConstantItem(140).AlignRight().Text($"Subtotal: ${order.Subtotal:F2}");
+                            r.ConstantItem(140).AlignRight().Text($"Subtotal: {order.Subtotal:F2} {order.Currency}");
                         });
                         totals.Item().Row(r =>
                         {
                             r.RelativeItem();
-                            r.ConstantItem(140).AlignRight().Text($"Envío: ${order.ShippingTotal:F2}");
+                            r.ConstantItem(140).AlignRight().Text($"Envío: {order.ShippingTotal:F2} {order.Currency}");
                         });
+                        if (order.TariffTotal > 0)
+                        {
+                            totals.Item().Row(r =>
+                            {
+                                r.RelativeItem();
+                                r.ConstantItem(140).AlignRight().Text($"Arancel (import.): {order.TariffTotal:F2} {order.Currency}");
+                            });
+                        }
                         totals.Item().Row(r =>
                         {
                             r.RelativeItem();
-                            r.ConstantItem(140).AlignRight().Text(t => t.Span($"Total: ${order.Total:F2}").SemiBold());
+                            r.ConstantItem(140).AlignRight().Text(t => t.Span($"Total: {order.Total:F2} {order.Currency}").SemiBold());
                         });
                     });
 

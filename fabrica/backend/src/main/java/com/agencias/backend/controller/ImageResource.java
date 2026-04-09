@@ -1,14 +1,17 @@
 package com.agencias.backend.controller;
 
 import com.agencias.backend.config.DatabaseConfig;
+import com.agencias.backend.model.PartImage;
 import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.TypedQuery;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.Base64;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +26,51 @@ public class ImageResource {
 
     public ImageResource() {
         this.emf = DatabaseConfig.getEntityManagerFactory();
+    }
+
+    /**
+     * Imágenes adicionales del repuesto (sort_order 1..n en PART_IMAGE). La principal sigue en
+     * {@code GET /api/images/part/{partId}}.
+     */
+    @GET
+    @Path("/part/{partId}/gallery/{sortOrder}")
+    public Response getPartGalleryImage(@PathParam("partId") Long partId, @PathParam("sortOrder") int sortOrder) {
+        if (sortOrder < 1 || sortOrder > 4) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(400, "sortOrder debe estar entre 1 y 4"))
+                    .build();
+        }
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<PartImage> q = em.createQuery(
+                    "SELECT pi FROM PartImage pi WHERE pi.partId = :pid AND pi.sortOrder = :so", PartImage.class);
+            q.setParameter("pid", partId);
+            q.setParameter("so", sortOrder);
+            List<PartImage> rows = q.getResultList();
+            if (rows.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(new ErrorResponse(404, "Imagen de galería no encontrada"))
+                        .build();
+            }
+            PartImage row = rows.get(0);
+            byte[] imageData = row.getImageData();
+            if (imageData == null || imageData.length == 0) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(new ErrorResponse(404, "Imagen de galería no encontrada"))
+                        .build();
+            }
+            String contentType = row.getImageType() != null ? row.getImageType() : "image/jpeg";
+            return Response.ok(imageData)
+                    .type(contentType)
+                    .header("Cache-Control", "max-age=86400")
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(new ErrorResponse(500, "Error al obtener la imagen: " + e.getMessage()))
+                    .build();
+        } finally {
+            em.close();
+        }
     }
 
     /**

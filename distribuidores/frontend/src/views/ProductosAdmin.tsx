@@ -64,7 +64,7 @@ export function ProductosAdmin() {
                 <th>Imagen</th>
                 <th>Código</th>
                 <th>Título</th>
-                <th>Precio</th>
+                <th>Precio (USD)</th>
                 <th>Stock</th>
                 <th>Activo</th>
                 <th>Acciones</th>

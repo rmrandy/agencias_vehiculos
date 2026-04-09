@@ -198,3 +198,9 @@
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/BackendDistribuidores.Tests/obj/Debug/net9.0/BackendDistribuidores.Tests.pdb
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/BackendDistribuidores.Tests/obj/Debug/net9.0/BackendDistribuidores.Tests.genruntimeconfig.cache
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/BackendDistribuidores.Tests/obj/Debug/net9.0/ref/BackendDistribuidores.Tests.dll
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/BackendDistribuidores.Tests/bin/Debug/net9.0/docs/docfx.json
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/BackendDistribuidores.Tests/bin/Debug/net9.0/docs/_site/api/toc.json
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/BackendDistribuidores.Tests/bin/Debug/net9.0/docs/_site/index.json
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/BackendDistribuidores.Tests/bin/Debug/net9.0/docs/_site/manifest.json
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/BackendDistribuidores.Tests/bin/Debug/net9.0/docs/_site/toc.json
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/BackendDistribuidores.Tests/bin/Debug/net9.0/BackendDistribuidores.xml

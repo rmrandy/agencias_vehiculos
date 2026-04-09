@@ -19,6 +19,9 @@ public class OrderServiceTests
         return new FabricaIntegrationService(factory.Object, config.Object);
     }
 
+    private static OrderService CreateOrderService(AppDbContext db) =>
+        new OrderService(db, new PartService(db), CreateFabricaService(), new ArancelService(db), new ShippingRateService(db), new MonedaService(db));
+
     private static async Task<(AppDbContext db, Part part)> SeedPartWithStockAsync()
     {
         var db = TestAppDbContextFactory.Create();
@@ -48,7 +51,7 @@ public class OrderServiceTests
     {
         await using var db = TestAppDbContextFactory.Create();
         var partSvc = new PartService(db);
-        var orderSvc = new OrderService(db, partSvc, CreateFabricaService());
+        var orderSvc = new OrderService(db, partSvc, CreateFabricaService(), new ArancelService(db), new ShippingRateService(db), new MonedaService(db));
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
             orderSvc.CreateOrderAsync(1, new List<OrderItemDto>(), CancellationToken.None));
@@ -59,7 +62,7 @@ public class OrderServiceTests
     {
         await using var db = TestAppDbContextFactory.Create();
         var partSvc = new PartService(db);
-        var orderSvc = new OrderService(db, partSvc, CreateFabricaService());
+        var orderSvc = new OrderService(db, partSvc, CreateFabricaService(), new ArancelService(db), new ShippingRateService(db), new MonedaService(db));
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
             orderSvc.CreateOrderAsync(1, new List<OrderItemDto> { new() { PartId = 999, Qty = 1 } },
@@ -73,7 +76,7 @@ public class OrderServiceTests
         await using (db)
         {
             var partSvc = new PartService(db);
-            var orderSvc = new OrderService(db, partSvc, CreateFabricaService());
+            var orderSvc = new OrderService(db, partSvc, CreateFabricaService(), new ArancelService(db), new ShippingRateService(db), new MonedaService(db));
 
             var header = await orderSvc.CreateOrderAsync(1,
                 new List<OrderItemDto> { new() { PartId = part.PartId, Qty = 2 } },
@@ -94,14 +97,68 @@ public class OrderServiceTests
     }
 
     [Fact]
+    public async Task CreateOrderAsync_conPesoYTarifa_sumaEnvio()
+    {
+        var (db, part) = await SeedPartWithStockAsync();
+        part.WeightLb = 2m;
+        await db.SaveChangesAsync();
+        db.EnvioConfigs.Add(new EnvioConfig { Id = EnvioConfig.SingletonId, UsdPerLb = 1.5m });
+        await db.SaveChangesAsync();
+
+        await using (db)
+        {
+            var partSvc = new PartService(db);
+            var orderSvc = new OrderService(db, partSvc, CreateFabricaService(), new ArancelService(db), new ShippingRateService(db), new MonedaService(db));
+
+            var header = await orderSvc.CreateOrderAsync(1,
+                new List<OrderItemDto> { new() { PartId = part.PartId, Qty = 3 } },
+                CancellationToken.None);
+
+            Assert.Equal(75m, header.Subtotal);
+            Assert.Equal(9m, header.ShippingTotal);
+            Assert.Equal(84m, header.Total);
+        }
+    }
+
+    [Fact]
+    public async Task CreateOrderAsync_monedaGTQ_convierteImportes()
+    {
+        var (db, part) = await SeedPartWithStockAsync();
+        db.Monedas.Add(new Moneda
+        {
+            Code = "GTQ",
+            Name = "Quetzal",
+            Symbol = "Q",
+            UnitsPerUsd = 2m,
+            Activo = true,
+            SortOrder = 1
+        });
+        await db.SaveChangesAsync();
+
+        await using (db)
+        {
+            var orderSvc = CreateOrderService(db);
+            var header = await orderSvc.CreateOrderAsync(1,
+                new List<OrderItemDto> { new() { PartId = part.PartId, Qty = 2 } },
+                CancellationToken.None,
+                "GTQ");
+
+            Assert.Equal("GTQ", header.Currency);
+            Assert.Equal(100m, header.Total);
+            var line = await db.OrderItems.SingleAsync(i => i.OrderId == header.OrderId);
+            Assert.Equal(50m, line.UnitPrice);
+        }
+    }
+
+    [Fact]
     public async Task CreateMultiSourceOrderAsync_vacio_lanza()
     {
         await using var db = TestAppDbContextFactory.Create();
         var partSvc = new PartService(db);
-        var orderSvc = new OrderService(db, partSvc, CreateFabricaService());
+        var orderSvc = new OrderService(db, partSvc, CreateFabricaService(), new ArancelService(db), new ShippingRateService(db), new MonedaService(db));
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
-            orderSvc.CreateMultiSourceOrderAsync(1, new List<PedidoItemRequest>(), null,
+            orderSvc.CreateMultiSourceOrderAsync(1, new List<PedidoItemRequest>(), null, null,
                 CancellationToken.None));
     }
 
@@ -109,7 +166,7 @@ public class OrderServiceTests
     public async Task CreateMultiSourceOrderAsync_localCantidadInvalida_lanza()
     {
         await using var db = TestAppDbContextFactory.Create();
-        var orderSvc = new OrderService(db, new PartService(db), CreateFabricaService());
+        var orderSvc = CreateOrderService(db);
 
         var items = new List<PedidoItemRequest>
         {
@@ -117,14 +174,14 @@ public class OrderServiceTests
         };
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
-            orderSvc.CreateMultiSourceOrderAsync(1, items, null, CancellationToken.None));
+            orderSvc.CreateMultiSourceOrderAsync(1, items, null, null, CancellationToken.None));
     }
 
     [Fact]
     public async Task CreateMultiSourceOrderAsync_fabricaSinPrecio_lanza()
     {
         await using var db = TestAppDbContextFactory.Create();
-        var orderSvc = new OrderService(db, new PartService(db), CreateFabricaService());
+        var orderSvc = CreateOrderService(db);
 
         var items = new List<PedidoItemRequest>
         {
@@ -139,7 +196,7 @@ public class OrderServiceTests
         };
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
-            orderSvc.CreateMultiSourceOrderAsync(1, items, null, CancellationToken.None));
+            orderSvc.CreateMultiSourceOrderAsync(1, items, null, null, CancellationToken.None));
     }
 
     [Fact]
@@ -156,7 +213,7 @@ public class OrderServiceTests
         await db.SaveChangesAsync();
         var provId = db.Proveedores.First().ProveedorId;
 
-        var orderSvc = new OrderService(db, new PartService(db), CreateFabricaService());
+        var orderSvc = CreateOrderService(db);
         var items = new List<PedidoItemRequest>
         {
             new()
@@ -170,8 +227,30 @@ public class OrderServiceTests
         };
 
         var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
-            orderSvc.CreateMultiSourceOrderAsync(1, items, null, CancellationToken.None));
+            orderSvc.CreateMultiSourceOrderAsync(1, items, null, "MX", CancellationToken.None));
         Assert.Contains("apiBaseUrl", ex.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task CreateMultiSourceOrderAsync_fabricaSinPaisDestino_lanza()
+    {
+        await using var db = TestAppDbContextFactory.Create();
+        var orderSvc = CreateOrderService(db);
+        var items = new List<PedidoItemRequest>
+        {
+            new()
+            {
+                Source = "fabrica",
+                ProveedorId = 1,
+                FabricaPartId = 10,
+                Qty = 1,
+                UnitPrice = 10m
+            }
+        };
+
+        var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
+            orderSvc.CreateMultiSourceOrderAsync(1, items, null, null, CancellationToken.None));
+        Assert.Contains("País de destino", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -181,14 +260,14 @@ public class OrderServiceTests
         await using (db)
         {
             var partSvc = new PartService(db);
-            var orderSvc = new OrderService(db, partSvc, CreateFabricaService());
+            var orderSvc = new OrderService(db, partSvc, CreateFabricaService(), new ArancelService(db), new ShippingRateService(db), new MonedaService(db));
 
             var items = new List<PedidoItemRequest>
             {
                 new() { Source = "local", PartId = part.PartId, Qty = 1 }
             };
 
-            var header = await orderSvc.CreateMultiSourceOrderAsync(2, items, null, CancellationToken.None);
+            var header = await orderSvc.CreateMultiSourceOrderAsync(2, items, null, null, CancellationToken.None);
             Assert.Equal(25m, header.Total);
             var line = await db.OrderItems.FirstAsync(i => i.OrderId == header.OrderId);
             Assert.Equal("LOCAL", line.LineSource);
