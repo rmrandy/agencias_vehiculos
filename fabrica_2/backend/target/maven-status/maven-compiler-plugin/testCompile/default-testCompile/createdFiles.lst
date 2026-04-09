@@ -1,0 +1,9 @@
+com/agencias/backend/service/PartReviewInputValidatorTest.class
+com/agencias/backend/service/UserRegistrationValidatorTest.class
+com/agencias/backend/service/OrderPricingTest.class
+com/agencias/backend/config/ConfigLoaderTest.class
+com/agencias/backend/controller/ErrorResponseTest.class
+com/agencias/backend/service/CatalogNameValidatorTest.class
+com/agencias/backend/service/RecaptchaServiceTest.class
+com/agencias/backend/service/OrderFlowRulesTest.class
+com/agencias/backend/service/PasswordEncodingTest.class

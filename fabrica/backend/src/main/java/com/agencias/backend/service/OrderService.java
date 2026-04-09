@@ -18,31 +18,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 /** Flujo: Iniciada → Preparación del pedido → Enviado → Entregado. No se puede volver atrás. */
 public class OrderService {
 
-    private static final List<String> STATUS_FLOW = List.of(
-        "INITIATED",   // Iniciada
-        "PREPARING",   // Preparación del pedido (nombre en BD)
-        "SHIPPED",     // Enviado
-        "DELIVERED"    // Entregado
-    );
-    private static final String STATUS_CANCELLED = "CANCELLED";
-
-    private static int statusIndex(String status) {
-        if (status == null) return -1;
-        String u = status.toUpperCase();
-        if (STATUS_CANCELLED.equals(u)) return STATUS_FLOW.size();
-        for (int i = 0; i < STATUS_FLOW.size(); i++) {
-            if (STATUS_FLOW.get(i).equals(u)) return i;
-        }
-        if ("CONFIRMED".equals(u) || "IN_PREPARATION".equals(u)) return 1; // legacy
-        return -1;
-    }
     private final OrderRepository orderRepo;
     private final OrderItemRepository itemRepo;
     private final OrderStatusRepository statusRepo;
@@ -61,17 +41,6 @@ public class OrderService {
         this.enterpriseProfileRepo = new EnterpriseProfileRepository(emf);
         this.mailService = new MailService();
         this.partService = new PartService(emf, this.mailService);
-    }
-
-    private static String normalizeOrderOrigin(String header) {
-        if (header == null || header.isBlank()) {
-            return "FABRICA_WEB";
-        }
-        String u = header.trim().toLowerCase(Locale.ROOT);
-        if (u.contains("distributor") || u.contains("distribuidor")) {
-            return "DISTRIBUIDORA";
-        }
-        return "FABRICA_WEB";
     }
 
     public OrderHeader createOrder(Long userId, List<Map<String, Object>> items, String xOrderOriginHeader) {
@@ -128,9 +97,9 @@ public class OrderService {
         java.util.Optional<EnterpriseProfile> enterpriseOpt = enterpriseProfileRepo.findByUserId(userId);
         if (enterpriseOpt.isPresent()) {
             EnterpriseProfile ep = enterpriseOpt.get();
-            if (ep.getDiscountPercent() != null && ep.getDiscountPercent().compareTo(BigDecimal.ZERO) > 0) {
-                BigDecimal discount = subtotal.multiply(ep.getDiscountPercent()).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                total = subtotal.subtract(discount);
+            BigDecimal discounted = OrderPricing.applyEnterpriseDiscount(subtotal, ep.getDiscountPercent());
+            if (discounted.compareTo(subtotal) < 0) {
+                total = discounted;
                 orderType = "ENTERPRISE_API";
             }
         }
@@ -140,7 +109,7 @@ public class OrderService {
         order.setOrderNumber(generateOrderNumber());
         order.setUserId(userId);
         order.setOrderType(orderType);
-        order.setOrderOrigin(normalizeOrderOrigin(xOrderOriginHeader));
+        order.setOrderOrigin(OrderFlowRules.normalizeOrderOrigin(xOrderOriginHeader));
         order.setSubtotal(subtotal);
         order.setShippingTotal(BigDecimal.ZERO); // Por ahora sin envío
         order.setTotal(total);
@@ -246,14 +215,15 @@ public class OrderService {
         if (current == null) {
             throw new IllegalArgumentException("Pedido no encontrado");
         }
-        int currentIdx = statusIndex(current.getStatus());
-        int newIdx = statusIndex(status);
+        int currentIdx = OrderFlowRules.statusIndex(current.getStatus());
+        int newIdx = OrderFlowRules.statusIndex(status);
         if (newIdx < 0) {
-            throw new IllegalArgumentException("Estado no válido: " + status + ". Use: " + String.join(", ", STATUS_FLOW) + " o " + STATUS_CANCELLED);
+            throw new IllegalArgumentException("Estado no válido: " + status + ". Use: "
+                + String.join(", ", OrderFlowRules.STATUS_FLOW) + " o " + OrderFlowRules.STATUS_CANCELLED);
         }
         String newStatusUpper = status.toUpperCase();
-        if (STATUS_CANCELLED.equals(newStatusUpper)) {
-            if (currentIdx >= STATUS_FLOW.size() - 1) {
+        if (OrderFlowRules.STATUS_CANCELLED.equals(newStatusUpper)) {
+            if (currentIdx >= OrderFlowRules.STATUS_FLOW.size() - 1) {
                 throw new IllegalArgumentException("No se puede cancelar un pedido ya entregado");
             }
         } else if (newIdx <= currentIdx) {
@@ -316,7 +286,7 @@ public class OrderService {
     }
 
     public List<String> getValidStatusFlow() {
-        return STATUS_FLOW;
+        return OrderFlowRules.STATUS_FLOW;
     }
 
     public List<OrderHeader> getAllOrders() {

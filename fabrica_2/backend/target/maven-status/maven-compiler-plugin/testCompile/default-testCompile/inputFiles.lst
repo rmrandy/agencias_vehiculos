@@ -1,0 +1,9 @@
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/test/java/com/agencias/backend/config/ConfigLoaderTest.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/test/java/com/agencias/backend/controller/ErrorResponseTest.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/test/java/com/agencias/backend/service/PartReviewInputValidatorTest.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/test/java/com/agencias/backend/service/UserRegistrationValidatorTest.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/test/java/com/agencias/backend/service/CatalogNameValidatorTest.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/test/java/com/agencias/backend/service/PasswordEncodingTest.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/test/java/com/agencias/backend/service/OrderPricingTest.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/test/java/com/agencias/backend/service/RecaptchaServiceTest.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/test/java/com/agencias/backend/service/OrderFlowRulesTest.java

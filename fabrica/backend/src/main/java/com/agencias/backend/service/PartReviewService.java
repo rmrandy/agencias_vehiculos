@@ -24,29 +24,18 @@ public class PartReviewService {
      * En comentarios raíz (parentId null) se puede enviar rating 1-5.
      */
     public PartReview create(Long partId, Long userId, Long parentId, Integer rating, String body) {
-        if (userId == null) {
-            throw new IllegalArgumentException("Debes iniciar sesión para comentar");
-        }
+        PartReviewInputValidator.validate(userId, parentId, rating, body);
         AppUser user = userService.getById(userId);
         if (user == null) {
             throw new IllegalArgumentException("Usuario no encontrado");
         }
-        if (body == null || body.isBlank()) {
-            throw new IllegalArgumentException("El comentario no puede estar vacío");
-        }
-        boolean isRoot = (parentId == null);
-        if (isRoot && rating != null && (rating < 1 || rating > 5)) {
-            throw new IllegalArgumentException("La puntuación debe ser entre 1 y 5 estrellas");
-        }
-        if (!isRoot && rating != null) {
-            rating = null; // las respuestas no llevan rating
-        }
+        Integer effectiveRating = PartReviewInputValidator.normalizedRating(parentId, rating);
 
         PartReview r = new PartReview();
         r.setPartId(partId);
         r.setUserId(userId);
         r.setParentId(parentId);
-        r.setRating(isRoot ? rating : null);
+        r.setRating(effectiveRating);
         r.setBody(body.trim());
         return reviewRepo.save(r);
     }

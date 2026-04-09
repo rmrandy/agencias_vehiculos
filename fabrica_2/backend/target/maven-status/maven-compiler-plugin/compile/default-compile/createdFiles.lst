@@ -15,6 +15,7 @@ com/agencias/backend/repository/OrderRepository.class
 com/agencias/backend/model/Role.class
 com/agencias/backend/service/MailService$1.class
 com/agencias/backend/controller/AuthResource.class
+com/agencias/backend/service/UserRegistrationValidator.class
 com/agencias/backend/controller/PartReviewResource.class
 com/agencias/backend/service/EnterpriseProfileService.class
 com/agencias/backend/controller/ErrorResponse.class
@@ -35,10 +36,13 @@ com/agencias/backend/model/PartReview.class
 com/agencias/backend/controller/VehicleResource.class
 com/agencias/backend/controller/dto/LoginRequest.class
 com/agencias/backend/controller/HealthResource.class
+com/agencias/backend/service/PartReviewInputValidator.class
 com/agencias/backend/repository/PartReviewRepository.class
+com/agencias/backend/service/OrderPricing.class
 com/agencias/backend/repository/InventoryLogRepository.class
 com/agencias/backend/controller/dto/UsuarioCreateRequest.class
 com/agencias/backend/controller/ApiResource$ApiInfo.class
+com/agencias/backend/service/OrderFlowRules.class
 com/agencias/backend/controller/ReporteriaResource.class
 com/agencias/backend/model/ImportExportLog.class
 com/agencias/backend/controller/ApiResource.class
@@ -63,6 +67,7 @@ com/agencias/backend/model/Brand.class
 com/agencias/backend/controller/BrandResource.class
 com/agencias/backend/service/PartService.class
 com/agencias/backend/service/VehicleService.class
+com/agencias/backend/service/PasswordEncoding.class
 com/agencias/backend/config/CorsFilter.class
 com/agencias/backend/controller/HealthResource$HealthStatus.class
 com/agencias/backend/service/RecaptchaService.class
@@ -72,6 +77,7 @@ com/agencias/backend/model/OrderItem.class
 com/agencias/backend/repository/RoleRepository.class
 com/agencias/backend/model/OrderStatusHistory.class
 com/agencias/backend/service/BrandService.class
+com/agencias/backend/service/CatalogNameValidator.class
 com/agencias/backend/controller/dto/ImportExportLogDto.class
 com/agencias/backend/repository/PartEngagementLogRepository.class
 com/agencias/backend/repository/EnterpriseProfileRepository.class

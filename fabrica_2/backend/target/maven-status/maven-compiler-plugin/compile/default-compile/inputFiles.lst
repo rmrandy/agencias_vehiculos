@@ -1,3 +1,4 @@
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/service/PasswordEncoding.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/controller/dto/InventoryLogDto.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/controller/dto/ImportExportLogDto.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/model/PartEngagementLog.java
@@ -16,7 +17,9 @@
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/controller/RoleResource.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/model/Vehicle.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/config/CorsFilter.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/service/OrderFlowRules.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/service/MailService.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/service/UserRegistrationValidator.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/config/DistributorApiKeyFilter.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/model/Brand.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/service/ReporteriaService.java
@@ -35,12 +38,15 @@
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/service/RoleService.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/repository/ImportExportLogRepository.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/controller/CategoryResource.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/service/PartReviewInputValidator.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/service/CatalogNameValidator.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/service/EnterpriseProfileService.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/service/OrderService.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/repository/InventoryLogRepository.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/model/Part.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/controller/VehicleResource.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/controller/dto/UsuarioCreateRequest.java
+/Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/service/OrderPricing.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/model/Role.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/config/JerseyConfig.java
 /Users/randyrivera/Documents/agencias_vehiculos/fabrica_2/backend/src/main/java/com/agencias/backend/controller/dto/VentaLineaDto.java

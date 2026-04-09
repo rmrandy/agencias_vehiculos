@@ -13,11 +13,8 @@ public class BrandService {
     }
 
     public Brand create(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("El nombre es obligatorio");
-        }
         Brand b = new Brand();
-        b.setName(name.trim());
+        b.setName(CatalogNameValidator.requireNonBlankName(name));
         return repo.save(b);
     }
 

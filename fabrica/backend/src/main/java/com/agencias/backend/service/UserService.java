@@ -1,6 +1,5 @@
 package com.agencias.backend.service;
 
-import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.agencias.backend.model.AppUser;
 import com.agencias.backend.model.Role;
 import com.agencias.backend.repository.AppUserRepository;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserService {
-    private static final int BCRYPT_COST = 12;
 
     private final AppUserRepository userRepo;
     private final RoleRepository roleRepo;
@@ -26,17 +24,12 @@ public class UserService {
      * En caso contrario, rol REGISTERED.
      */
     public AppUser createUser(String email, String password, String fullName, String phone) {
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("El email es obligatorio");
-        }
-        if (password == null || password.length() < 6) {
-            throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres");
-        }
+        UserRegistrationValidator.validateEmailAndPassword(email, password);
         if (userRepo.findByEmail(email.trim()).isPresent()) {
             throw new IllegalArgumentException("Ya existe un usuario con ese email");
         }
 
-        String hash = BCrypt.withDefaults().hashToString(BCRYPT_COST, password.toCharArray());
+        String hash = PasswordEncoding.hash(password);
         AppUser user = new AppUser();
         user.setEmail(email.trim().toLowerCase());
         user.setPasswordHash(hash);
@@ -97,7 +90,7 @@ public class UserService {
     }
 
     public boolean verifyPassword(String plainPassword, String hash) {
-        return BCrypt.verifyer().verify(plainPassword.toCharArray(), hash).verified;
+        return PasswordEncoding.verify(plainPassword, hash);
     }
 
     private Role ensureRole(String name) {

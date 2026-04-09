@@ -13,11 +13,8 @@ public class CategoryService {
     }
 
     public Category create(String name, Long parentId) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("El nombre es obligatorio");
-        }
         Category c = new Category();
-        c.setName(name.trim());
+        c.setName(CatalogNameValidator.requireNonBlankName(name));
         c.setParentId(parentId);
         return repo.save(c);
     }
