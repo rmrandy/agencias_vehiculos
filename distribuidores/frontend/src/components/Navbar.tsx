@@ -53,11 +53,18 @@ export function Navbar() {
               </Link>
             </li>
             {(user?.roles?.includes('ADMIN') || user?.roles?.includes('EMPLOYEE')) && (
-              <li>
-                <Link to="/pedidos-admin" className={`nav-link ${isActive('/pedidos-admin') ? 'active' : ''}`}>
-                  <span className="nav-icon">📦</span> Gestión pedidos
-                </Link>
-              </li>
+              <>
+                <li>
+                  <Link to="/pedidos-admin" className={`nav-link ${isActive('/pedidos-admin') ? 'active' : ''}`}>
+                    <span className="nav-icon">📦</span> Gestión pedidos
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/reportes" className={`nav-link ${isActive('/reportes') ? 'active' : ''}`}>
+                    <span className="nav-icon">📊</span> Reportería
+                  </Link>
+                </li>
+              </>
             )}
             {user?.roles?.includes('ADMIN') && (
               <>

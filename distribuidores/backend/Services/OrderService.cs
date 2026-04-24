@@ -371,8 +371,8 @@ public class OrderService
             .ToListAsync(ct);
     }
 
-    /// <summary>Añade un nuevo estado al pedido (para admin/empleado).</summary>
-    public async Task<OrderStatusHistory> AddOrderStatusAsync(long orderId, string status, string? comment, string? trackingNumber, int? etaDays, long changedByUserId, CancellationToken ct = default)
+    /// <summary>Añade un nuevo estado al pedido (para admin/empleado o webhook desde fábrica).</summary>
+    public async Task<OrderStatusHistory> AddOrderStatusAsync(long orderId, string status, string? comment, string? trackingNumber, int? etaDays, long? changedByUserId, CancellationToken ct = default)
     {
         var order = await GetByIdAsync(orderId, ct);
         if (order == null)
@@ -390,6 +390,48 @@ public class OrderService
         _db.OrderStatusHistories.Add(entry);
         await _db.SaveChangesAsync(ct);
         return entry;
+    }
+
+    /// <summary>
+    /// Notificación HTTP desde la fábrica: alinea el historial del pedido maestro con el estado del pedido remoto
+    /// (<see cref="OrderItem.FabricaOrderId"/>). No envía correo (la fábrica ya notifica al cliente).
+    /// </summary>
+    public async Task<IReadOnlyList<long>> ApplyFabricaPedidoStatusNotifyAsync(
+        long fabricaOrderId,
+        long? proveedorId,
+        string status,
+        string? comment,
+        string? trackingNumber,
+        int? etaDays,
+        CancellationToken ct = default)
+    {
+        var normalized = PedidoEstadoRules.NormalizeFabricaStatus(status);
+        if (string.IsNullOrWhiteSpace(normalized))
+            throw new ArgumentException("status es obligatorio");
+
+        IQueryable<OrderItem> query = _db.OrderItems.AsNoTracking()
+            .Where(i => i.FabricaOrderId == fabricaOrderId
+                && string.Equals(i.LineSource, "FABRICA", StringComparison.OrdinalIgnoreCase));
+        if (proveedorId.HasValue)
+            query = query.Where(i => i.ProveedorId == proveedorId.Value);
+
+        var orderIds = await query.Select(i => i.OrderId).Distinct().ToListAsync(ct);
+        if (orderIds.Count == 0)
+            return Array.Empty<long>();
+
+        var updated = new List<long>();
+        foreach (var orderId in orderIds)
+        {
+            var current = await GetLatestStatusAsync(orderId, ct);
+            var currentStatus = current?.Status?.Trim().ToUpperInvariant() ?? "INITIATED";
+            if (!PedidoEstadoRules.CanAdvanceTo(currentStatus, normalized))
+                continue;
+
+            await AddOrderStatusAsync(orderId, normalized, comment, trackingNumber, etaDays, null, ct);
+            updated.Add(orderId);
+        }
+
+        return updated;
     }
 
     private static string GenerateOrderNumber()

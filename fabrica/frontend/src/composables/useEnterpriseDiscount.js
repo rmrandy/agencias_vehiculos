@@ -1,6 +1,7 @@
 import { ref, computed, watch } from 'vue'
 import { useAuth } from './useAuth'
 import { getEmpresarial } from '../api/usuarios'
+import { priceWithDiscount } from '../utils/enterprisePricing'
 
 const cachedProfile = ref(null)
 const cachedUserId = ref(null)
@@ -58,11 +59,11 @@ export function useEnterpriseDiscount() {
   const hasDiscount = computed(() => discountPercent.value != null && Number(discountPercent.value) > 0)
 
   function precioConDescuento(precio) {
-    if (precio == null) return null
-    const p = Number(precio)
-    if (!hasDiscount.value) return p
-    const d = Number(discountPercent.value) / 100
-    return Math.round(p * (1 - d) * 100) / 100
+    if (!hasDiscount.value) {
+      if (precio == null) return null
+      return Number(precio)
+    }
+    return priceWithDiscount(precio, discountPercent.value)
   }
 
   return {

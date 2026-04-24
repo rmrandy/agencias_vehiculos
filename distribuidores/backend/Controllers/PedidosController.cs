@@ -265,7 +265,9 @@ public class PedidosController : ControllerBase
             var newStatus = (body.Status ?? "INITIATED").Trim().ToUpperInvariant();
             var current = await _orderService.GetLatestStatusAsync(orderId, ct);
             var currentStatus = current?.Status?.Trim().ToUpperInvariant() ?? "INITIATED";
-            if (!CanAdvanceTo(currentStatus, newStatus))
+            if (string.Equals(currentStatus, newStatus, StringComparison.OrdinalIgnoreCase))
+                return BadRequest(new { message = "El pedido ya está en ese estado." });
+            if (!PedidoEstadoRules.CanAdvanceTo(currentStatus, newStatus))
                 return BadRequest(new { message = "No se puede retroceder el estado. Estado actual: " + (current?.Status ?? "Iniciado") + ". Solo se puede avanzar (p. ej. Iniciado → Confirmado → En preparación → Enviado → Entregado)." });
 
             await _orderService.AddOrderStatusAsync(
@@ -302,26 +304,6 @@ public class PedidosController : ControllerBase
             });
         }
         catch (ArgumentException e) { return BadRequest(new { message = e.Message }); }
-    }
-
-    /// <summary>Orden de estados: solo se permite avanzar (no retroceder). CANCELLED y DELIVERED son finales.</summary>
-    private static bool CanAdvanceTo(string currentStatus, string newStatus)
-    {
-        var order = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["INITIATED"] = 0,
-            ["CONFIRMED"] = 1,
-            ["PREPARING"] = 2,
-            ["IN_PREPARATION"] = 2,
-            ["SHIPPED"] = 3,
-            ["DELIVERED"] = 4,
-            ["CANCELLED"] = 99
-        };
-        if (!order.TryGetValue(newStatus, out var newOrder)) return true;
-        if (!order.TryGetValue(currentStatus, out var currentOrder)) return true;
-        if (currentOrder == 99) return false;
-        if (newStatus == "CANCELLED") return true;
-        return newOrder >= currentOrder;
     }
 
     private async Task<bool> IsAdminAsync(long userId, CancellationToken ct)

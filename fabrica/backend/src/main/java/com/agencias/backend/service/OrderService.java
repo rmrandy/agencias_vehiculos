@@ -261,6 +261,15 @@ public class OrderService {
                         statusHistory.getEtaDays()
                     );
                 }
+                if ("DISTRIBUIDORA".equals(order.getOrderOrigin())) {
+                    DistributorOrderWebhookNotifier.notifyOrderStatusAsync(
+                        orderId,
+                        newStatusUpper,
+                        comment,
+                        statusHistory.getTrackingNumber(),
+                        statusHistory.getEtaDays()
+                    );
+                }
             }
         } catch (Exception e) {
             System.err.println("Error enviando correo de actualización de estado: " + e.getMessage());

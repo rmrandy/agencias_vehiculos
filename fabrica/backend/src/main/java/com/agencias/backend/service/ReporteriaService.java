@@ -3,6 +3,9 @@ package com.agencias.backend.service;
 import com.agencias.backend.controller.dto.EngagementReporteDto;
 import com.agencias.backend.controller.dto.ImportExportLogDto;
 import com.agencias.backend.controller.dto.InventoryLogDto;
+import com.agencias.backend.controller.dto.MasVendidoDto;
+import com.agencias.backend.controller.dto.PedidosPorOrigenDto;
+import com.agencias.backend.controller.dto.VentaDiariaDto;
 import com.agencias.backend.controller.dto.VentaLineaDto;
 import com.agencias.backend.controller.dto.VentaReporteDto;
 import com.agencias.backend.model.AppUser;
@@ -10,6 +13,7 @@ import com.agencias.backend.model.ImportExportLog;
 import com.agencias.backend.model.InventoryLog;
 import com.agencias.backend.model.OrderHeader;
 import com.agencias.backend.model.OrderItem;
+import com.agencias.backend.model.OrderStatusHistory;
 import com.agencias.backend.model.Part;
 import com.agencias.backend.model.PartEngagementLog;
 import com.agencias.backend.repository.ImportExportLogRepository;
@@ -18,15 +22,20 @@ import com.agencias.backend.repository.OrderItemRepository;
 import com.agencias.backend.repository.OrderRepository;
 import com.agencias.backend.repository.PartEngagementLogRepository;
 import com.agencias.backend.repository.PartRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ReporteriaService {
+    private final EntityManagerFactory emf;
     private final ImportExportLogRepository importExportLogRepo;
     private final InventoryLogRepository inventoryLogRepo;
     private final UserService userService;
@@ -36,6 +45,7 @@ public class ReporteriaService {
     private final OrderItemRepository orderItemRepository;
 
     public ReporteriaService(EntityManagerFactory emf) {
+        this.emf = emf;
         this.importExportLogRepo = new ImportExportLogRepository(emf);
         this.inventoryLogRepo = new InventoryLogRepository(emf);
         this.userService = new UserService(emf);
@@ -132,6 +142,171 @@ public class ReporteriaService {
             result.add(dto);
         }
         return result;
+    }
+
+    /**
+     * Repuestos más vendidos (suma de cantidades) en pedidos cuyo último estado no es CANCELLED.
+     */
+    public List<MasVendidoDto> reporteMasVendidos(Date from, Date to, Integer limit) {
+        Date fromDate = from != null ? from : startOfDay(90);
+        Date toDate = to != null ? endOfDay(to) : endOfDay(new Date());
+        List<OrderHeader> orders = orderRepository.findAllFiltered(null, null, fromDate, toDate, null);
+        if (orders.isEmpty()) {
+            return List.of();
+        }
+        List<Long> orderIds = orders.stream().map(OrderHeader::getOrderId).toList();
+        Map<Long, OrderStatusHistory> latestByOrder = loadLatestStatusByOrderId(orderIds);
+        List<Long> activeOrderIds = orders.stream()
+            .map(OrderHeader::getOrderId)
+            .filter(oid -> {
+                OrderStatusHistory st = latestByOrder.get(oid);
+                return st == null || !"CANCELLED".equalsIgnoreCase(st.getStatus());
+            })
+            .toList();
+        if (activeOrderIds.isEmpty()) {
+            return List.of();
+        }
+        List<OrderItem> items = orderItemRepository.findByOrderIds(activeOrderIds);
+        Map<Long, Long> qtyByPart = new HashMap<>();
+        Map<Long, BigDecimal> importeByPart = new HashMap<>();
+        for (OrderItem oi : items) {
+            Long pid = oi.getPartId();
+            if (pid == null) {
+                continue;
+            }
+            qtyByPart.merge(pid, (long) oi.getQty(), Long::sum);
+            importeByPart.merge(pid, oi.getLineTotal() != null ? oi.getLineTotal() : BigDecimal.ZERO, BigDecimal::add);
+        }
+        int max = (limit != null && limit > 0) ? limit : 30;
+        List<Long> topPartIds = qtyByPart.entrySet().stream()
+            .sorted((a, b) -> Long.compare(b.getValue(), a.getValue()))
+            .limit(max)
+            .map(Map.Entry::getKey)
+            .toList();
+
+        List<MasVendidoDto> out = new ArrayList<>();
+        for (Long partId : topPartIds) {
+            Part p = partRepository.findById(partId).orElse(null);
+            MasVendidoDto dto = new MasVendidoDto();
+            dto.setPartId(partId);
+            dto.setPartNumber(p != null ? p.getPartNumber() : null);
+            dto.setPartTitle(p != null ? p.getTitle() : null);
+            dto.setTotalQty(qtyByPart.getOrDefault(partId, 0L));
+            dto.setTotalImporte(importeByPart.getOrDefault(partId, BigDecimal.ZERO));
+            out.add(dto);
+        }
+        return out;
+    }
+
+    /** Pedidos por día (conteo e importe total), excluye pedidos cancelados al cierre del período. */
+    public List<VentaDiariaDto> reporteVentasPorDia(Date from, Date to) {
+        Date fromDate = from != null ? from : startOfDay(90);
+        Date toDate = to != null ? endOfDay(to) : endOfDay(new Date());
+        List<OrderHeader> orders = orderRepository.findAllFiltered(null, null, fromDate, toDate, null);
+        if (orders.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, OrderStatusHistory> latestByOrder = loadLatestStatusByOrderId(
+            orders.stream().map(OrderHeader::getOrderId).toList());
+        Map<Date, Long> countByDay = new HashMap<>();
+        Map<Date, BigDecimal> sumByDay = new HashMap<>();
+        for (OrderHeader oh : orders) {
+            OrderStatusHistory st = latestByOrder.get(oh.getOrderId());
+            if (st != null && "CANCELLED".equalsIgnoreCase(st.getStatus())) {
+                continue;
+            }
+            Date day = startOfDayForDate(oh.getCreatedAt());
+            countByDay.merge(day, 1L, Long::sum);
+            sumByDay.merge(day, oh.getTotal() != null ? oh.getTotal() : BigDecimal.ZERO, BigDecimal::add);
+        }
+        List<VentaDiariaDto> list = new ArrayList<>();
+        for (Map.Entry<Date, Long> e : countByDay.entrySet()) {
+            VentaDiariaDto dto = new VentaDiariaDto();
+            dto.setFecha(e.getKey());
+            dto.setPedidoCount(e.getValue());
+            dto.setTotalImporte(sumByDay.getOrDefault(e.getKey(), BigDecimal.ZERO));
+            list.add(dto);
+        }
+        list.sort(Comparator.comparing(VentaDiariaDto::getFecha));
+        return list;
+    }
+
+    /** Pedidos agrupados por origen (FABRICA_WEB vs DISTRIBUIDORA), excluye cancelados. */
+    public List<PedidosPorOrigenDto> reportePedidosPorOrigen(Date from, Date to) {
+        Date fromDate = from != null ? from : startOfDay(90);
+        Date toDate = to != null ? endOfDay(to) : endOfDay(new Date());
+        List<OrderHeader> orders = orderRepository.findAllFiltered(null, null, fromDate, toDate, null);
+        if (orders.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, OrderStatusHistory> latestByOrder = loadLatestStatusByOrderId(
+            orders.stream().map(OrderHeader::getOrderId).toList());
+        Map<String, Long> countByOrigin = new HashMap<>();
+        Map<String, BigDecimal> sumByOrigin = new HashMap<>();
+        for (OrderHeader oh : orders) {
+            OrderStatusHistory st = latestByOrder.get(oh.getOrderId());
+            if (st != null && "CANCELLED".equalsIgnoreCase(st.getStatus())) {
+                continue;
+            }
+            String origin = oh.getOrderOrigin() != null && !oh.getOrderOrigin().isBlank()
+                ? oh.getOrderOrigin()
+                : "FABRICA_WEB";
+            countByOrigin.merge(origin, 1L, Long::sum);
+            sumByOrigin.merge(origin, oh.getTotal() != null ? oh.getTotal() : BigDecimal.ZERO, BigDecimal::add);
+        }
+        List<PedidosPorOrigenDto> list = new ArrayList<>();
+        for (Map.Entry<String, Long> e : countByOrigin.entrySet()) {
+            PedidosPorOrigenDto dto = new PedidosPorOrigenDto();
+            dto.setOrderOrigin(e.getKey());
+            dto.setPedidoCount(e.getValue());
+            dto.setTotalImporte(sumByOrigin.getOrDefault(e.getKey(), BigDecimal.ZERO));
+            list.add(dto);
+        }
+        list.sort(Comparator.comparing(PedidosPorOrigenDto::getOrderOrigin));
+        return list;
+    }
+
+    private Map<Long, OrderStatusHistory> loadLatestStatusByOrderId(List<Long> orderIds) {
+        if (orderIds.isEmpty()) {
+            return Map.of();
+        }
+        EntityManager em = emf.createEntityManager();
+        try {
+            List<OrderStatusHistory> all = em.createQuery(
+                "SELECT h FROM OrderStatusHistory h WHERE h.orderId IN :ids",
+                OrderStatusHistory.class)
+                .setParameter("ids", orderIds)
+                .getResultList();
+            Map<Long, OrderStatusHistory> map = new HashMap<>();
+            for (OrderStatusHistory h : all) {
+                OrderStatusHistory cur = map.get(h.getOrderId());
+                if (cur == null) {
+                    map.put(h.getOrderId(), h);
+                    continue;
+                }
+                Date hc = h.getChangedAt();
+                Date cc = cur.getChangedAt();
+                if (hc != null && (cc == null || hc.after(cc))) {
+                    map.put(h.getOrderId(), h);
+                } else if (hc == null && cc == null && h.getStatusId() != null && cur.getStatusId() != null
+                    && h.getStatusId() > cur.getStatusId()) {
+                    map.put(h.getOrderId(), h);
+                }
+            }
+            return map;
+        } finally {
+            em.close();
+        }
+    }
+
+    private static Date startOfDayForDate(Date d) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(d != null ? d : new Date());
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTime();
     }
 
     private static Date startOfDay(int daysAgo) {

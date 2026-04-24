@@ -3,6 +3,9 @@ package com.agencias.backend.controller;
 import com.agencias.backend.controller.dto.EngagementReporteDto;
 import com.agencias.backend.controller.dto.ImportExportLogDto;
 import com.agencias.backend.controller.dto.InventoryLogDto;
+import com.agencias.backend.controller.dto.MasVendidoDto;
+import com.agencias.backend.controller.dto.PedidosPorOrigenDto;
+import com.agencias.backend.controller.dto.VentaDiariaDto;
 import com.agencias.backend.controller.dto.VentaReporteDto;
 import com.agencias.backend.model.PartEngagementLog;
 import com.agencias.backend.service.ReporteriaService;
@@ -104,6 +107,63 @@ public class ReporteriaResource {
             return Response.status(Response.Status.CREATED).entity(Map.of("logId", log.getLogId(), "eventType", log.getEventType())).build();
         } catch (IllegalArgumentException e) {
             return Response.status(400).entity(new ErrorResponse(400, e.getMessage())).build();
+        } catch (Exception e) {
+            return Response.status(500).entity(new ErrorResponse(500, e.getMessage())).build();
+        }
+    }
+
+    /**
+     * Repuestos más vendidos (cantidad total en pedidos no cancelados).
+     * {@code GET /api/reporteria/mas-vendidos?from=yyyy-MM-dd&to=yyyy-MM-dd&limit=30}
+     */
+    @GET
+    @Path("/mas-vendidos")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response reporteMasVendidos(
+            @QueryParam("from") String fromStr,
+            @QueryParam("to") String toStr,
+            @QueryParam("limit") Integer limit) {
+        try {
+            Date from = parseDate(fromStr);
+            Date to = parseDate(toStr);
+            List<MasVendidoDto> list = service.reporteMasVendidos(from, to, limit);
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return Response.status(500).entity(new ErrorResponse(500, e.getMessage())).build();
+        }
+    }
+
+    /**
+     * Resumen de pedidos por día (conteo e importe), excluye cancelados.
+     * {@code GET /api/reporteria/ventas-diarias?from=&to=}
+     */
+    @GET
+    @Path("/ventas-diarias")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response reporteVentasDiarias(@QueryParam("from") String fromStr, @QueryParam("to") String toStr) {
+        try {
+            Date from = parseDate(fromStr);
+            Date to = parseDate(toStr);
+            List<VentaDiariaDto> list = service.reporteVentasPorDia(from, to);
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return Response.status(500).entity(new ErrorResponse(500, e.getMessage())).build();
+        }
+    }
+
+    /**
+     * Pedidos por canal de origen (tienda fábrica vs distribuidora).
+     * {@code GET /api/reporteria/pedidos-por-origen?from=&to=}
+     */
+    @GET
+    @Path("/pedidos-por-origen")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response reportePedidosPorOrigen(@QueryParam("from") String fromStr, @QueryParam("to") String toStr) {
+        try {
+            Date from = parseDate(fromStr);
+            Date to = parseDate(toStr);
+            List<PedidosPorOrigenDto> list = service.reportePedidosPorOrigen(from, to);
+            return Response.ok(list).build();
         } catch (Exception e) {
             return Response.status(500).entity(new ErrorResponse(500, e.getMessage())).build();
         }

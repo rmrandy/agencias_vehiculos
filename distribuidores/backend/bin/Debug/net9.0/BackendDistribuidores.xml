@@ -121,6 +121,15 @@
         <member name="T:BackendDistribuidores.Controllers.FabricaLoginRequest">
             <summary>DTO enviado al proxy; se reenvía como JSON al <c>/api/auth/login</c> de la fábrica.</summary>
         </member>
+        <member name="T:BackendDistribuidores.Controllers.FabricaIntegracionController">
+            <summary>Callbacks desde el backend de la fábrica (sincronizar estado del pedido maestro).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.FabricaIntegracionController.SyncEstadoPedido(BackendDistribuidores.Models.FabricaPedidoStatusWebhookRequest,System.Threading.CancellationToken)">
+            <summary>
+            La fábrica llama este endpoint tras cambiar el estado de un pedido con origen distribuidora.
+            Requiere cabecera <c>X-Fabrica-Webhook-Secret</c> igual a <c>Integration:FabricaWebhookSecret</c>.
+            </summary>
+        </member>
         <member name="T:BackendDistribuidores.Controllers.FabricaPedidosController">
             <summary>Proxy de pedidos hacia el API de la fábrica (crear y consultar por usuario o id).</summary>
         </member>
@@ -207,9 +216,6 @@
         <member name="M:BackendDistribuidores.Controllers.PedidosController.UpdateEstado(System.Int64,BackendDistribuidores.Models.UpdateEstadoRequest,System.Threading.CancellationToken)">
             <summary>Actualizar estado del pedido (solo ADMIN/EMPLOYEE). Solo se puede avanzar, no retroceder. Envía correo al cliente.</summary>
         </member>
-        <member name="M:BackendDistribuidores.Controllers.PedidosController.CanAdvanceTo(System.String,System.String)">
-            <summary>Orden de estados: solo se permite avanzar (no retroceder). CANCELLED y DELIVERED son finales.</summary>
-        </member>
         <member name="M:BackendDistribuidores.Controllers.PedidosController.GetById(System.Int64,System.Threading.CancellationToken)">
             <summary>Detalle completo del pedido: cabecera, ítems enriquecidos, estado y snapshots remotos de fábrica.</summary>
         </member>
@@ -237,16 +243,22 @@
             <summary>Cuerpo para crear o actualizar proveedor.</summary>
         </member>
         <member name="T:BackendDistribuidores.Controllers.ReportesController">
-            <summary>Envía eventos de engagement a la fábrica (visto en detalle, agregado al carrito).</summary>
+            <summary>Reportería comercial (admin / empleado) y reenvío de eventos de engagement a la fábrica.</summary>
         </member>
-        <member name="M:BackendDistribuidores.Controllers.ReportesController.VistoDetalle(BackendDistribuidores.Controllers.ReporteEventRequest,System.Threading.CancellationToken)">
-            <summary>Registra en la fábrica que se vio el detalle de un repuesto. El frontend llama con partId (local); resolvemos partNumber para la fábrica.</summary>
+        <member name="M:BackendDistribuidores.Controllers.ReportesController.VistoDetalle(BackendDistribuidores.Controllers.EngagementFabricaRequest,System.Threading.CancellationToken)">
+            <summary>Reenvía a la fábrica: repuesto visto en detalle (catálogo local).</summary>
         </member>
-        <member name="M:BackendDistribuidores.Controllers.ReportesController.AgregadoCarrito(BackendDistribuidores.Controllers.ReporteEventRequest,System.Threading.CancellationToken)">
-            <summary>Registra en la fábrica que se agregó un repuesto al carrito (sin compra).</summary>
+        <member name="M:BackendDistribuidores.Controllers.ReportesController.AgregadoCarrito(BackendDistribuidores.Controllers.EngagementFabricaRequest,System.Threading.CancellationToken)">
+            <summary>Reenvía a la fábrica: repuesto agregado al carrito.</summary>
         </member>
-        <member name="T:BackendDistribuidores.Controllers.ReporteEventRequest">
-            <summary>Eventos de engagement reenviados a la reportería de la fábrica.</summary>
+        <member name="M:BackendDistribuidores.Controllers.ReportesController.MasVendidos(System.Int64,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Int32,System.Threading.CancellationToken)">
+            <summary>Repuestos locales más vendidos (excluye pedidos cancelados).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ReportesController.VentasDiarias(System.Int64,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+            <summary>Pedidos por día (conteo e importe total), sin cancelados.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Controllers.ReportesController.PedidosPorEstado(System.Int64,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+            <summary>Pedidos creados en el período agrupados por estado actual.</summary>
         </member>
         <member name="T:BackendDistribuidores.Controllers.RepuestosController">
             <summary>
@@ -375,6 +387,9 @@
         </member>
         <member name="P:BackendDistribuidores.Models.EnvioConfig.UsdPerLb">
             <summary>Precio de envío por libra (USD). 0 = sin cargo por peso.</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Models.FabricaPedidoStatusWebhookRequest">
+            <summary>Cuerpo del POST desde la fábrica para alinear el estado del pedido maestro en la distribuidora.</summary>
         </member>
         <member name="T:BackendDistribuidores.Models.LatamCountries">
             <summary>Catálogo fijo de países de América Latina y el Caribe (ISO 3166-1 alpha-2) para aranceles.</summary>
@@ -546,8 +561,14 @@
         <member name="M:BackendDistribuidores.Services.OrderService.GetAllOrdersAsync(System.Threading.CancellationToken)">
             <summary>Todos los pedidos (para admin).</summary>
         </member>
-        <member name="M:BackendDistribuidores.Services.OrderService.AddOrderStatusAsync(System.Int64,System.String,System.String,System.String,System.Nullable{System.Int32},System.Int64,System.Threading.CancellationToken)">
-            <summary>Añade un nuevo estado al pedido (para admin/empleado).</summary>
+        <member name="M:BackendDistribuidores.Services.OrderService.AddOrderStatusAsync(System.Int64,System.String,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int64},System.Threading.CancellationToken)">
+            <summary>Añade un nuevo estado al pedido (para admin/empleado o webhook desde fábrica).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.OrderService.ApplyFabricaPedidoStatusNotifyAsync(System.Int64,System.Nullable{System.Int64},System.String,System.String,System.String,System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Notificación HTTP desde la fábrica: alinea el historial del pedido maestro con el estado del pedido remoto
+            (<see cref="P:BackendDistribuidores.Models.OrderItem.FabricaOrderId"/>). No envía correo (la fábrica ya notifica al cliente).
+            </summary>
         </member>
         <member name="T:BackendDistribuidores.Services.PartService">
             <summary>Catálogo local y stock (misma lógica que fábrica: CRUD, imagen BLOB, reserva, confirmar venta).</summary>
@@ -573,8 +594,20 @@
         <member name="M:BackendDistribuidores.Services.PartService.AddPartImageAsync(System.Int64,System.Byte[],System.String,System.Threading.CancellationToken)">
             <summary>Agrega una imagen a la galería del producto.</summary>
         </member>
+        <member name="T:BackendDistribuidores.Services.PedidoEstadoRules">
+            <summary>Reglas compartidas de transición de estado del pedido maestro (local + webhook desde fábrica).</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.PedidoEstadoRules.CanAdvanceTo(System.String,System.String)">
+            <summary>Orden de estados: solo se permite avanzar (no retroceder). CANCELLED y DELIVERED son finales.</summary>
+        </member>
+        <member name="M:BackendDistribuidores.Services.PedidoEstadoRules.NormalizeFabricaStatus(System.String)">
+            <summary>Alinea nombres de estado del API de fábrica con los del pedido maestro en distribuidora.</summary>
+        </member>
         <member name="T:BackendDistribuidores.Services.PedidoReciboPdfService">
             <summary>PDF de recibo del pedido en la distribuidora (resumen unificado).</summary>
+        </member>
+        <member name="T:BackendDistribuidores.Services.ReportesService">
+            <summary>Reportería comercial sobre pedidos e ítems (usa tablas existentes; no requiere DDL).</summary>
         </member>
         <member name="T:BackendDistribuidores.Services.UnifiedCatalogService">
             <summary>Catálogo local + N fábricas (proveedores con ApiBaseUrl activo).</summary>

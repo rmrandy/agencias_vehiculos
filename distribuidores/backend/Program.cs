@@ -24,6 +24,7 @@ builder.Services.AddScoped<BackendDistribuidores.Services.MonedaService>();
 builder.Services.AddScoped<BackendDistribuidores.Services.ShippingRateService>();
 builder.Services.AddScoped<BackendDistribuidores.Services.PartService>();
 builder.Services.AddScoped<BackendDistribuidores.Services.OrderService>();
+builder.Services.AddScoped<BackendDistribuidores.Services.ReportesService>();
 builder.Services.AddScoped<BackendDistribuidores.Services.MailService>();
 builder.Services.AddHttpClient<BackendDistribuidores.Services.FabricaProxyService>();
 builder.Services.AddHttpClient("FabricaIntegration", client =>
@@ -54,7 +55,12 @@ var app = builder.Build();
 
 app.UseCors();
 app.UseHttpsRedirection();
+// SPA: los assets del front (Vite) deben estar en wwwroot; p. ej. `npm run build` en
+// `distribuidores/frontend` (el .csproj copia dist/ → wwwroot/ al compilar si index.html existe).
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 
 // Crear la base de datos y tablas si no existen (sin migraciones) y seed inicial
 using (var scope = app.Services.CreateScope())

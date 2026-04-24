@@ -1,0 +1,98 @@
+.reporteria-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.reporteria-header h1 {
+  font-size: 1.5rem;
+  margin: 0 0 8px;
+  color: #0f172a;
+}
+
+.reporteria-sub {
+  color: #64748b;
+  font-size: 0.9375rem;
+  margin: 0 0 16px;
+}
+
+.reporteria-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 8px;
+}
+
+.reporteria-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.reporteria-filters input[type='date'] {
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+.reporteria-section {
+  margin-top: 32px;
+}
+
+.reporteria-section h2 {
+  font-size: 1.125rem;
+  margin: 0 0 6px;
+  color: #0f172a;
+}
+
+.reporteria-hint {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0 0 12px;
+}
+
+.reporteria-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.reporteria-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.reporteria-table th,
+.reporteria-table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.reporteria-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+}
+
+.reporteria-empty {
+  text-align: center;
+  color: #94a3b8;
+  padding: 24px !important;
+}
+
+.reporteria-table a {
+  color: #0d9488;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.reporteria-table a:hover {
+  text-decoration: underline;
+}

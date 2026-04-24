@@ -24,6 +24,17 @@ npm run dev
 
 Abre http://localhost:5173. El Home muestra el estado del backend (endpoint `/api/health`).
 
+## Pruebas unitarias (Vitest)
+
+Archivos `*.test.js` junto al código bajo `src/`. Usan `fetch` simulado (`vi.stubGlobal`) donde aplica.
+
+```bash
+npm install
+npm run test
+```
+
+Modo interactivo: `npm run test:watch`.
+
 ## Estructura
 
 - `src/views/Home.vue` – Página principal con comprobación de salud del API

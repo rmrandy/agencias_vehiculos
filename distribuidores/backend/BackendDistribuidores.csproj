@@ -19,4 +19,15 @@
     <PackageReference Include="QuestPDF" Version="2025.7.0" />
   </ItemGroup>
 
+  <!-- Si existe el build de Vite, copia frontend/dist a wwwroot (reemplaza el index.html de ayuda). -->
+  <Target Name="CopyFrontendDistToWwwroot" AfterTargets="Build" Condition="Exists('$(MSBuildThisFileDirectory)../frontend/dist/index.html')">
+    <ItemGroup>
+      <_DistFiles Include="$(MSBuildThisFileDirectory)../frontend/dist/**/*" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(_DistFiles)"
+      DestinationFiles="@(_DistFiles->'$(MSBuildThisFileDirectory)wwwroot/%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>

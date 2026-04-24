@@ -2,114 +2,229 @@
   <div class="reporteria-page">
     <header class="page-header">
       <h1>Reportería</h1>
-      <p class="page-subtitle">Log de operaciones: quién, cuándo, archivo usado, exitosos y errores</p>
+      <p class="page-subtitle">
+        Operaciones (import / inventario) y reportes comerciales (más vendidos, ventas por día, pedidos por canal).
+      </p>
     </header>
 
-    <div class="tabs">
-      <button :class="{ active: activeTab === 'import-export' }" @click="activeTab = 'import-export'">
-        Import / Export
+    <div class="main-tabs">
+      <button type="button" :class="{ active: mainSection === 'operaciones' }" @click="mainSection = 'operaciones'">
+        Operaciones
       </button>
-      <button :class="{ active: activeTab === 'inventario' }" @click="activeTab = 'inventario'">
-        Altas de inventario
+      <button type="button" :class="{ active: mainSection === 'ventas' }" @click="mainSection = 'ventas'">
+        Ventas e ingresos
       </button>
     </div>
 
-    <!-- Tab Import/Export -->
-    <div v-show="activeTab === 'import-export'" class="tab-content">
-      <div class="section-header">
-        <h2>Log de importación y exportación</h2>
-        <div class="filters">
-          <select v-model="filterOperation" @change="loadImportExport">
-            <option value="">Todas las operaciones</option>
-            <option value="EXPORT">Exportar</option>
-            <option value="IMPORT">Importar</option>
-            <option value="IMPORT_INVENTORY">Importar inventario</option>
-          </select>
-          <button type="button" class="btn btn-secondary btn-sm" @click="loadImportExport">Actualizar</button>
+    <!-- ——— Operaciones ——— -->
+    <template v-if="mainSection === 'operaciones'">
+      <div class="tabs">
+        <button :class="{ active: activeTab === 'import-export' }" @click="activeTab = 'import-export'">
+          Import / Export
+        </button>
+        <button :class="{ active: activeTab === 'inventario' }" @click="activeTab = 'inventario'">
+          Altas de inventario
+        </button>
+      </div>
+
+      <div v-show="activeTab === 'import-export'" class="tab-content">
+        <div class="section-header">
+          <h2>Log de importación y exportación</h2>
+          <div class="filters">
+            <select v-model="filterOperation" @change="loadImportExport">
+              <option value="">Todas las operaciones</option>
+              <option value="EXPORT">Exportar</option>
+              <option value="IMPORT">Importar</option>
+              <option value="IMPORT_INVENTORY">Importar inventario</option>
+            </select>
+            <button type="button" class="btn btn-secondary btn-sm" @click="loadImportExport">Actualizar</button>
+          </div>
+        </div>
+        <div v-if="loadingImportExport" class="loading">Cargando...</div>
+        <div v-else class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Quién</th>
+                <th>Cuándo</th>
+                <th>Operación</th>
+                <th>Archivo usado</th>
+                <th>Exitosos</th>
+                <th>Errores</th>
+                <th>Detalle</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in logImportExport" :key="row.logId">
+                <td>{{ row.userDisplayName || '—' }}</td>
+                <td>{{ formatDate(row.createdAt) }}</td>
+                <td><span class="badge" :class="badgeClass(row.operation)">{{ row.operation }}</span></td>
+                <td>{{ row.fileName || '—' }}</td>
+                <td>{{ row.successCount }}</td>
+                <td>{{ row.errorCount }}</td>
+                <td>
+                  <button v-if="row.detail" type="button" class="btn-detail" @click="toggleDetail(row.logId)">
+                    {{ expandedDetail === row.logId ? 'Ocultar' : 'Ver' }}
+                  </button>
+                  <span v-else>—</span>
+                  <pre v-if="expandedDetail === row.logId && row.detail" class="detail-pre">{{ row.detail }}</pre>
+                </td>
+              </tr>
+              <tr v-if="logImportExport.length === 0">
+                <td colspan="7" class="empty">No hay registros</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <div v-if="loadingImportExport" class="loading">Cargando...</div>
-      <div v-else class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Quién</th>
-              <th>Cuándo</th>
-              <th>Operación</th>
-              <th>Archivo usado</th>
-              <th>Exitosos</th>
-              <th>Errores</th>
-              <th>Detalle</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in logImportExport" :key="row.logId">
-              <td>{{ row.userDisplayName || '—' }}</td>
-              <td>{{ formatDate(row.createdAt) }}</td>
-              <td><span class="badge" :class="badgeClass(row.operation)">{{ row.operation }}</span></td>
-              <td>{{ row.fileName || '—' }}</td>
-              <td>{{ row.successCount }}</td>
-              <td>{{ row.errorCount }}</td>
-              <td>
-                <button v-if="row.detail" type="button" class="btn-detail" @click="toggleDetail(row.logId)">
-                  {{ expandedDetail === row.logId ? 'Ocultar' : 'Ver' }}
-                </button>
-                <span v-else>—</span>
-                <pre v-if="expandedDetail === row.logId && row.detail" class="detail-pre">{{ row.detail }}</pre>
-              </td>
-            </tr>
-            <tr v-if="logImportExport.length === 0">
-              <td colspan="7" class="empty">No hay registros</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
 
-    <!-- Tab Inventario -->
-    <div v-show="activeTab === 'inventario'" class="tab-content">
-      <div class="section-header">
-        <h2>Log de altas de inventario</h2>
-        <button type="button" class="btn btn-secondary btn-sm" @click="loadInventario">Actualizar</button>
+      <div v-show="activeTab === 'inventario'" class="tab-content">
+        <div class="section-header">
+          <h2>Log de altas de inventario</h2>
+          <button type="button" class="btn btn-secondary btn-sm" @click="loadInventario">Actualizar</button>
+        </div>
+        <div v-if="loadingInventario" class="loading">Cargando...</div>
+        <div v-else class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Quién</th>
+                <th>Cuándo</th>
+                <th>Repuesto</th>
+                <th>Código</th>
+                <th>Cantidad agregada</th>
+                <th>Stock anterior</th>
+                <th>Stock nuevo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in logInventario" :key="row.logId">
+                <td>{{ row.userDisplayName || '—' }}</td>
+                <td>{{ formatDate(row.createdAt) }}</td>
+                <td>{{ row.partTitle || '—' }}</td>
+                <td><code>{{ row.partNumber || '—' }}</code></td>
+                <td>{{ row.quantityAdded }}</td>
+                <td>{{ row.previousQuantity }}</td>
+                <td>{{ row.newQuantity }}</td>
+              </tr>
+              <tr v-if="logInventario.length === 0">
+                <td colspan="7" class="empty">No hay registros</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div v-if="loadingInventario" class="loading">Cargando...</div>
-      <div v-else class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Quién</th>
-              <th>Cuándo</th>
-              <th>Repuesto</th>
-              <th>Código</th>
-              <th>Cantidad agregada</th>
-              <th>Stock anterior</th>
-              <th>Stock nuevo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in logInventario" :key="row.logId">
-              <td>{{ row.userDisplayName || '—' }}</td>
-              <td>{{ formatDate(row.createdAt) }}</td>
-              <td>{{ row.partTitle || '—' }}</td>
-              <td><code>{{ row.partNumber || '—' }}</code></td>
-              <td>{{ row.quantityAdded }}</td>
-              <td>{{ row.previousQuantity }}</td>
-              <td>{{ row.newQuantity }}</td>
-            </tr>
-            <tr v-if="logInventario.length === 0">
-              <td colspan="7" class="empty">No hay registros</td>
-            </tr>
-          </tbody>
-        </table>
+    </template>
+
+    <!-- ——— Ventas e ingresos ——— -->
+    <template v-else>
+      <div class="comercial-filters">
+        <label>Desde <input v-model="fromDate" type="date" /></label>
+        <label>Hasta <input v-model="toDate" type="date" /></label>
+        <button type="button" class="btn btn-primary btn-sm" @click="loadComercial">Actualizar</button>
       </div>
-    </div>
+      <div v-if="loadingComercial" class="loading">Cargando reportes…</div>
+      <template v-else>
+        <section class="comercial-block">
+          <h2>Repuestos más vendidos</h2>
+          <p class="hint">Unidades en pedidos cuyo último estado no es cancelado.</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Código</th>
+                  <th>Descripción</th>
+                  <th>Unidades</th>
+                  <th>Importe</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="masVendidos.length === 0">
+                  <td colspan="5" class="empty">Sin datos en el período.</td>
+                </tr>
+                <tr v-for="(r, idx) in masVendidos" :key="r.partId">
+                  <td>{{ idx + 1 }}</td>
+                  <td>
+                    <router-link :to="`/producto/${r.partId}`">{{ r.partNumber || '—' }}</router-link>
+                  </td>
+                  <td>{{ r.partTitle || '—' }}</td>
+                  <td>{{ r.totalQty }}</td>
+                  <td>{{ money(r.totalImporte) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="comercial-block">
+          <h2>Ventas por día</h2>
+          <p class="hint">Pedidos no cancelados: cantidad e importe total por día.</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Pedidos</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="ventasDiarias.length === 0">
+                  <td colspan="3" class="empty">Sin datos.</td>
+                </tr>
+                <tr v-for="r in ventasDiarias" :key="r.fecha">
+                  <td>{{ formatDay(r.fecha) }}</td>
+                  <td>{{ r.pedidoCount }}</td>
+                  <td>{{ money(r.totalImporte) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="comercial-block">
+          <h2>Pedidos por canal</h2>
+          <p class="hint">Tienda fábrica frente a integración distribuidora (excluye cancelados).</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Origen</th>
+                  <th>Pedidos</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="porOrigen.length === 0">
+                  <td colspan="3" class="empty">Sin datos.</td>
+                </tr>
+                <tr v-for="r in porOrigen" :key="r.orderOrigin">
+                  <td>{{ originLabel(r.orderOrigin) }}</td>
+                  <td>{{ r.pedidoCount }}</td>
+                  <td>{{ money(r.totalImporte) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </template>
+    </template>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getLogImportExport, getLogInventario } from '../api/reporteria'
+import {
+  getLogImportExport,
+  getLogInventario,
+  getMasVendidos,
+  getVentasDiarias,
+  getPedidosPorOrigen,
+  defaultReportDateRange,
+} from '../api/reporteria'
 
+const mainSection = ref('operaciones')
 const activeTab = ref('import-export')
 const logImportExport = ref([])
 const logInventario = ref([])
@@ -117,6 +232,35 @@ const loadingImportExport = ref(false)
 const loadingInventario = ref(false)
 const filterOperation = ref('')
 const expandedDetail = ref(null)
+
+const dr = defaultReportDateRange()
+const fromDate = ref(dr.from)
+const toDate = ref(dr.to)
+const loadingComercial = ref(false)
+const masVendidos = ref([])
+const ventasDiarias = ref([])
+const porOrigen = ref([])
+
+function money(v) {
+  const n = Number(v)
+  if (Number.isNaN(n)) return '—'
+  return new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'USD' }).format(n)
+}
+
+function formatDay(iso) {
+  if (!iso) return '—'
+  try {
+    return new Date(iso).toLocaleDateString('es-GT', { dateStyle: 'medium' })
+  } catch {
+    return iso
+  }
+}
+
+function originLabel(o) {
+  if (!o || o === 'FABRICA_WEB') return 'Tienda fábrica'
+  if (o === 'DISTRIBUIDORA') return 'Distribuidora'
+  return o
+}
 
 function formatDate(d) {
   if (!d) return '—'
@@ -147,7 +291,7 @@ async function loadImportExport() {
       limit: 200,
       operation: filterOperation.value || undefined,
     })
-  } catch (e) {
+  } catch {
     logImportExport.value = []
   } finally {
     loadingImportExport.value = false
@@ -158,16 +302,37 @@ async function loadInventario() {
   loadingInventario.value = true
   try {
     logInventario.value = await getLogInventario({ limit: 200 })
-  } catch (e) {
+  } catch {
     logInventario.value = []
   } finally {
     loadingInventario.value = false
   }
 }
 
+async function loadComercial() {
+  loadingComercial.value = true
+  try {
+    const [mv, vd, po] = await Promise.all([
+      getMasVendidos({ from: fromDate.value, to: toDate.value, limit: 30 }),
+      getVentasDiarias({ from: fromDate.value, to: toDate.value }),
+      getPedidosPorOrigen({ from: fromDate.value, to: toDate.value }),
+    ])
+    masVendidos.value = Array.isArray(mv) ? mv : []
+    ventasDiarias.value = Array.isArray(vd) ? vd : []
+    porOrigen.value = Array.isArray(po) ? po : []
+  } catch {
+    masVendidos.value = []
+    ventasDiarias.value = []
+    porOrigen.value = []
+  } finally {
+    loadingComercial.value = false
+  }
+}
+
 onMounted(() => {
   loadImportExport()
   loadInventario()
+  loadComercial()
 })
 </script>
 
@@ -188,6 +353,58 @@ onMounted(() => {
   margin: 0.25rem 0 0;
   color: #64748b;
   font-size: 0.9375rem;
+}
+.main-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.main-tabs button {
+  padding: 0.65rem 1.1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  cursor: pointer;
+}
+.main-tabs button.active {
+  background: #0d9488;
+  color: #fff;
+  border-color: #0d9488;
+}
+.comercial-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+.comercial-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+.comercial-filters input[type='date'] {
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+.comercial-block {
+  margin-top: 1.75rem;
+}
+.comercial-block h2 {
+  font-size: 1.125rem;
+  margin: 0 0 6px;
+  color: #0f172a;
+}
+.hint {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0 0 10px;
 }
 .tabs {
   display: flex;
@@ -261,9 +478,18 @@ onMounted(() => {
   font-size: 0.75rem;
   font-weight: 600;
 }
-.badge-info { background: #e0f2fe; color: #0369a1; }
-.badge-warning { background: #fef3c7; color: #b45309; }
-.badge-success { background: #d1fae5; color: #047857; }
+.badge-info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.badge-warning {
+  background: #fef3c7;
+  color: #b45309;
+}
+.badge-success {
+  background: #d1fae5;
+  color: #047857;
+}
 .btn-detail {
   background: none;
   border: none;
@@ -272,7 +498,9 @@ onMounted(() => {
   font-size: 0.8125rem;
   padding: 0;
 }
-.btn-detail:hover { text-decoration: underline; }
+.btn-detail:hover {
+  text-decoration: underline;
+}
 .detail-pre {
   margin: 0.5rem 0 0;
   padding: 0.75rem;
@@ -289,5 +517,16 @@ onMounted(() => {
   text-align: center;
   color: #64748b;
 }
-.btn-sm { padding: 6px 12px; font-size: 0.8125rem; }
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+}
+.data-table a {
+  color: #0d9488;
+  font-weight: 600;
+  text-decoration: none;
+}
+.data-table a:hover {
+  text-decoration: underline;
+}
 </style>

@@ -8,6 +8,19 @@ import java.util.List;
 public class OrderStatusRepository {
     private final EntityManagerFactory emf;
 
+    private static boolean isOrderStatusCheckConstraintViolation(Throwable e) {
+        for (Throwable t = e; t != null; t = t.getCause()) {
+            String m = t.getMessage();
+            if (m == null) {
+                continue;
+            }
+            if (m.contains("CHK_OSH_STATUS") || m.contains("ORA-02290")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public OrderStatusRepository(EntityManagerFactory emf) {
         this.emf = emf;
     }
@@ -23,6 +36,12 @@ public class OrderStatusRepository {
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
+            }
+            if (isOrderStatusCheckConstraintViolation(e)) {
+                throw new IllegalArgumentException(
+                    "Oracle rechaza el estado: el CHECK CHK_OSH_STATUS de ORDER_STATUS_HISTORY no incluye ese valor "
+                        + "(p. ej. CANCELLED). Ejecuta el script SQL del repositorio: fabrica/database/08_order_status_allow_cancelled.sql "
+                        + "con el usuario FABRICA y reinicia el backend si hace falta.");
             }
             throw new RuntimeException("Error al guardar el estado del pedido: " + e.getMessage(), e);
         } finally {

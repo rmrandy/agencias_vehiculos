@@ -22,6 +22,7 @@ import { UsuariosAdmin } from './views/UsuariosAdmin'
 import { ProveedoresAdmin } from './views/ProveedoresAdmin'
 import { ProveedorForm } from './views/ProveedorForm'
 import { ArancelesAdmin } from './views/ArancelesAdmin'
+import { Reporteria } from './views/Reporteria'
 import './App.css'
 
 /**
@@ -56,6 +57,7 @@ function App() {
                     <Route path="/fabricas/nuevo" element={<ProveedorForm />} />
                     <Route path="/fabricas/editar/:id" element={<ProveedorForm />} />
                     <Route path="/aranceles" element={<ArancelesAdmin />} />
+                    <Route path="/reportes" element={<Reporteria />} />
                     <Route path="/producto/fabrica/:proveedorId/:partId" element={<DetalleProductoFabrica />} />
                     <Route path="/producto/:id" element={<DetalleProducto />} />
                     <Route path="/gracias" element={<Gracias />} />

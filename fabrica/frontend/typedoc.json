@@ -4,6 +4,7 @@
     "./src/api",
     "./src/router",
     "./src/composables",
+    "./src/utils",
     "./src/main.js"
   ],
   "entryPointStrategy": "expand",

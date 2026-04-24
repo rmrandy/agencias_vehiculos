@@ -254,6 +254,104 @@ public class OrderServiceTests
     }
 
     [Fact]
+    public async Task ApplyFabricaPedidoStatusNotifyAsync_cancel_actualiza_pedido_maestro()
+    {
+        await using var db = TestAppDbContextFactory.Create();
+        var header = new OrderHeader
+        {
+            OrderNumber = "ORD-WEBHOOK-T",
+            UserId = 1,
+            OrderType = "WEB",
+            Subtotal = 10m,
+            ShippingTotal = 0m,
+            TariffTotal = 0m,
+            Total = 10m,
+            CreatedAt = DateTime.UtcNow
+        };
+        db.OrderHeaders.Add(header);
+        await db.SaveChangesAsync();
+
+        db.OrderItems.Add(new OrderItem
+        {
+            OrderId = header.OrderId,
+            LineSource = "FABRICA",
+            PartId = null,
+            ProveedorId = 77,
+            FabricaPartId = 1,
+            FabricaOrderId = 999001,
+            Qty = 1,
+            UnitPrice = 10m,
+            LineTotal = 10m,
+            TitleSnapshot = "Repuesto remoto"
+        });
+        db.OrderStatusHistories.Add(new OrderStatusHistory
+        {
+            OrderId = header.OrderId,
+            Status = "INITIATED",
+            ChangedByUserId = 1,
+            ChangedAt = DateTime.UtcNow
+        });
+        await db.SaveChangesAsync();
+
+        var orderSvc = CreateOrderService(db);
+        var updated = await orderSvc.ApplyFabricaPedidoStatusNotifyAsync(
+            999001, null, "CANCELLED", "Cancelado en fábrica", null, null, CancellationToken.None);
+
+        Assert.Single(updated);
+        Assert.Equal(header.OrderId, updated[0]);
+        var latest = await db.OrderStatusHistories
+            .Where(s => s.OrderId == header.OrderId)
+            .OrderByDescending(s => s.ChangedAt)
+            .FirstAsync();
+        Assert.Equal("CANCELLED", latest.Status);
+        Assert.Null(latest.ChangedByUserId);
+    }
+
+    [Fact]
+    public async Task ApplyFabricaPedidoStatusNotifyAsync_cancel_no_aplica_si_ya_entregado()
+    {
+        await using var db = TestAppDbContextFactory.Create();
+        var header = new OrderHeader
+        {
+            OrderNumber = "ORD-WEBHOOK-D",
+            UserId = 1,
+            OrderType = "WEB",
+            Subtotal = 5m,
+            ShippingTotal = 0m,
+            TariffTotal = 0m,
+            Total = 5m,
+            CreatedAt = DateTime.UtcNow
+        };
+        db.OrderHeaders.Add(header);
+        await db.SaveChangesAsync();
+        db.OrderItems.Add(new OrderItem
+        {
+            OrderId = header.OrderId,
+            LineSource = "FABRICA",
+            FabricaOrderId = 888002,
+            ProveedorId = 1,
+            FabricaPartId = 2,
+            Qty = 1,
+            UnitPrice = 5m,
+            LineTotal = 5m
+        });
+        db.OrderStatusHistories.Add(new OrderStatusHistory
+        {
+            OrderId = header.OrderId,
+            Status = "DELIVERED",
+            ChangedByUserId = 1,
+            ChangedAt = DateTime.UtcNow.AddHours(-1)
+        });
+        await db.SaveChangesAsync();
+
+        var orderSvc = CreateOrderService(db);
+        var updated = await orderSvc.ApplyFabricaPedidoStatusNotifyAsync(
+            888002, null, "CANCELLED", null, null, null, CancellationToken.None);
+
+        Assert.Empty(updated);
+    }
+
+    [Fact]
     public async Task CreateMultiSourceOrderAsync_soloLocal_exito()
     {
         var (db, part) = await SeedPartWithStockAsync();
