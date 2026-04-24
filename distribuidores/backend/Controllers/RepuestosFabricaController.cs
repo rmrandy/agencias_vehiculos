@@ -89,10 +89,13 @@ public class RepuestosFabricaController : ControllerBase
             return NotFound(new { message = "Proveedor no encontrado o inactivo" });
 
         int? rating = body.ParentId == null ? body.Rating : null;
+        var displayName = string.IsNullOrWhiteSpace(body.UserFullName)
+            ? null
+            : $"{body.UserFullName.Trim()} (Distribuidora)";
         object payload = new
         {
             userEmail = body.UserEmail.Trim(),
-            userFullName = string.IsNullOrWhiteSpace(body.UserFullName) ? null : body.UserFullName.Trim(),
+            userFullName = displayName,
             parentId = body.ParentId,
             rating,
             body = body.Body.Trim()
@@ -100,7 +103,12 @@ public class RepuestosFabricaController : ControllerBase
 
         try
         {
-            var json = await _fabrica.PostComentarioRepuestoJsonAsync(prov.ApiBaseUrl!, partId, payload, ct);
+            var json = await _fabrica.PostComentarioRepuestoJsonAsync(
+                prov.ApiBaseUrl!,
+                partId,
+                payload,
+                prov.FabricaEnterpriseUserId,
+                ct);
             using var doc = JsonDocument.Parse(json);
             var dto = MapCreatedReview(doc.RootElement, body);
             return StatusCode(201, dto);

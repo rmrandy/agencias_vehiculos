@@ -28,6 +28,7 @@ import java.util.Set;
 public class PartReviewResource {
 
     private static final String DIST_API_KEY_HEADER = "X-Distributor-Api-Key";
+    private static final String DIST_USER_ID_HEADER = "X-Distributor-User-Id";
 
     private final PartReviewService reviewService;
     private final PartService partService;
@@ -87,10 +88,17 @@ public class PartReviewResource {
     }
 
     /**
-     * Si hay allowlist de API keys y la petición trae clave válida + {@code userEmail}, se usa (o crea) un usuario en APP_USER.
-     * Si no, se exige {@code userId} como hasta ahora.
+     * Resolución de usuario para crear comentarios:
+     * - Si hay allowlist, exige API key válida para aceptar {@code userEmail} y crear/reusar usuario portal.
+     * - Si no hay allowlist configurada, acepta {@code userEmail} sin API key (modo abierto para integración local).
+     * - Fallback: {@code userId} (flujo clásico de fábrica).
      */
     private Long resolveUserIdForCreate(Map<String, Object> body) {
+        Long headerUserId = readDistributorUserIdHeader();
+        if (headerUserId != null && headerUserId > 0) {
+            return headerUserId;
+        }
+
         Properties props = ConfigLoader.loadProperties();
         String allow = props.getProperty("distribuidoras.api.key.allowlist", "").trim();
         if (!allow.isEmpty() && headers != null) {
@@ -109,7 +117,28 @@ public class PartReviewResource {
                     return userService.resolveOrCreatePortalUser(ue, fullName).getUserId();
                 }
             }
+        } else {
+            Object rawEmail = body.get("userEmail");
+            if (rawEmail instanceof String ue && !ue.isBlank()) {
+                String fullName = body.get("userFullName") instanceof String s ? s : null;
+                return userService.resolveOrCreatePortalUser(ue, fullName).getUserId();
+            }
         }
         return body.get("userId") != null ? ((Number) body.get("userId")).longValue() : null;
+    }
+
+    private Long readDistributorUserIdHeader() {
+        if (headers == null) {
+            return null;
+        }
+        String raw = headers.getHeaderString(DIST_USER_ID_HEADER);
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(raw.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

@@ -520,7 +520,7 @@
         <member name="M:BackendDistribuidores.Services.FabricaIntegrationService.GetComentariosRepuestoJsonAsync(System.String,System.Int64,System.Threading.CancellationToken)">
             <summary>GET /api/repuestos/{partId}/comentarios — cuerpo JSON (promedio + comentarios).</summary>
         </member>
-        <member name="M:BackendDistribuidores.Services.FabricaIntegrationService.PostComentarioRepuestoJsonAsync(System.String,System.Int64,System.Object,System.Threading.CancellationToken)">
+        <member name="M:BackendDistribuidores.Services.FabricaIntegrationService.PostComentarioRepuestoJsonAsync(System.String,System.Int64,System.Object,System.Nullable{System.Int64},System.Threading.CancellationToken)">
             <summary>POST /api/repuestos/{partId}/comentarios — crea comentario (userEmail vía API key en fábrica).</summary>
         </member>
         <member name="M:BackendDistribuidores.Services.FabricaIntegrationService.CreatePedidoAsync(System.String,System.Int64,System.Collections.Generic.IReadOnlyList{System.ValueTuple{System.Int64,System.Int32}},BackendDistribuidores.Models.PaymentRequest,System.Threading.CancellationToken)">

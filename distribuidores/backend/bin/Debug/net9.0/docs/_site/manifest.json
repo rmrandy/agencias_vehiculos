@@ -40,6 +40,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.ArancelesController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.ArancelesController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.ArancelesController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ArancelesController.yml\" sourcestartlinenumber=\"1\">Aranceles por país LATAM (destino del envío). Lectura pública; edición solo ADMIN.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/BackendDistribuidores.Controllers.AuthController.yml",
       "output": {
         ".html": {
@@ -93,6 +107,20 @@
       "IsMRef": true,
       "Title": "BackendDistribuidores.Controllers.ComentariosController",
       "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ComentariosController.yml\" sourcestartlinenumber=\"1\">Comentarios y respuestas anidadas (árbol) asociados a un repuesto local.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.CreateComentarioFabricaRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.CreateComentarioFabricaRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.CreateComentarioFabricaRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.CreateComentarioFabricaRequest.yml\" sourcestartlinenumber=\"1\">Crear comentario en fábrica (el backend reenvía userEmail con la API key configurada).</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -152,6 +180,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.EngagementFabricaRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.EngagementFabricaRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.EngagementFabricaRequest",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/BackendDistribuidores.Controllers.FabricaAuthController.yml",
       "output": {
         ".html": {
@@ -163,6 +205,20 @@
       "IsMRef": true,
       "Title": "BackendDistribuidores.Controllers.FabricaAuthController",
       "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.FabricaAuthController.yml\" sourcestartlinenumber=\"1\">Proxy de autenticación hacia el API de la fábrica (Jetty/Jersey); útil para usuarios empresariales en flujos B2B.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.FabricaIntegracionController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.FabricaIntegracionController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.FabricaIntegracionController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.FabricaIntegracionController.yml\" sourcestartlinenumber=\"1\">Callbacks desde el backend de la fábrica (sincronizar estado del pedido maestro).</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -264,6 +320,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.MonedasController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.MonedasController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.MonedasController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.MonedasController.yml\" sourcestartlinenumber=\"1\">Divisas de cobro y tipo de cambio (unidades de moneda por 1 USD). Lectura pública; tasas solo ADMIN.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/BackendDistribuidores.Controllers.PedidosController.yml",
       "output": {
         ".html": {
@@ -330,7 +400,7 @@
       "Uid": null,
       "IsMRef": true,
       "Title": "BackendDistribuidores.Controllers.ReportesController",
-      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ReportesController.yml\" sourcestartlinenumber=\"1\">Envía eventos de engagement a la fábrica (visto en detalle, agregado al carrito).</p>\n"
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.ReportesController.yml\" sourcestartlinenumber=\"1\">Reportería comercial (admin / empleado) y reenvío de eventos de engagement a la fábrica.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -348,6 +418,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.RepuestosFabricaController.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.RepuestosFabricaController.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.RepuestosFabricaController",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.RepuestosFabricaController.yml\" sourcestartlinenumber=\"1\">Proxy de detalle y comentarios hacia la API de un proveedor (fábrica) por proveedorId.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/BackendDistribuidores.Controllers.SaveProveedorRequest.yml",
       "output": {
         ".html": {
@@ -359,6 +443,20 @@
       "IsMRef": true,
       "Title": "BackendDistribuidores.Controllers.SaveProveedorRequest",
       "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.SaveProveedorRequest.yml\" sourcestartlinenumber=\"1\">Cuerpo para crear o actualizar proveedor.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.UpdateArancelRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.UpdateArancelRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.UpdateArancelRequest",
+      "Summary": null
     },
     {
       "type": "ManagedReference",
@@ -376,6 +474,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.UpdateMonedaRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.UpdateMonedaRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.UpdateMonedaRequest",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/BackendDistribuidores.Controllers.UpdateRepuestoRequest.yml",
       "output": {
         ".html": {
@@ -387,6 +499,20 @@
       "IsMRef": true,
       "Title": "BackendDistribuidores.Controllers.UpdateRepuestoRequest",
       "Summary": "<p sourcefile=\"api/BackendDistribuidores.Controllers.UpdateRepuestoRequest.yml\" sourcestartlinenumber=\"1\">Cuerpo JSON para actualizar repuesto; todos los campos son opcionales salvo uso en lógica de negocio.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Controllers.UpdateTarifaEnvioRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Controllers.UpdateTarifaEnvioRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Controllers.UpdateTarifaEnvioRequest",
+      "Summary": null
     },
     {
       "type": "ManagedReference",
@@ -502,6 +628,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.ArancelPais.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.ArancelPais.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.ArancelPais",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.ArancelPais.yml\" sourcestartlinenumber=\"1\">Arancel (%) aplicable a importaciones según país de destino en LATAM.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/BackendDistribuidores.Models.Brand.yml",
       "output": {
         ".html": {
@@ -555,6 +695,62 @@
       "IsMRef": true,
       "Title": "BackendDistribuidores.Models.Distribuidor",
       "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.EnvioConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.EnvioConfig.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.EnvioConfig",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.EnvioConfig.yml\" sourcestartlinenumber=\"1\">Configuración global de envío: tarifa en USD por libra de peso total del pedido.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.FabricaPedidoStatusWebhookRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.FabricaPedidoStatusWebhookRequest.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.FabricaPedidoStatusWebhookRequest",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.FabricaPedidoStatusWebhookRequest.yml\" sourcestartlinenumber=\"1\">Cuerpo del POST desde la fábrica para alinear el estado del pedido maestro en la distribuidora.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.LatamCountries.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.LatamCountries.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.LatamCountries",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.LatamCountries.yml\" sourcestartlinenumber=\"1\">Catálogo fijo de países de América Latina y el Caribe (ISO 3166-1 alpha-2) para aranceles.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Models.Moneda.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Models.Moneda.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Models.Moneda",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Models.Moneda.yml\" sourcestartlinenumber=\"1\">Divisa de cobro. Los precios de catálogo se mantienen en USD; UnitsPerUsd convierte a esta moneda.</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -740,6 +936,20 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.ArancelService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.ArancelService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.ArancelService",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.ArancelService.yml\" sourcestartlinenumber=\"1\">Aranceles por país de destino (solo LATAM), configurables desde el distribuidor.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/BackendDistribuidores.Services.AuthService.yml",
       "output": {
         ".html": {
@@ -751,6 +961,20 @@
       "IsMRef": true,
       "Title": "BackendDistribuidores.Services.AuthService",
       "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.AuthService.yml\" sourcestartlinenumber=\"1\">Autenticación local (misma lógica que fábrica: email + BCrypt).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.FabricaHistorialEntry.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.FabricaHistorialEntry.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.FabricaHistorialEntry",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.FabricaHistorialEntry.yml\" sourcestartlinenumber=\"1\">Entrada del historial de estados en fábrica (GET /api/pedidos/{id}/historial).</p>\n"
     },
     {
       "type": "ManagedReference",
@@ -810,6 +1034,34 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.MasVendidoRow.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.MasVendidoRow.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.MasVendidoRow",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.MonedaService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.MonedaService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.MonedaService",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/BackendDistribuidores.Services.OrderItemDto.yml",
       "output": {
         ".html": {
@@ -852,6 +1104,34 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.PedidoEstadoRow.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.PedidoEstadoRow.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.PedidoEstadoRow",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.PedidoEstadoRules.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.PedidoEstadoRules.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.PedidoEstadoRules",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.PedidoEstadoRules.yml\" sourcestartlinenumber=\"1\">Reglas compartidas de transición de estado del pedido maestro (local + webhook desde fábrica).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/BackendDistribuidores.Services.PedidoReciboPdfService.yml",
       "output": {
         ".html": {
@@ -866,6 +1146,34 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.ReportesService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.ReportesService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.ReportesService",
+      "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.ReportesService.yml\" sourcestartlinenumber=\"1\">Reportería comercial sobre pedidos e ítems (usa tablas existentes; no requiere DDL).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.ShippingRateService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.ShippingRateService.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.ShippingRateService",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/BackendDistribuidores.Services.UnifiedCatalogService.yml",
       "output": {
         ".html": {
@@ -877,6 +1185,20 @@
       "IsMRef": true,
       "Title": "BackendDistribuidores.Services.UnifiedCatalogService",
       "Summary": "<p sourcefile=\"api/BackendDistribuidores.Services.UnifiedCatalogService.yml\" sourcestartlinenumber=\"1\">Catálogo local + N fábricas (proveedores con ApiBaseUrl activo).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BackendDistribuidores.Services.VentaDiariaRow.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BackendDistribuidores.Services.VentaDiariaRow.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "BackendDistribuidores.Services.VentaDiariaRow",
+      "Summary": null
     },
     {
       "type": "ManagedReference",

@@ -96,6 +96,7 @@ public sealed class FabricaIntegrationService
         string apiBaseUrl,
         long partId,
         object body,
+        long? distributorUserId,
         CancellationToken ct)
     {
         var client = _httpFactory.CreateClient("FabricaIntegration");
@@ -105,6 +106,8 @@ public sealed class FabricaIntegrationService
             Content = JsonContent.Create(body, options: JsonOpts)
         };
         AddApiKey(req);
+        if (distributorUserId.HasValue && distributorUserId.Value > 0)
+            req.Headers.TryAddWithoutValidation("X-Distributor-User-Id", distributorUserId.Value.ToString());
         using var resp = await client.SendAsync(req, ct);
         var json = await resp.Content.ReadAsStringAsync(ct);
         if (!resp.IsSuccessStatusCode)
