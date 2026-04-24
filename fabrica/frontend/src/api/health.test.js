@@ -1,20 +1,25 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, beforeEach, afterEach } from 'node:test'
+import assert from 'node:assert/strict'
 import { getHealth } from './health.js'
 
 describe('getHealth', () => {
+  let prevFetch
+
   beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn())
+    prevFetch = globalThis.fetch
   })
+
   afterEach(() => {
-    vi.unstubAllGlobals()
+    globalThis.fetch = prevFetch
   })
 
   it('devuelve el cuerpo JSON cuando HTTP es OK', async () => {
-    globalThis.fetch.mockResolvedValue({
+    globalThis.fetch = async () => ({
       ok: true,
       json: async () => ({ status: 'UP' }),
     })
     const body = await getHealth()
-    expect(body.status).toBe('UP')
+    assert.equal(body.status, 'UP')
   })
 })
+ 

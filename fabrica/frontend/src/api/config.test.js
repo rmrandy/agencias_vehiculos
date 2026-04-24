@@ -1,30 +1,39 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, beforeEach, afterEach } from 'node:test'
+import assert from 'node:assert/strict'
 import { apiFetch } from './config.js'
 
 describe('apiFetch', () => {
+  let prevFetch
+
   beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn())
+    prevFetch = globalThis.fetch
   })
+
   afterEach(() => {
-    vi.unstubAllGlobals()
+    globalThis.fetch = prevFetch
   })
 
   it('devuelve el JSON cuando la respuesta es OK', async () => {
-    globalThis.fetch.mockResolvedValue({
-      ok: true,
-      json: async () => ({ ok: true }),
-    })
+    let calledUrl = ''
+    globalThis.fetch = async (url) => {
+      calledUrl = String(url)
+      return { ok: true, json: async () => ({ ok: true }) }
+    }
     const data = await apiFetch('/api/health')
-    expect(data.ok).toBe(true)
-    expect(globalThis.fetch).toHaveBeenCalled()
+    assert.equal(data.ok, true)
+    assert.ok(calledUrl.includes('/api/health'))
   })
 
   it('lanza Error con el mensaje del servidor cuando no es OK', async () => {
-    globalThis.fetch.mockResolvedValue({
+    globalThis.fetch = async () => ({
       ok: false,
       status: 500,
       json: async () => ({ message: 'Error interno' }),
     })
-    await expect(apiFetch('/api/x')).rejects.toThrow('Error interno')
+    await assert.rejects(apiFetch('/api/x'), (err) => {
+      assert.ok(err instanceof Error)
+      assert.equal(err.message, 'Error interno')
+      return true
+    })
   })
-})
+}) 

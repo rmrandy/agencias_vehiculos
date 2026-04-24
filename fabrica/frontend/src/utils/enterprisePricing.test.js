@@ -1,17 +1,19 @@
-import { describe, it, expect } from 'vitest'
-import { priceWithDiscount } from './enterprisePricing'
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
+import { priceWithDiscount } from './enterprisePricing.js'
 
 describe('priceWithDiscount', () => {
   it('devuelve null si el precio es null', () => {
-    expect(priceWithDiscount(null, 10)).toBeNull()
+    assert.equal(priceWithDiscount(null, 10), null)
   })
 
   it('no aplica descuento si el porcentaje es 0 o null', () => {
-    expect(priceWithDiscount(100, 0)).toBe(100)
-    expect(priceWithDiscount(100, null)).toBe(100)
+    assert.equal(priceWithDiscount(100, 0), 100)
+    assert.equal(priceWithDiscount(100, null), 100)
   })
 
   it('aplica 10% sobre 100 → 90', () => {
-    expect(priceWithDiscount(100, 10)).toBe(90)
+    assert.equal(priceWithDiscount(100, 10), 90)
   })
 })
+ 

@@ -44,7 +44,18 @@ for i in $(seq 1 "$MAX_WAIT"); do
 done
 
 # Frontend (en primer plano; usa el puerto del backend para la API)
-cd "$SCRIPT_DIR/frontend"
-VITE_API_URL="http://localhost:$BE_PORT" npm run dev -- --port "$FE_PORT"
+FE_DIR="$SCRIPT_DIR/frontend"
+cd "$FE_DIR"
+if [ ! -f "node_modules/vite/package.json" ]; then
+  echo ""
+  echo "Error: no hay dependencias del frontend (falta node_modules/vite)."
+  echo "Instálalas una vez y vuelve a ejecutar este script:"
+  echo "  cd \"$FE_DIR\" && npm install"
+  echo ""
+  kill "$BACKEND_PID" 2>/dev/null || true
+  exit 1
+fi
+# npm exec asegura usar el vite local (evita \"vite: command not found\" si el PATH del script no incluye .bin)
+VITE_API_URL="http://localhost:$BE_PORT" npm exec -- vite --port "$FE_PORT"
 # Cuando se cierra el frontend (Ctrl+C), cleanup mata el backend
 cleanup

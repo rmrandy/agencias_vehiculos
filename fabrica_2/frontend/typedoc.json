@@ -1,0 +1,18 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "./src/api",
+    "./src/router",
+    "./src/composables",
+    "./src/utils",
+    "./src/main.js"
+  ],
+  "entryPointStrategy": "expand",
+  "tsconfig": "./tsconfig.typedoc.json",
+  "out": "docs/_site",
+  "name": "Frontend Fábrica",
+  "readme": "docs/index-docs.md",
+  "skipErrorChecking": true,
+  "excludePrivate": true,
+  "excludeInternal": true
+}

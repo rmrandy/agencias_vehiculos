@@ -1,0 +1,38 @@
+[
+  {
+    "partNumber": "FILT-ACEITE-001",
+    "title": "Filtro de aceite universal",
+    "description": "Filtro de aceite para motor. Especificaciones: rosca M20x1.5, altura 120mm.",
+    "categoryId": 1,
+    "brandId": 1,
+    "price": 12.99,
+    "weightLb": 0.5,
+    "stockQuantity": 100,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "PAST-FRENO-DEL",
+    "title": "Pastillas de freno delanteras",
+    "description": "Juego de pastillas de freno para eje delantero. Compatible con varios modelos.",
+    "categoryId": 1,
+    "brandId": 1,
+    "price": 45.50,
+    "weightLb": 2.2,
+    "stockQuantity": 30,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "BOMB-AGUA-002",
+    "title": "Bomba de agua",
+    "description": "Bomba de agua para circuito de refrigeración. Incluye sellos.",
+    "categoryId": 1,
+    "brandId": 1,
+    "price": 89.00,
+    "weightLb": 3.1,
+    "stockQuantity": 8,
+    "lowStockThreshold": 5,
+    "active": 1
+  }
+]
