@@ -17,7 +17,7 @@ class PartServiceTest {
         EntityManagerFactory emf = null;
         PartService svc = new PartService(emf);
         assertThrows(IllegalArgumentException.class,
-            () -> svc.create(1L, 1L, "  ", "Título", null, null, BigDecimal.TEN, 0, 5, null));
+            () -> svc.create(1L, 1L, "  ", "Título", null, null, null, BigDecimal.TEN, 0, 5, null));
     }
 
     @Test
@@ -25,7 +25,7 @@ class PartServiceTest {
         EntityManagerFactory emf = null;
         PartService svc = new PartService(emf);
         assertThrows(IllegalArgumentException.class,
-            () -> svc.create(1L, 1L, "PN-1", "  ", null, null, BigDecimal.TEN, 0, 5, null));
+            () -> svc.create(1L, 1L, "PN-1", "  ", null, null, null, BigDecimal.TEN, 0, 5, null));
     }
 
     @Test
@@ -33,6 +33,6 @@ class PartServiceTest {
         EntityManagerFactory emf = null;
         PartService svc = new PartService(emf);
         assertThrows(IllegalArgumentException.class,
-            () -> svc.create(1L, 1L, "PN-2", "Ok", null, null, BigDecimal.valueOf(-1), 0, 5, null));
+            () -> svc.create(1L, 1L, "PN-2", "Ok", null, null, null, BigDecimal.valueOf(-1), 0, 5, null));
     }
 }
