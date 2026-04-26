@@ -130,6 +130,7 @@ export async function buscarRepuestos(params = {}) {
   if (params.nombre) query.set('nombre', params.nombre)
   if (params.descripcion) query.set('descripcion', params.descripcion)
   if (params.especificaciones) query.set('especificaciones', params.especificaciones)
+  if (params.compatibilityTags) query.set('compatibilityTags', params.compatibilityTags)
   const qs = query.toString()
   return apiFetch(`/api/repuestos/busqueda${qs ? '?' + qs : ''}`)
 }

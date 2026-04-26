@@ -436,6 +436,9 @@
         <member name="T:BackendDistribuidores.Models.Part">
             <summary>Repuesto del catálogo local (misma lógica que fábrica Part).</summary>
         </member>
+        <member name="P:BackendDistribuidores.Models.Part.CompatibilityTags">
+            Tags de compatibilidad (marca/modelo/año, separados por coma). 
+        </member>
         <member name="T:BackendDistribuidores.Models.PartImage">
             <summary>Imagen adicional del repuesto (galería: varias fotos por producto).</summary>
         </member>
@@ -573,10 +576,10 @@
         <member name="T:BackendDistribuidores.Services.PartService">
             <summary>Catálogo local y stock (misma lógica que fábrica: CRUD, imagen BLOB, reserva, confirmar venta).</summary>
         </member>
-        <member name="M:BackendDistribuidores.Services.PartService.CreateAsync(System.Int64,System.Int64,System.String,System.String,System.String,System.Nullable{System.Decimal},System.Decimal,System.Int32,System.Int32,System.Threading.CancellationToken)">
+        <member name="M:BackendDistribuidores.Services.PartService.CreateAsync(System.Int64,System.Int64,System.String,System.String,System.String,System.String,System.Nullable{System.Decimal},System.Decimal,System.Int32,System.Int32,System.Threading.CancellationToken)">
             <summary>Crear repuesto (misma lógica que fábrica). Imagen se asigna después con UpdateImageAsync.</summary>
         </member>
-        <member name="M:BackendDistribuidores.Services.PartService.UpdateAsync(System.Int64,System.Nullable{System.Int64},System.Nullable{System.Int64},System.String,System.String,System.Nullable{System.Decimal},System.Nullable{System.Decimal},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+        <member name="M:BackendDistribuidores.Services.PartService.UpdateAsync(System.Int64,System.Nullable{System.Int64},System.Nullable{System.Int64},System.String,System.String,System.String,System.Nullable{System.Decimal},System.Nullable{System.Decimal},System.Nullable{System.Int32},System.Threading.CancellationToken)">
             <summary>Actualizar datos básicos (misma lógica que fábrica).</summary>
         </member>
         <member name="M:BackendDistribuidores.Services.PartService.UpdateImageAsync(System.Int64,System.Byte[],System.String,System.Threading.CancellationToken)">

@@ -128,6 +128,7 @@ public class RepuestosController : ControllerBase
                 body.PartNumber,
                 body.Title,
                 body.Description,
+                body.CompatibilityTags,
                 body.WeightLb,
                 body.Price ?? 0,
                 body.StockQuantity ?? 0,
@@ -154,6 +155,7 @@ public class RepuestosController : ControllerBase
         try
         {
             var part = await _partService.UpdateAsync(id, body.CategoryId, body.BrandId, body.Title, body.Description,
+                body.CompatibilityTags,
                 body.WeightLb, body.Price, body.Active, ct);
 
             if (body.StockQuantity.HasValue || body.LowStockThreshold.HasValue)
@@ -205,6 +207,7 @@ public class RepuestosController : ControllerBase
             partNumber = p.PartNumber,
             title = p.Title,
             description = p.Description,
+            compatibilityTags = p.CompatibilityTags,
             weightLb = p.WeightLb,
             price = p.Price,
             active = p.Active,
@@ -226,6 +229,7 @@ public class CreateRepuestoRequest
     public string PartNumber { get; set; } = "";
     public string Title { get; set; } = "";
     public string? Description { get; set; }
+    public string? CompatibilityTags { get; set; }
     public decimal? WeightLb { get; set; }
     public decimal? Price { get; set; }
     public int? StockQuantity { get; set; }
@@ -241,6 +245,7 @@ public class UpdateRepuestoRequest
     public long? BrandId { get; set; }
     public string? Title { get; set; }
     public string? Description { get; set; }
+    public string? CompatibilityTags { get; set; }
     public decimal? WeightLb { get; set; }
     public decimal? Price { get; set; }
     public int? Active { get; set; }

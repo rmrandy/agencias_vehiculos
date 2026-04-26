@@ -19,7 +19,7 @@ const marcas = ref([])
 const repuestos = ref([])
 const loading = ref(true)
 const error = ref('')
-const searchForm = ref({ nombre: '', descripcion: '', especificaciones: '' })
+const searchForm = ref({ nombre: '', descripcion: '', especificaciones: '', compatibilityTags: '' })
 const searchLoading = ref(false)
 const isSearchResult = ref(false)
 const showInventarioModal = ref(false)
@@ -43,6 +43,7 @@ const repuestoForm = ref({
   partNumber: '',
   title: '',
   description: '',
+  compatibilityTags: '',
   weightLb: null,
   price: null,
   partYear: null,
@@ -191,6 +192,7 @@ function resetRepuestoForm() {
     partNumber: '',
     title: '',
     description: '',
+    compatibilityTags: '',
     weightLb: null,
     price: null,
     partYear: null,
@@ -210,6 +212,7 @@ function editRepuesto(repuesto) {
     partNumber: repuesto.partNumber,
     title: repuesto.title,
     description: repuesto.description || '',
+    compatibilityTags: repuesto.compatibilityTags || '',
     weightLb: repuesto.weightLb,
     price: repuesto.price,
     partYear: repuesto.partYear ?? null,
@@ -238,8 +241,8 @@ async function deleteRepuesto(repuesto) {
 }
 
 async function runBusqueda() {
-  const { nombre, descripcion, especificaciones } = searchForm.value
-  if (!nombre?.trim() && !descripcion?.trim() && !especificaciones?.trim()) {
+  const { nombre, descripcion, especificaciones, compatibilityTags } = searchForm.value
+  if (!nombre?.trim() && !descripcion?.trim() && !especificaciones?.trim() && !compatibilityTags?.trim()) {
     showError('Indica al menos un criterio de búsqueda')
     return
   }
@@ -249,6 +252,7 @@ async function runBusqueda() {
       nombre: nombre?.trim() || undefined,
       descripcion: descripcion?.trim() || undefined,
       especificaciones: especificaciones?.trim() || undefined,
+      compatibilityTags: compatibilityTags?.trim() || undefined,
     })
     isSearchResult.value = true
     success(`Encontrados ${repuestos.value.length} repuestos`)
@@ -260,7 +264,7 @@ async function runBusqueda() {
 }
 
 function clearBusqueda() {
-  searchForm.value = { nombre: '', descripcion: '', especificaciones: '' }
+  searchForm.value = { nombre: '', descripcion: '', especificaciones: '', compatibilityTags: '' }
   isSearchResult.value = false
   loadData()
 }
@@ -409,6 +413,7 @@ async function submitInventario() {
           <input v-model="searchForm.nombre" placeholder="Nombre" class="search-input" />
           <input v-model="searchForm.descripcion" placeholder="Descripción" class="search-input" />
           <input v-model="searchForm.especificaciones" placeholder="Especificaciones" class="search-input" />
+          <input v-model="searchForm.compatibilityTags" placeholder="Tags compatibilidad (marca/modelo/año)" class="search-input" />
           <button type="button" class="btn btn-primary" :disabled="searchLoading" @click="runBusqueda">Buscar</button>
           <button v-if="isSearchResult" type="button" class="btn btn-secondary" @click="clearBusqueda">Ver todos</button>
         </div>
@@ -442,6 +447,14 @@ async function submitInventario() {
           <div class="form-group full-width">
             <label>Descripción</label>
             <textarea v-model="repuestoForm.description" rows="3" placeholder="Descripción del repuesto"></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label>Compatibilidad (tags)</label>
+            <input
+              v-model="repuestoForm.compatibilityTags"
+              placeholder="Ej: Toyota Corolla 2018, Honda Civic 2019, Mazda 3"
+            />
+            <small>Separa por comas marca/modelo/año para mejorar la búsqueda en distribuidora.</small>
           </div>
           <div class="form-group">
             <label>Peso (lb)</label>

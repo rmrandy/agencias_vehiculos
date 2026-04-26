@@ -2,9 +2,11 @@
 import { useAuth } from '../composables/useAuth'
 import { useCart } from '../composables/useCart'
 import { useRoute, useRouter } from 'vue-router'
+import { useStoreInfo } from '../composables/useStoreInfo'
 
 const { user, isLoggedIn, isAdmin, isEnterprise, logout } = useAuth()
 const { cartCount } = useCart()
+const { storeInfo } = useStoreInfo()
 const route = useRoute()
 const router = useRouter()
 
@@ -23,8 +25,9 @@ function doLogout() {
     <div class="navbar-brand">
       <router-link to="/" class="brand-link">
         <span class="brand-icon">⚙</span>
-        <span class="brand-text">Fábrica</span>
-        <span class="brand-sub">Agencias Vehículos</span>
+        <span class="brand-text">{{ storeInfo.name }}</span>
+        <span class="brand-sub">{{ storeInfo.subtitle }}</span>
+        <span class="brand-sub">{{ storeInfo.generalInfo }}</span>
       </router-link>
     </div>
     <ul class="nav-links">
@@ -83,6 +86,11 @@ function doLogout() {
       <li v-if="isAdmin">
         <router-link to="/reporteria" class="nav-link" :class="{ active: isActive('Reporteria') }">
           <span class="nav-icon">📋</span> Reportería
+        </router-link>
+      </li>
+      <li v-if="isAdmin">
+        <router-link to="/ajustes-tienda" class="nav-link" :class="{ active: isActive('AjustesTienda') }">
+          <span class="nav-icon">🛠</span> Ajustes tienda
         </router-link>
       </li>
 

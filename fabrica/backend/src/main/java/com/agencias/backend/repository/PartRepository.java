@@ -107,22 +107,25 @@ public class PartRepository {
     }
 
     /**
-     * Búsqueda por nombre (título), descripción y especificaciones (descripción).
+     * Búsqueda por nombre (título), descripción, especificaciones y tags de compatibilidad.
      * Cualquier término null se omite. LIKE %valor% en cada campo.
      */
-    public List<Part> search(String nombre, String descripcion, String especificaciones) {
+    public List<Part> search(String nombre, String descripcion, String especificaciones, String compatibilityTags) {
         EntityManager em = emf.createEntityManager();
         try {
             StringBuilder jpql = new StringBuilder("SELECT p FROM Part p WHERE p.active = 1");
             List<String> conditions = new ArrayList<>();
             if (nombre != null && !nombre.isBlank()) {
-                conditions.add("LOWER(p.title) LIKE :nombre");
+                conditions.add("(LOWER(p.title) LIKE :nombre OR LOWER(p.compatibilityTags) LIKE :nombre)");
             }
             if (descripcion != null && !descripcion.isBlank()) {
                 conditions.add("LOWER(p.description) LIKE :descripcion");
             }
             if (especificaciones != null && !especificaciones.isBlank()) {
-                conditions.add("LOWER(p.description) LIKE :espec");
+                conditions.add("(LOWER(p.description) LIKE :espec OR LOWER(p.compatibilityTags) LIKE :espec)");
+            }
+            if (compatibilityTags != null && !compatibilityTags.isBlank()) {
+                conditions.add("LOWER(p.compatibilityTags) LIKE :ctags");
             }
             if (!conditions.isEmpty()) {
                 jpql.append(" AND ").append(String.join(" AND ", conditions));
@@ -137,6 +140,9 @@ public class PartRepository {
             }
             if (especificaciones != null && !especificaciones.isBlank()) {
                 q.setParameter("espec", "%" + especificaciones.toLowerCase().trim() + "%");
+            }
+            if (compatibilityTags != null && !compatibilityTags.isBlank()) {
+                q.setParameter("ctags", "%" + compatibilityTags.toLowerCase().trim() + "%");
             }
             return q.getResultList();
         } finally {

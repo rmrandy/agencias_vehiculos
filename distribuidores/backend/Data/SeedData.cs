@@ -169,6 +169,8 @@ public static class SeedData
                   ALTER TABLE ORDER_ITEM ADD PartNumberSnapshot nvarchar(100) NULL;
                 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'ORDER_ITEM') AND name = N'PartId' AND is_nullable = 0)
                   ALTER TABLE ORDER_ITEM ALTER COLUMN PartId bigint NULL;
+                IF COL_LENGTH(N'PART', N'CompatibilityTags') IS NULL
+                  ALTER TABLE PART ADD CompatibilityTags nvarchar(2000) NULL;
                 IF COL_LENGTH(N'PROVEEDOR', N'FabricaEnterpriseUserId') IS NULL
                   ALTER TABLE PROVEEDOR ADD FabricaEnterpriseUserId bigint NULL;", ct);
         }

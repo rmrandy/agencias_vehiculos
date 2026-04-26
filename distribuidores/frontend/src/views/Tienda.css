@@ -41,5 +41,6 @@
 .product-title-link:hover h3 { color: var(--primary); }
 .product-info h3 { margin: 0; font-size: 1rem; color: #0f172a; transition: color 0.15s; }
 .part-number { font-size: 0.8125rem; color: #64748b; margin: 0; }
+.part-compat { font-size: 0.78rem; color: #475569; margin: 0; line-height: 1.35; }
 .price { font-size: 1.25rem; font-weight: 700; color: #059669; margin: 0; }
 .loading, .no-results { padding: 2rem; text-align: center; color: #64748b; }

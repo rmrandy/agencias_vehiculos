@@ -193,6 +193,7 @@ export function DetalleProductoFabrica() {
           <p className="detalle-code">Código: {part.partNumber}</p>
           <p className="detalle-price">{formatCatalog(Number(part.price))}</p>
           {part.description && <p className="detalle-desc">{part.description}</p>}
+          {part.compatibilityTags && <p className="detalle-meta">Compatibilidad: {part.compatibilityTags}</p>}
           {part.weightLb != null && (
             <p className="detalle-meta">Peso: {Number(part.weightLb).toFixed(2)} lb</p>
           )}

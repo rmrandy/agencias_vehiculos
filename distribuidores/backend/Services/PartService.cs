@@ -45,6 +45,7 @@ public class PartService
             .Where(p => p.Active != 0 && (
                 p.Title.ToLower().Contains(term) ||
                 (p.Description != null && p.Description.ToLower().Contains(term)) ||
+                (p.CompatibilityTags != null && p.CompatibilityTags.ToLower().Contains(term)) ||
                 p.PartNumber.ToLower().Contains(term)))
             .OrderBy(p => p.Title)
             .ToListAsync(ct);
@@ -52,7 +53,7 @@ public class PartService
 
     /// <summary>Crear repuesto (misma lógica que fábrica). Imagen se asigna después con UpdateImageAsync.</summary>
     public async Task<Part> CreateAsync(long categoryId, long brandId, string partNumber, string title,
-        string? description, decimal? weightLb, decimal price, int stockQuantity = 0, int lowStockThreshold = 5,
+        string? description, string? compatibilityTags, decimal? weightLb, decimal price, int stockQuantity = 0, int lowStockThreshold = 5,
         CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(partNumber)) throw new ArgumentException("El número de parte es obligatorio");
@@ -68,6 +69,7 @@ public class PartService
             PartNumber = partNumber.Trim(),
             Title = title.Trim(),
             Description = description?.Trim(),
+            CompatibilityTags = NormalizeTags(compatibilityTags),
             WeightLb = weightLb,
             Price = price,
             Active = 1,
@@ -83,6 +85,7 @@ public class PartService
 
     /// <summary>Actualizar datos básicos (misma lógica que fábrica).</summary>
     public async Task<Part> UpdateAsync(long id, long? categoryId, long? brandId, string? title, string? description,
+        string? compatibilityTags,
         decimal? weightLb, decimal? price, int? active, CancellationToken ct = default)
     {
         var part = await GetByIdAsync(id, ct) ?? throw new ArgumentException("Repuesto no encontrado");
@@ -90,11 +93,19 @@ public class PartService
         if (brandId.HasValue) part.BrandId = brandId.Value;
         if (!string.IsNullOrWhiteSpace(title)) part.Title = title.Trim();
         if (description != null) part.Description = description.Trim();
+        if (compatibilityTags != null) part.CompatibilityTags = NormalizeTags(compatibilityTags);
         if (weightLb.HasValue) part.WeightLb = weightLb;
         if (price.HasValue) part.Price = price.Value;
         if (active.HasValue) part.Active = active.Value;
         await _db.SaveChangesAsync(ct);
         return part;
+    }
+
+    private static string? NormalizeTags(string? raw)
+    {
+        if (raw == null) return null;
+        var v = raw.Trim().Replace(';', ',');
+        return v.Length == 0 ? null : v;
     }
 
     /// <summary>Actualizar imagen BLOB (misma lógica que fábrica).</summary>

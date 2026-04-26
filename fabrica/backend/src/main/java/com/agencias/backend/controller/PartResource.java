@@ -40,6 +40,7 @@ public class PartResource {
             String partNumber = (String) body.get("partNumber");
             String title = (String) body.get("title");
             String description = (String) body.get("description");
+            String compatibilityTags = parseCompatibilityTags(body.get("compatibilityTags"));
             BigDecimal weightLb = body.get("weightLb") != null ? new BigDecimal(body.get("weightLb").toString()) : null;
             BigDecimal price = body.get("price") != null ? new BigDecimal(body.get("price").toString()) : null;
             Integer stockQuantity = body.get("stockQuantity") != null ? ((Number) body.get("stockQuantity")).intValue() : 0;
@@ -70,7 +71,7 @@ public class PartResource {
                 imageTypes.add(imageType);
             }
 
-            Part p = service.create(categoryId, brandId, partNumber, title, description, weightLb, price, stockQuantity, lowStockThreshold, partYear);
+            Part p = service.create(categoryId, brandId, partNumber, title, description, compatibilityTags, weightLb, price, stockQuantity, lowStockThreshold, partYear);
             p = service.replacePartGallery(p.getPartId(), imageBytes, imageTypes);
             fillImageGalleryCount(p);
 
@@ -111,9 +112,10 @@ public class PartResource {
     public Response busqueda(
             @QueryParam("nombre") String nombre,
             @QueryParam("descripcion") String descripcion,
-            @QueryParam("especificaciones") String especificaciones) {
+            @QueryParam("especificaciones") String especificaciones,
+            @QueryParam("compatibilityTags") String compatibilityTags) {
         try {
-            List<Part> list = service.search(nombre, descripcion, especificaciones);
+            List<Part> list = service.search(nombre, descripcion, especificaciones, compatibilityTags);
             return Response.ok(list).build();
         } catch (Exception e) {
             return Response.status(500).entity(new ErrorResponse(500, e.getMessage())).build();
@@ -216,6 +218,9 @@ public class PartResource {
             Long brandId = body.get("brandId") != null ? ((Number) body.get("brandId")).longValue() : null;
             String title = (String) body.get("title");
             String description = (String) body.get("description");
+            String compatibilityTags = body.containsKey("compatibilityTags")
+                    ? parseCompatibilityTags(body.get("compatibilityTags"))
+                    : null;
             BigDecimal weightLb = body.get("weightLb") != null ? new BigDecimal(body.get("weightLb").toString()) : null;
             BigDecimal price = body.get("price") != null ? new BigDecimal(body.get("price").toString()) : null;
             Integer active = body.get("active") != null ? ((Number) body.get("active")).intValue() : null;
@@ -225,7 +230,7 @@ public class PartResource {
             Boolean updatePartYear = body.containsKey("partYear");
             
             // Actualizar datos básicos
-            Part p = service.update(id, categoryId, brandId, title, description, weightLb, price, active, partYear, updatePartYear);
+            Part p = service.update(id, categoryId, brandId, title, description, compatibilityTags, weightLb, price, active, partYear, updatePartYear);
             
             // Actualizar inventario si se proporcionó
             if (stockQuantity != null || lowStockThreshold != null) {
@@ -367,5 +372,21 @@ public class PartResource {
         int main = (p.getImageData() != null && p.getImageData().length > 0) ? 1 : 0;
         int extras = service.countGalleryExtras(p.getPartId());
         p.setImageGalleryCount(main + extras);
+    }
+
+    private static String parseCompatibilityTags(Object raw) {
+        if (raw == null) return null;
+        if (raw instanceof String s) return s;
+        if (raw instanceof List<?> list) {
+            List<String> vals = new ArrayList<>();
+            for (Object o : list) {
+                if (o != null) {
+                    String v = o.toString().trim();
+                    if (!v.isEmpty()) vals.add(v);
+                }
+            }
+            return vals.isEmpty() ? null : String.join(", ", vals);
+        }
+        return raw.toString();
     }
 }

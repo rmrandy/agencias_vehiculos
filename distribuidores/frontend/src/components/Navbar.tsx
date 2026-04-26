@@ -2,12 +2,14 @@ import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
+import { useStoreInfo } from '../context/StoreInfoContext'
 import './Navbar.css'
 
 export function Navbar() {
   const { user, isLoggedIn, logout } = useAuth()
   const { count } = useCart()
   const { monedas, selectedCode, setSelectedCode, loading: monedasLoading } = useCurrency()
+  const { info } = useStoreInfo()
   const location = useLocation()
 
   function isActive(path: string) {
@@ -19,8 +21,9 @@ export function Navbar() {
       <div className="navbar-brand">
         <Link to="/" className="brand-link">
           <span className="brand-icon">📦</span>
-          <span className="brand-text">Distribuidora</span>
-          <span className="brand-sub">Agencias Vehículos</span>
+          <span className="brand-text">{info.name}</span>
+          <span className="brand-sub">{info.subtitle}</span>
+          <span className="brand-sub">{info.generalInfo}</span>
         </Link>
       </div>
       <ul className="nav-links">
@@ -81,6 +84,11 @@ export function Navbar() {
                 <li>
                   <Link to="/aranceles" className={`nav-link ${isActive('/aranceles') ? 'active' : ''}`}>
                     <span className="nav-icon">🌎</span> Fiscal y divisas
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/ajustes-tienda" className={`nav-link ${isActive('/ajustes-tienda') ? 'active' : ''}`}>
+                    <span className="nav-icon">🛠</span> Ajustes tienda
                   </Link>
                 </li>
               </>

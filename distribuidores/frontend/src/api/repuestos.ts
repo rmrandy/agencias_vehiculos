@@ -7,6 +7,7 @@ export interface Part {
   partNumber: string
   title: string
   description?: string
+  compatibilityTags?: string
   weightLb?: number
   price: number
   active?: number
@@ -39,6 +40,7 @@ export interface CreateRepuestoBody {
   partNumber: string
   title: string
   description?: string
+  compatibilityTags?: string
   weightLb?: number
   price: number
   stockQuantity?: number
@@ -52,6 +54,7 @@ export interface UpdateRepuestoBody {
   brandId?: number
   title?: string
   description?: string
+  compatibilityTags?: string
   weightLb?: number
   price?: number
   active?: number

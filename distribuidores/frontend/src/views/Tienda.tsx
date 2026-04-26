@@ -49,14 +49,14 @@ export function Tienda() {
         <h1>Catálogo de repuestos</h1>
         <p className="page-subtitle">
           Catálogo local y fábricas conectadas. Los precios de referencia están en USD; elige la divisa en la barra
-          lateral para ver el equivalente. Usa el buscador para acotar por nombre; si está vacío se muestra todo lo
+          lateral para ver el equivalente. Usa el buscador para acotar por nombre o compatibilidad; si está vacío se muestra todo lo
           activo.
         </p>
       </header>
       <div className="search-bar">
         <input
           type="text"
-          placeholder="Filtrar por nombre (opcional)…"
+          placeholder="Filtrar por nombre, marca/modelo/año (opcional)…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -102,6 +102,7 @@ export function Tienda() {
                   <p className="part-number">Fábrica: {part.proveedorNombre}</p>
                 )}
                 <p className="part-number">{part.partNumber}</p>
+                {part.compatibilityTags && <p className="part-compat">Compatibilidad: {part.compatibilityTags}</p>}
                 <p className="price">{formatCatalog(Number(part.price))}</p>
                 <button
                   type="button"

@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext'
 import { CurrencyProvider } from './context/CurrencyContext'
 import { CartProvider } from './context/CartContext'
 import { ToastProvider } from './context/ToastContext'
+import { StoreInfoProvider } from './context/StoreInfoContext'
 import { Navbar } from './components/Navbar'
 import { Home } from './views/Home'
 import { Login } from './views/Login'
@@ -23,6 +24,7 @@ import { ProveedoresAdmin } from './views/ProveedoresAdmin'
 import { ProveedorForm } from './views/ProveedorForm'
 import { ArancelesAdmin } from './views/ArancelesAdmin'
 import { Reporteria } from './views/Reporteria'
+import { AjustesTienda } from './views/AjustesTienda'
 import './App.css'
 
 /**
@@ -35,11 +37,12 @@ function App() {
       <BrowserRouter>
         <CurrencyProvider>
           <CartProvider>
-            <ToastProvider>
-              <div className="app-layout">
-                <Navbar />
-                <main className="main-content">
-                  <Routes>
+            <StoreInfoProvider>
+              <ToastProvider>
+                <div className="app-layout">
+                  <Navbar />
+                  <main className="main-content">
+                    <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/tienda" element={<Tienda />} />
                     <Route path="/login" element={<Login />} />
@@ -57,15 +60,17 @@ function App() {
                     <Route path="/fabricas/nuevo" element={<ProveedorForm />} />
                     <Route path="/fabricas/editar/:id" element={<ProveedorForm />} />
                     <Route path="/aranceles" element={<ArancelesAdmin />} />
+                    <Route path="/ajustes-tienda" element={<AjustesTienda />} />
                     <Route path="/reportes" element={<Reporteria />} />
                     <Route path="/producto/fabrica/:proveedorId/:partId" element={<DetalleProductoFabrica />} />
                     <Route path="/producto/:id" element={<DetalleProducto />} />
                     <Route path="/gracias" element={<Gracias />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </main>
-              </div>
-            </ToastProvider>
+                    </Routes>
+                  </main>
+                </div>
+              </ToastProvider>
+            </StoreInfoProvider>
           </CartProvider>
         </CurrencyProvider>
       </BrowserRouter>

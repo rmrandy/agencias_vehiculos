@@ -95,6 +95,7 @@ public class AppDbContext : DbContext
             e.HasKey(x => x.PartId);
             e.Property(x => x.PartNumber).HasMaxLength(100).IsRequired();
             e.Property(x => x.Title).HasMaxLength(500).IsRequired();
+            e.Property(x => x.CompatibilityTags).HasMaxLength(2000);
             e.Property(x => x.ImageType).HasMaxLength(50);
             e.Property(x => x.Price).HasPrecision(12, 2);
             e.Property(x => x.WeightLb).HasPrecision(10, 2);

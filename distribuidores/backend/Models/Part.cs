@@ -12,6 +12,8 @@ public class Part
     public string PartNumber { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
+    /** Tags de compatibilidad (marca/modelo/año, separados por coma). */
+    public string? CompatibilityTags { get; set; }
     public decimal? WeightLb { get; set; }
     public decimal Price { get; set; }
     public int Active { get; set; } = 1;

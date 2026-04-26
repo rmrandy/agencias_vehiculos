@@ -30,6 +30,10 @@ public class Part {
     @Column
     private String description;
 
+    /** Tags de compatibilidad (ej. "toyota corolla, honda civic 2018"). */
+    @Column(name = "COMPATIBILITY_TAGS", length = 2000)
+    private String compatibilityTags;
+
     @Column(name = "WEIGHT_LB", precision = 10, scale = 2)
     private BigDecimal weightLb;
 
@@ -123,6 +127,8 @@ public class Part {
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public String getCompatibilityTags() { return compatibilityTags; }
+    public void setCompatibilityTags(String compatibilityTags) { this.compatibilityTags = compatibilityTags; }
     public BigDecimal getWeightLb() { return weightLb; }
     public void setWeightLb(BigDecimal weightLb) { this.weightLb = weightLb; }
     public BigDecimal getPrice() { return price; }

@@ -29,7 +29,7 @@
 
       <div class="filter-group">
         <label>Buscar:</label>
-        <input v-model="searchQuery" type="text" placeholder="Nombre o número de parte..." />
+        <input v-model="searchQuery" type="text" placeholder="Nombre, número de parte o tags de compatibilidad..." />
       </div>
     </div>
 
@@ -148,7 +148,8 @@ const filteredParts = computed(() => {
     filtered = filtered.filter(p => 
       p.title.toLowerCase().includes(query) ||
       p.partNumber.toLowerCase().includes(query) ||
-      (p.description && p.description.toLowerCase().includes(query))
+      (p.description && p.description.toLowerCase().includes(query)) ||
+      (p.compatibilityTags && p.compatibilityTags.toLowerCase().includes(query))
     )
   }
 

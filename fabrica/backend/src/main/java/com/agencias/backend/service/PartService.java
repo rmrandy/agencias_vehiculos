@@ -48,7 +48,7 @@ public class PartService {
     }
 
     public Part create(Long categoryId, Long brandId, String partNumber, String title, 
-                      String description, BigDecimal weightLb, BigDecimal price, 
+                      String description, String compatibilityTags, BigDecimal weightLb, BigDecimal price, 
                       Integer stockQuantity, Integer lowStockThreshold, Integer partYear) {
         if (partNumber == null || partNumber.isBlank()) {
             throw new IllegalArgumentException("El número de parte es obligatorio");
@@ -69,6 +69,7 @@ public class PartService {
         p.setPartNumber(partNumber.trim());
         p.setTitle(title.trim());
         p.setDescription(description != null ? description.trim() : null);
+        p.setCompatibilityTags(normalizeTags(compatibilityTags));
         p.setWeightLb(weightLb);
         p.setPrice(price);
         p.setStockQuantity(stockQuantity != null ? stockQuantity : 0);
@@ -78,17 +79,25 @@ public class PartService {
     }
 
     public Part update(Long id, Long categoryId, Long brandId, String title, 
-                      String description, BigDecimal weightLb, BigDecimal price, Integer active, Integer partYear, Boolean updatePartYear) {
+                      String description, String compatibilityTags, BigDecimal weightLb, BigDecimal price, Integer active, Integer partYear, Boolean updatePartYear) {
         Part p = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Repuesto no encontrado"));
         if (categoryId != null) p.setCategoryId(categoryId);
         if (brandId != null) p.setBrandId(brandId);
         if (title != null && !title.isBlank()) p.setTitle(title.trim());
         if (description != null) p.setDescription(description.trim());
+        if (compatibilityTags != null) p.setCompatibilityTags(normalizeTags(compatibilityTags));
         if (weightLb != null) p.setWeightLb(weightLb);
         if (price != null) p.setPrice(price);
         if (active != null) p.setActive(active);
         if (updatePartYear != null && updatePartYear) p.setPartYear(partYear);
         return repo.save(p);
+    }
+
+    private String normalizeTags(String raw) {
+        if (raw == null) return null;
+        String v = raw.trim().replace(';', ',');
+        if (v.isEmpty()) return null;
+        return v;
     }
 
     public Part updateImage(Long id, byte[] imageData, String imageType) {
@@ -259,8 +268,8 @@ public class PartService {
     /**
      * Búsqueda por nombre, descripción y especificaciones (descripción).
      */
-    public List<Part> search(String nombre, String descripcion, String especificaciones) {
-        return repo.search(nombre, descripcion, especificaciones);
+    public List<Part> search(String nombre, String descripcion, String especificaciones, String compatibilityTags) {
+        return repo.search(nombre, descripcion, especificaciones, compatibilityTags);
     }
 
     /**

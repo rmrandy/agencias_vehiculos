@@ -43,6 +43,7 @@ export function ProductoForm() {
   const [partNumber, setPartNumber] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [compatibilityTags, setCompatibilityTags] = useState('')
   const [weightLb, setWeightLb] = useState<string>('')
   const [price, setPrice] = useState<string>('')
   const [stockQuantity, setStockQuantity] = useState<string>('')
@@ -69,6 +70,7 @@ export function ProductoForm() {
         setPartNumber(p.partNumber)
         setTitle(p.title)
         setDescription(p.description ?? '')
+        setCompatibilityTags(p.compatibilityTags ?? '')
         setWeightLb(p.weightLb != null ? String(p.weightLb) : '')
         setPrice(String(p.price))
         setStockQuantity(p.stockQuantity != null ? String(p.stockQuantity) : '')
@@ -140,6 +142,7 @@ export function ProductoForm() {
         brandId: brandId || undefined,
         title: title.trim(),
         description: description.trim() || undefined,
+        compatibilityTags: compatibilityTags.trim() || undefined,
         weightLb: numWeight,
         price: numPrice,
         active,
@@ -164,6 +167,7 @@ export function ProductoForm() {
         partNumber: partNumber.trim(),
         title: title.trim(),
         description: description.trim() || undefined,
+        compatibilityTags: compatibilityTags.trim() || undefined,
         weightLb: numWeight,
         price: numPrice,
         stockQuantity: numStock,
@@ -230,6 +234,16 @@ export function ProductoForm() {
         <div className="form-group">
           <label>Descripción</label>
           <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
+        </div>
+        <div className="form-group">
+          <label>Compatibilidad (tags marca/modelo/año)</label>
+          <input
+            type="text"
+            value={compatibilityTags}
+            onChange={(e) => setCompatibilityTags(e.target.value)}
+            placeholder="Ej: Toyota Corolla 2018, Honda Civic 2019, Hyundai Elantra"
+          />
+          <small className="form-help">Separa por comas para mejorar la búsqueda del catálogo.</small>
         </div>
         <div className="form-row-two">
           <div className="form-group">

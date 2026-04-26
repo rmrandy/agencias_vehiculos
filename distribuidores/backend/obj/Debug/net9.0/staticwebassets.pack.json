@@ -1,8 +1,16 @@
 {
   "Files": [
     {
+      "Id": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-b6297229.css",
+      "PackagePath": "staticwebassets/assets/index-b6297229.css"
+    },
+    {
       "Id": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-c0089b44.css",
       "PackagePath": "staticwebassets/assets/index-c0089b44.css"
+    },
+    {
+      "Id": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-cad3829b.js",
+      "PackagePath": "staticwebassets/assets/index-cad3829b.js"
     },
     {
       "Id": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-fe378831.js",

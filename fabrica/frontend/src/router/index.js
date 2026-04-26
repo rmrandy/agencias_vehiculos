@@ -26,6 +26,7 @@ const routes = [
   { path: '/catalogo', name: 'Catalogo', component: () => import('../views/Catalogo.vue'), meta: { title: 'Catálogo', requiresAdmin: true } },
   { path: '/pedidos', name: 'GestionPedidos', component: () => import('../views/GestionPedidos.vue'), meta: { title: 'Gestión de pedidos', requiresAdmin: true } },
   { path: '/reporteria', name: 'Reporteria', component: () => import('../views/Reporteria.vue'), meta: { title: 'Reportería', requiresAdmin: true } },
+  { path: '/ajustes-tienda', name: 'AjustesTienda', component: () => import('../views/AjustesTienda.vue'), meta: { title: 'Ajustes de tienda', requiresAdmin: true } },
   
   // Usuario empresarial (compras B2B, perfil con dirección/tarjeta/horario)
   { path: '/mi-perfil-empresarial', name: 'PerfilEmpresarial', component: () => import('../views/PerfilEmpresarial.vue'), meta: { title: 'Mi perfil empresarial', requiresAuth: true } },

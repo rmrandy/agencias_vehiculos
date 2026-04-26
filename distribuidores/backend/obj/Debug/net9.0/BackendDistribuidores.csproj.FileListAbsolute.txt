@@ -212,4 +212,6 @@
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/7ukdvrs001-goh33qrdpy.gz
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/u80u8fv82t-mzsql74kfo.gz
 /Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6qpulk14q9-69kjnsiwqx.gz
-/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-2fxxwpgis6.gz
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/wdry26rwn6-ar66ayzed0.gz
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/jhovdpjxbo-otrps5rmhq.gz
+/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-fmmjj6cosv.gz

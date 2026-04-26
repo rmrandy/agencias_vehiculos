@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.agencias.backend"},{"l":"com.agencias.backend.config"},{"l":"com.agencias.backend.controller"},{"l":"com.agencias.backend.controller.dto"},{"l":"com.agencias.backend.model"},{"l":"com.agencias.backend.repository"},{"l":"com.agencias.backend.service"}];updateSearchResults();

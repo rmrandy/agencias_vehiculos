@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "947UZH6yX+GK8c5DcW64ehGNhdFBYg3P6zq/gXtQ/RM=",
+  "Hash": "W6HgtaDG2p26u/H6mQ5myfj4NK/Z92gc1Tx5B7Noozo=",
   "Source": "BackendDistribuidores",
   "BasePath": "_content/BackendDistribuidores",
   "Mode": "Default",
@@ -17,12 +17,12 @@
   ],
   "Assets": [
     {
-      "Identity": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-2fxxwpgis6.gz",
+      "Identity": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-fmmjj6cosv.gz",
       "SourceId": "BackendDistribuidores",
       "SourceType": "Discovered",
       "ContentRoot": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/",
       "BasePath": "_content/BackendDistribuidores",
-      "RelativePath": "index#[.{fingerprint=2fxxwpgis6}]?.html.gz",
+      "RelativePath": "index#[.{fingerprint=fmmjj6cosv}]?.html.gz",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Alternative",
@@ -31,8 +31,8 @@
       "RelatedAsset": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/index.html",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "yvf74mf4k3",
-      "Integrity": "LtiA9WZGepshGBDfh/szIQqixzcNR1fbNRzIL4jShXU=",
+      "Fingerprint": "33b5nlpkb6",
+      "Integrity": "ob2GIY3+Q4+snI30z8ScX9gPCNPToBJGYmwTD0040bo=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/index.html"
@@ -80,6 +80,27 @@
       "OriginalItemSpec": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-c0089b44.css"
     },
     {
+      "Identity": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/jhovdpjxbo-otrps5rmhq.gz",
+      "SourceId": "BackendDistribuidores",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/",
+      "BasePath": "_content/BackendDistribuidores",
+      "RelativePath": "assets/index-cad3829b#[.{fingerprint=otrps5rmhq}]?.js.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-cad3829b.js",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "9i0e6or9u2",
+      "Integrity": "ERDA5S08+8JG4Io9V01EoI0NRUrCiD7lTC9/7Uwd2c8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-cad3829b.js"
+    },
+    {
       "Identity": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/u80u8fv82t-mzsql74kfo.gz",
       "SourceId": "BackendDistribuidores",
       "SourceType": "Discovered",
@@ -101,6 +122,48 @@
       "OriginalItemSpec": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-fe378831.js"
     },
     {
+      "Identity": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/wdry26rwn6-ar66ayzed0.gz",
+      "SourceId": "BackendDistribuidores",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/",
+      "BasePath": "_content/BackendDistribuidores",
+      "RelativePath": "assets/index-b6297229#[.{fingerprint=ar66ayzed0}]?.css.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-b6297229.css",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "uhzzpwdn0k",
+      "Integrity": "cmeqi8UJD55JBwDN6+huAWvmK/ie7y98v/MvmUXggk4=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-b6297229.css"
+    },
+    {
+      "Identity": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-b6297229.css",
+      "SourceId": "BackendDistribuidores",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/",
+      "BasePath": "_content/BackendDistribuidores",
+      "RelativePath": "assets/index-b6297229#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ar66ayzed0",
+      "Integrity": "tilyKWnEsJQt21NeW3iMSZbY3H32bmfOqmIUl2req8w=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/assets/index-b6297229.css"
+    },
+    {
       "Identity": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-c0089b44.css",
       "SourceId": "BackendDistribuidores",
       "SourceType": "Discovered",
@@ -120,6 +183,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/assets/index-c0089b44.css"
+    },
+    {
+      "Identity": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-cad3829b.js",
+      "SourceId": "BackendDistribuidores",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/",
+      "BasePath": "_content/BackendDistribuidores",
+      "RelativePath": "assets/index-cad3829b#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "otrps5rmhq",
+      "Integrity": "HFmO7H38mplOdvggqo+1DO5ghKlz5qG74ZHbj4haRCk=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/assets/index-cad3829b.js"
     },
     {
       "Identity": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-fe378831.js",
@@ -157,8 +241,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "2fxxwpgis6",
-      "Integrity": "kjR0V64YdWnGxfcMZBCvAFDWAU3f/81ZY4FP28+7C0o=",
+      "Fingerprint": "fmmjj6cosv",
+      "Integrity": "uXtIOfh++NaQAKtBj35pO4LCHwTNPGdtDd2+lq5a6mM=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/index.html"
@@ -186,6 +270,304 @@
     }
   ],
   "Endpoints": [
+    {
+      "Route": "assets/index-b6297229.ar66ayzed0.css",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/wdry26rwn6-ar66ayzed0.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000125992188"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "7936"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"cmeqi8UJD55JBwDN6+huAWvmK/ie7y98v/MvmUXggk4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"tilyKWnEsJQt21NeW3iMSZbY3H32bmfOqmIUl2req8w=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ar66ayzed0"
+        },
+        {
+          "Name": "label",
+          "Value": "assets/index-b6297229.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-tilyKWnEsJQt21NeW3iMSZbY3H32bmfOqmIUl2req8w="
+        }
+      ]
+    },
+    {
+      "Route": "assets/index-b6297229.ar66ayzed0.css",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-b6297229.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "45865"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"tilyKWnEsJQt21NeW3iMSZbY3H32bmfOqmIUl2req8w=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ar66ayzed0"
+        },
+        {
+          "Name": "label",
+          "Value": "assets/index-b6297229.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-tilyKWnEsJQt21NeW3iMSZbY3H32bmfOqmIUl2req8w="
+        }
+      ]
+    },
+    {
+      "Route": "assets/index-b6297229.ar66ayzed0.css.gz",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/wdry26rwn6-ar66ayzed0.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "7936"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"cmeqi8UJD55JBwDN6+huAWvmK/ie7y98v/MvmUXggk4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ar66ayzed0"
+        },
+        {
+          "Name": "label",
+          "Value": "assets/index-b6297229.css.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-cmeqi8UJD55JBwDN6+huAWvmK/ie7y98v/MvmUXggk4="
+        }
+      ]
+    },
+    {
+      "Route": "assets/index-b6297229.css",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/wdry26rwn6-ar66ayzed0.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000125992188"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "7936"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"cmeqi8UJD55JBwDN6+huAWvmK/ie7y98v/MvmUXggk4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"tilyKWnEsJQt21NeW3iMSZbY3H32bmfOqmIUl2req8w=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-tilyKWnEsJQt21NeW3iMSZbY3H32bmfOqmIUl2req8w="
+        }
+      ]
+    },
+    {
+      "Route": "assets/index-b6297229.css",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-b6297229.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "45865"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"tilyKWnEsJQt21NeW3iMSZbY3H32bmfOqmIUl2req8w=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-tilyKWnEsJQt21NeW3iMSZbY3H32bmfOqmIUl2req8w="
+        }
+      ]
+    },
+    {
+      "Route": "assets/index-b6297229.css.gz",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/wdry26rwn6-ar66ayzed0.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "7936"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"cmeqi8UJD55JBwDN6+huAWvmK/ie7y98v/MvmUXggk4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-cmeqi8UJD55JBwDN6+huAWvmK/ie7y98v/MvmUXggk4="
+        }
+      ]
+    },
     {
       "Route": "assets/index-c0089b44.css",
       "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/7ukdvrs001-goh33qrdpy.gz",
@@ -481,6 +863,304 @@
         {
           "Name": "integrity",
           "Value": "sha256-/RR0cwuAnJpOftAnYpMzUk9mhs8cmcfLHIRu1llK7O8="
+        }
+      ]
+    },
+    {
+      "Route": "assets/index-cad3829b.js",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/jhovdpjxbo-otrps5rmhq.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000012333194"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "81081"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ERDA5S08+8JG4Io9V01EoI0NRUrCiD7lTC9/7Uwd2c8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"HFmO7H38mplOdvggqo+1DO5ghKlz5qG74ZHbj4haRCk=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-HFmO7H38mplOdvggqo+1DO5ghKlz5qG74ZHbj4haRCk="
+        }
+      ]
+    },
+    {
+      "Route": "assets/index-cad3829b.js",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-cad3829b.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "273802"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"HFmO7H38mplOdvggqo+1DO5ghKlz5qG74ZHbj4haRCk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-HFmO7H38mplOdvggqo+1DO5ghKlz5qG74ZHbj4haRCk="
+        }
+      ]
+    },
+    {
+      "Route": "assets/index-cad3829b.js.gz",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/jhovdpjxbo-otrps5rmhq.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "81081"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ERDA5S08+8JG4Io9V01EoI0NRUrCiD7lTC9/7Uwd2c8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-ERDA5S08+8JG4Io9V01EoI0NRUrCiD7lTC9/7Uwd2c8="
+        }
+      ]
+    },
+    {
+      "Route": "assets/index-cad3829b.otrps5rmhq.js",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/jhovdpjxbo-otrps5rmhq.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000012333194"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "81081"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ERDA5S08+8JG4Io9V01EoI0NRUrCiD7lTC9/7Uwd2c8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"HFmO7H38mplOdvggqo+1DO5ghKlz5qG74ZHbj4haRCk=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "otrps5rmhq"
+        },
+        {
+          "Name": "label",
+          "Value": "assets/index-cad3829b.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-HFmO7H38mplOdvggqo+1DO5ghKlz5qG74ZHbj4haRCk="
+        }
+      ]
+    },
+    {
+      "Route": "assets/index-cad3829b.otrps5rmhq.js",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/assets/index-cad3829b.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "273802"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"HFmO7H38mplOdvggqo+1DO5ghKlz5qG74ZHbj4haRCk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "otrps5rmhq"
+        },
+        {
+          "Name": "label",
+          "Value": "assets/index-cad3829b.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-HFmO7H38mplOdvggqo+1DO5ghKlz5qG74ZHbj4haRCk="
+        }
+      ]
+    },
+    {
+      "Route": "assets/index-cad3829b.otrps5rmhq.js.gz",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/jhovdpjxbo-otrps5rmhq.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "81081"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ERDA5S08+8JG4Io9V01EoI0NRUrCiD7lTC9/7Uwd2c8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "otrps5rmhq"
+        },
+        {
+          "Name": "label",
+          "Value": "assets/index-cad3829b.js.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ERDA5S08+8JG4Io9V01EoI0NRUrCiD7lTC9/7Uwd2c8="
         }
       ]
     },
@@ -783,8 +1463,8 @@
       ]
     },
     {
-      "Route": "index.2fxxwpgis6.html",
-      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-2fxxwpgis6.gz",
+      "Route": "index.fmmjj6cosv.html",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-fmmjj6cosv.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
@@ -803,11 +1483,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"LtiA9WZGepshGBDfh/szIQqixzcNR1fbNRzIL4jShXU=\""
+          "Value": "\"ob2GIY3+Q4+snI30z8ScX9gPCNPToBJGYmwTD0040bo=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -827,13 +1507,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"kjR0V64YdWnGxfcMZBCvAFDWAU3f/81ZY4FP28+7C0o=\""
+          "Value": "W/\"uXtIOfh++NaQAKtBj35pO4LCHwTNPGdtDd2+lq5a6mM=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "2fxxwpgis6"
+          "Value": "fmmjj6cosv"
         },
         {
           "Name": "label",
@@ -841,12 +1521,12 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-kjR0V64YdWnGxfcMZBCvAFDWAU3f/81ZY4FP28+7C0o="
+          "Value": "sha256-uXtIOfh++NaQAKtBj35pO4LCHwTNPGdtDd2+lq5a6mM="
         }
       ]
     },
     {
-      "Route": "index.2fxxwpgis6.html",
+      "Route": "index.fmmjj6cosv.html",
       "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/wwwroot/index.html",
       "Selectors": [],
       "ResponseHeaders": [
@@ -864,11 +1544,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"kjR0V64YdWnGxfcMZBCvAFDWAU3f/81ZY4FP28+7C0o=\""
+          "Value": "\"uXtIOfh++NaQAKtBj35pO4LCHwTNPGdtDd2+lq5a6mM=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -878,7 +1558,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "2fxxwpgis6"
+          "Value": "fmmjj6cosv"
         },
         {
           "Name": "label",
@@ -886,13 +1566,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-kjR0V64YdWnGxfcMZBCvAFDWAU3f/81ZY4FP28+7C0o="
+          "Value": "sha256-uXtIOfh++NaQAKtBj35pO4LCHwTNPGdtDd2+lq5a6mM="
         }
       ]
     },
     {
-      "Route": "index.2fxxwpgis6.html.gz",
-      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-2fxxwpgis6.gz",
+      "Route": "index.fmmjj6cosv.html.gz",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-fmmjj6cosv.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -909,11 +1589,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"LtiA9WZGepshGBDfh/szIQqixzcNR1fbNRzIL4jShXU=\""
+          "Value": "\"ob2GIY3+Q4+snI30z8ScX9gPCNPToBJGYmwTD0040bo=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -931,7 +1611,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "2fxxwpgis6"
+          "Value": "fmmjj6cosv"
         },
         {
           "Name": "label",
@@ -939,13 +1619,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-LtiA9WZGepshGBDfh/szIQqixzcNR1fbNRzIL4jShXU="
+          "Value": "sha256-ob2GIY3+Q4+snI30z8ScX9gPCNPToBJGYmwTD0040bo="
         }
       ]
     },
     {
       "Route": "index.html",
-      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-2fxxwpgis6.gz",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-fmmjj6cosv.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
@@ -964,11 +1644,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"LtiA9WZGepshGBDfh/szIQqixzcNR1fbNRzIL4jShXU=\""
+          "Value": "\"ob2GIY3+Q4+snI30z8ScX9gPCNPToBJGYmwTD0040bo=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -988,13 +1668,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"kjR0V64YdWnGxfcMZBCvAFDWAU3f/81ZY4FP28+7C0o=\""
+          "Value": "W/\"uXtIOfh++NaQAKtBj35pO4LCHwTNPGdtDd2+lq5a6mM=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-kjR0V64YdWnGxfcMZBCvAFDWAU3f/81ZY4FP28+7C0o="
+          "Value": "sha256-uXtIOfh++NaQAKtBj35pO4LCHwTNPGdtDd2+lq5a6mM="
         }
       ]
     },
@@ -1017,11 +1697,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"kjR0V64YdWnGxfcMZBCvAFDWAU3f/81ZY4FP28+7C0o=\""
+          "Value": "\"uXtIOfh++NaQAKtBj35pO4LCHwTNPGdtDd2+lq5a6mM=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1031,13 +1711,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-kjR0V64YdWnGxfcMZBCvAFDWAU3f/81ZY4FP28+7C0o="
+          "Value": "sha256-uXtIOfh++NaQAKtBj35pO4LCHwTNPGdtDd2+lq5a6mM="
         }
       ]
     },
     {
       "Route": "index.html.gz",
-      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-2fxxwpgis6.gz",
+      "AssetFile": "/Users/randyrivera/Documents/agencias_vehiculos/distribuidores/backend/obj/Debug/net9.0/compressed/6kv8u14pj9-fmmjj6cosv.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1054,11 +1734,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"LtiA9WZGepshGBDfh/szIQqixzcNR1fbNRzIL4jShXU=\""
+          "Value": "\"ob2GIY3+Q4+snI30z8ScX9gPCNPToBJGYmwTD0040bo=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:48 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1076,7 +1756,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-LtiA9WZGepshGBDfh/szIQqixzcNR1fbNRzIL4jShXU="
+          "Value": "sha256-ob2GIY3+Q4+snI30z8ScX9gPCNPToBJGYmwTD0040bo="
         }
       ]
     },
@@ -1105,7 +1785,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:47 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1166,7 +1846,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:47 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1211,7 +1891,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:47 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1266,7 +1946,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:47 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1319,7 +1999,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:47 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1356,7 +2036,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Apr 2026 00:07:57 GMT"
+          "Value": "Sun, 26 Apr 2026 17:38:47 GMT"
         },
         {
           "Name": "Cache-Control",
