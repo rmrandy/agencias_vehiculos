@@ -65,7 +65,7 @@ export function Tienda() {
       .sort((a, b) => a.name.localeCompare(b.name, 'es'))
   }, [parts])
 
-  const filtered = useMemo(() => {
+  const groupingRows = useMemo(() => {
     let rows = parts.filter((p) => p.active !== 0)
 
     if (sourceFilter !== 'all') rows = rows.filter((p) => (p.source ?? 'local') === sourceFilter)
@@ -75,6 +75,36 @@ export function Tienda() {
     }
     if (onlyInStock) rows = rows.filter((p) => p.inStock !== false)
     if (onlyWithImage) rows = rows.filter((p) => p.hasImage === true)
+    return rows
+  }, [parts, sourceFilter, selectedProveedor, onlyInStock, onlyWithImage])
+
+  const bestPriceByTitle = useMemo(() => {
+    const byTitle = new Map<string, number>()
+    for (const row of groupingRows) {
+      const key = (row.title || '').trim().toLowerCase()
+      const price = Number(row.price)
+      const prev = byTitle.get(key)
+      if (prev == null || price < prev) byTitle.set(key, price)
+    }
+    return byTitle
+  }, [groupingRows])
+
+  const optionsByTitle = useMemo(() => {
+    const map = new Map<string, CatalogPart[]>()
+    for (const row of groupingRows) {
+      const key = (row.title || '').trim().toLowerCase()
+      const list = map.get(key) ?? []
+      list.push(row)
+      map.set(key, list)
+    }
+    for (const list of map.values()) {
+      list.sort((a, b) => Number(a.price) - Number(b.price))
+    }
+    return map
+  }, [groupingRows])
+
+  const filtered = useMemo(() => {
+    let rows = groupingRows
 
     if (onlyBestPriceByTitle) {
       const byTitle = new Map<string, CatalogPart>()
@@ -95,7 +125,7 @@ export function Tienda() {
       return (a.title || '').localeCompare(b.title || '', 'es')
     })
     return rows
-  }, [parts, sourceFilter, selectedProveedor, onlyInStock, onlyWithImage, onlyBestPriceByTitle, sortBy])
+  }, [groupingRows, onlyBestPriceByTitle, sortBy])
 
   const pageSize = 24
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
@@ -183,6 +213,13 @@ export function Tienda() {
                 }
                 className="product-image"
               >
+                {(() => {
+                  const titleKey = (part.title || '').trim().toLowerCase()
+                  const bestPrice = bestPriceByTitle.get(titleKey)
+                  const isBest = bestPrice != null && Number(part.price) === bestPrice
+                  if (!isBest) return null
+                  return <span className="best-price-badge">Mejor precio</span>
+                })()}
                 {part.hasImage ? (
                   <img
                     src={
@@ -213,6 +250,31 @@ export function Tienda() {
                 <p className="part-number">{part.partNumber}</p>
                 {part.compatibilityTags && <p className="part-compat">Compatibilidad: {part.compatibilityTags}</p>}
                 <p className="price">{formatCatalog(Number(part.price))}</p>
+                {(() => {
+                  const titleKey = (part.title || '').trim().toLowerCase()
+                  const options = optionsByTitle.get(titleKey) ?? []
+                  if (options.length <= 1) return null
+                  return (
+                    <div className="price-options">
+                      <p className="price-options-title">Opciones disponibles ({options.length})</p>
+                      <div className="price-options-list">
+                        {options.map((opt) => {
+                          const optKey = catalogLineKey(opt)
+                          const isCurrent = optKey === catalogLineKey(part)
+                          const optTo =
+                            opt.source === 'fabrica' && opt.proveedorId != null
+                              ? `/producto/fabrica/${opt.proveedorId}/${opt.partId}`
+                              : `/producto/${opt.partId}`
+                          return (
+                            <Link key={optKey} to={optTo} className={`price-option-chip${isCurrent ? ' is-current' : ''}`}>
+                              {formatCatalog(Number(opt.price))} · {opt.source === 'fabrica' ? (opt.proveedorNombre || 'Fábrica') : 'Distribuidora'}
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )
+                })()}
                 <button
                   type="button"
                   className="btn btn-primary"

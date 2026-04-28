@@ -1,0 +1,251 @@
+================================================================================
+DOCUMENTACIÓN DETALLADA — MÓDULO FÁBRICA (Portal + API por instancia)
+Proyecto: agencias_vehiculos | fabrica/frontend, fabrica/backend
+Nivel: pantalla + proceso + regla + implementación
+================================================================================
+
+1) MANUAL DE USUARIO (INSUMOS DETALLADOS)
+
+1.1 Objetivo y usuarios
+  • La Fábrica publica catálogo de repuestos, vende, administra inventario y
+    atiende pedidos propios o pedidos originados por distribuidora.
+  • Usuarios: anónimo, REGISTERED, ENTERPRISE, ADMIN.
+
+1.2 Pantallas y propósito (router Vue)
+  • / : Tienda pública (consulta catálogo).
+  • /producto/:id : Detalle de repuesto.
+  • /login, /register : autenticación/registro.
+  • /dashboard : inicio autenticado.
+  • /carrito, /checkout : compra.
+  • /mis-pedidos, /mis-pedidos/:id : historial y detalle.
+  • /usuarios : administración de usuarios/roles/perfil enterprise.
+  • /catalogo : gestión de repuestos e inventario (admin).
+  • /pedidos : gestión de pedidos/estados (admin).
+  • /reporteria : indicadores y reportes (admin).
+  • /ajustes-tienda : parámetros de tienda (admin).
+  • /mi-perfil-empresarial : perfil B2B (requiere ENTERPRISE).
+
+1.3 Campos por formulario (mínimo funcional documentado)
+  A) Login
+    - email (obligatorio)
+    - password (obligatorio)
+    - error esperado: "Email y contraseña son obligatorios", "Credenciales incorrectas".
+  B) Registro de usuario
+    - email, password (obligatorios), fullName, phone (opcionales según UI)
+    - regla: primer usuario creado en el sistema recibe ADMIN.
+  C) Repuesto (alta/edición)
+    - categoryId (obligatorio)
+    - brandId (obligatorio)
+    - partNumber (obligatorio, único)
+    - title (obligatorio)
+    - description (opcional)
+    - compatibilityTags (opcional)
+    - weightLb (opcional)
+    - price (obligatorio de negocio)
+    - stockQuantity, lowStockThreshold, active
+    - imageData, imageType (opcionales)
+  D) Inventario de repuesto
+    - stockQuantity
+    - lowStockThreshold
+    - para alta incremental: qty
+  E) Checkout
+    - userId
+    - items[] con partId y qty
+    - payment opcional: cardNumber, expiryMonth, expiryYear
+  F) Cambio de estado pedido (admin)
+    - status (obligatorio)
+    - comment (opcional)
+    - changedByUserId (recomendado/esperado)
+    - trackingNumber, etaDays (para SHIPPED)
+  G) Perfil empresarial
+    - discountPercent
+    - apiKey u otros campos empresariales (según entidad/profile)
+
+1.4 Flujos exactos (paso a paso)
+  Flujo U1: Iniciar sesión
+    1. Usuario entra a /login.
+    2. Ingresa email/password.
+    3. Front llama POST /api/auth/login.
+    4. Si 200, guarda fabrica_user en localStorage.
+    5. Redirección:
+       - ADMIN -> dashboard
+       - no admin -> tienda/home según guard.
+    6. Si 401, mostrar "Credenciales incorrectas".
+
+  Flujo U2: Crear repuesto (admin)
+    1. Admin abre /catalogo y pulsa "nuevo repuesto".
+    2. Completa campos obligatorios (categoryId, brandId, partNumber, title, price).
+    3. Opcional: imagen y compatibilidad.
+    4. Front envía POST /api/repuestos.
+    5. Si éxito (201), refresca listado o redirige a detalle/edición.
+    6. Si error (400), mostrar validación de campo.
+
+  Flujo U3: Compra web
+    1. Usuario en /tienda agrega producto al carrito.
+    2. Abre /carrito y confirma cantidades.
+    3. Ir a /checkout.
+    4. Completa pago (opcional en API; si se envía se valida).
+    5. Front envía POST /api/pedidos.
+    6. Resultado:
+       - 201: pedido creado, estado INITIATED, ir a /mis-pedidos o detalle.
+       - 400: stock insuficiente o datos inválidos.
+
+  Flujo U4: Cambiar estado de pedido (admin)
+    1. Abrir /pedidos.
+    2. Elegir pedido y nuevo estado.
+    3. Si SHIPPED, ingresar tracking/eta (si aplica).
+    4. Front envía PUT /api/pedidos/{orderId}/estado.
+    5. Sistema bloquea retroceso de estado.
+    6. Si origen DISTRIBUIDORA, puede disparar webhook al actualizar.
+
+1.5 Reglas visibles al usuario
+  • Estados válidos: INITIATED, PREPARING, SHIPPED, DELIVERED, CANCELLED.
+  • No se puede retroceder de estado.
+  • No se cancela pedido ya entregado.
+  • Bajo stock: available = stockQuantity - reservedQuantity; alerta si <= threshold.
+  • Descuento enterprise: aplica al subtotal cuando existe ENTERPRISE_PROFILE con porcentaje > 0.
+  • Tarjeta (si se envía): 13-19 dígitos, solo numérico, fecha no vencida.
+
+1.6 Casos de uso reales para manual
+  • CU-FAB-01 registrar usuario nuevo.
+  • CU-FAB-02 crear repuesto.
+  • CU-FAB-03 importar catálogo.
+  • CU-FAB-04 ajustar inventario.
+  • CU-FAB-05 crear pedido.
+  • CU-FAB-06 cambiar estado.
+  • CU-FAB-07 consultar reportería.
+
+2) MANUAL TÉCNICO (IMPLEMENTACIÓN REAL)
+
+2.1 Estructura exacta (nivel carpetas)
+  fabrica/frontend/src/
+    - router/index.js
+    - views/*.vue
+    - components/*.vue
+    - composables/useAuth.js
+  fabrica/backend/src/main/java/com/agencias/backend/
+    - config/ (JerseyConfig, CorsFilter, DatabaseConfig, DistributorApiKeyFilter)
+    - controller/ (*Resource.java + dto/)
+    - service/ (OrderService, PartService, UserService, ReporteriaService, etc.)
+    - model/ (entidades JPA)
+    - repository/ (acceso datos)
+
+2.2 Base de datos (tablas clave y campos)
+  APP_USER: user id, email, password_hash, full_name, phone, status, created_at
+  ROLE: role_id, name
+  USER_ROLE: user_id, role_id (tabla puente)
+  ENTERPRISE_PROFILE: user_id, discount_percent, api_key, datos empresariales
+  PART: part_id, category_id, brand_id, part_number, title, description,
+        compatibility_tags, weight_lb, price, active, stock_quantity,
+        low_stock_threshold, reserved_quantity, image_data, image_type
+  ORDER_HEADER: order_id, order_number, user_id, order_type, order_origin,
+        subtotal, shipping_total, total, currency, created_at
+  ORDER_ITEM: order_item_id, order_id, part_id, qty, unit_price, line_total
+  ORDER_STATUS_HISTORY: order_id, status, comment_text, changed_by_user_id,
+        tracking_number, eta_days, changed_at
+  Otras: CATEGORY, BRAND, VEHICLE, PART_IMAGE, INVENTORY_LOG, IMPORT_EXPORT_LOG, PART_REVIEW
+
+2.3 Endpoints completos (catálogo mínimo detallado)
+  POST /api/auth/login
+    Headers: Content-Type: application/json
+    Body:
+      { "email": "admin@fabrica.local", "password": "123456" }
+    200: { userId, email, fullName, roles[]... }
+    400/401: mensaje de validación o credenciales.
+
+  POST /api/repuestos
+    Headers: Content-Type: application/json
+    Body ejemplo:
+      {
+        "categoryId": 1,
+        "brandId": 2,
+        "partNumber": "MF-OIL-001",
+        "title": "Filtro de aceite",
+        "price": 15.99,
+        "stockQuantity": 50,
+        "lowStockThreshold": 5
+      }
+    201: repuesto creado.
+    400: faltantes o duplicidad de partNumber.
+
+  PUT /api/repuestos/{id}/inventario
+    Body: { "stockQuantity": 40, "lowStockThreshold": 6 }
+    200: repuesto actualizado.
+
+  POST /api/pedidos
+    Headers opcionales: X-Order-Origin
+    Body:
+      {
+        "userId": 10,
+        "items": [ { "partId": 1, "qty": 2 } ],
+        "payment": { "cardNumber": "4111111111111111", "expiryMonth": 12, "expiryYear": 2030 }
+      }
+    201: ORDER_HEADER
+    400: userId inexistente, stock insuficiente, tarjeta inválida.
+
+  PUT /api/pedidos/{orderId}/estado
+    Body:
+      {
+        "status": "SHIPPED",
+        "comment": "Sale hoy",
+        "changedByUserId": 1,
+        "trackingNumber": "TRK123",
+        "etaDays": 3
+      }
+    200: { "message": "Estado actualizado correctamente" }
+    400: estado inválido o retroceso.
+
+2.4 Lógica interna importante
+  • Precio final enterprise: subtotal -> applyEnterpriseDiscount(discountPercent).
+  • Reserva stock: checkAvailability -> reserveStock en todas las líneas -> rollback si falla.
+  • Confirmación de venta: confirmSale al persistir líneas.
+  • Flujo estado: OrderFlowRules + OrderService.updateOrderStatus sin retroceso.
+  • Normalización origen: X-Order-Origin -> FABRICA_WEB o DISTRIBUIDORA.
+  • Integración segura: DistributorApiKeyFilter en rutas repuestos/pedidos cuando hay allowlist.
+
+2.5 Instalación y despliegue
+  Prerrequisitos:
+    - Java 17+
+    - Maven 3.6+
+    - Oracle (servicio accesible)
+  Variables:
+    DB_HOST, DB_PORT, DB_SERVICE, DB_USER, DB_PASS, PORT,
+    MAIL_USER, MAIL_PASSWORD, ORDER_DEFAULT_ETA_DAYS
+  Comandos:
+    cd fabrica/backend
+    mvn clean package
+    mvn test
+    java -jar target/*.jar
+    cd ../frontend
+    npm install
+    npm run dev
+
+2.6 Seguridad
+  • Auth por credenciales (sin JWT en controladores revisados).
+  • Password hash en backend.
+  • CORS filter configurado en Jersey.
+  • API key filter opcional para consumidores distribuidora.
+  • Recomendación manual técnico: documentar endurecimiento para producción
+    (TLS, secret manager, restricción /api/db, rotación API keys).
+
+2.7 Pruebas
+  Ubicación:
+    fabrica/backend/src/test/java
+  Cobertura observable:
+    - OrderFlowRulesTest
+    - OrderPricingTest
+    - PartServiceTest
+    - ReporteriaServiceTest
+    - UserRegistrationValidatorTest
+    - DistributorOrderWebhookNotifierTest
+  Ejecución:
+    mvn test
+
+3) CHECKLIST CORTO PARA AMPLIAR MANUAL AL 100%
+  [ ] 8-12 capturas de Fábrica (login, catálogo, pedido, reportería, errores)
+  [ ] 3 ejemplos reales de request/response (login, crear repuesto, crear pedido)
+  [ ] export de esquema Oracle (diccionario de datos)
+  [ ] 3 videos cortos (registro, compra, cambio de estado)
+  [ ] política operativa de roles (quién puede cambiar estado en negocio real)
+
+================================================================================

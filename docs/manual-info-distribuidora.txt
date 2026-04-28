@@ -1,0 +1,270 @@
+================================================================================
+DOCUMENTACIÓN DETALLADA — MÓDULO DISTRIBUIDORA (portal + API)
+Proyecto: agencias_vehiculos | distribuidores/frontend, distribuidores/backend
+Nivel: pantalla + proceso + regla + implementación
+================================================================================
+
+1) MANUAL DE USUARIO (INSUMOS DETALLADOS)
+
+a) Objetivo del sistema
+  • La distribuidora vende en un solo portal productos de inventario local y
+    productos de catálogos de fábricas configuradas como proveedores.
+  • Calcula envío por peso (USD/libra), arancel por país de destino cuando hay
+    líneas de fábrica, y soporta cobro en varias monedas.
+  • Usuarios: compradores (USER), personal operativo (EMPLOYEE), administración (ADMIN).
+
+1.2 Pantallas y propósito (React Router)
+  Público:
+    - /, /tienda, /login, /register
+  Compra:
+    - /producto/:id, /producto/fabrica/:proveedorId/:partId
+    - /carrito, /checkout, /gracias
+  Cliente:
+    - /pedidos, /pedidos/:orderId
+  Administración:
+    - /productos, /productos/nuevo, /productos/editar/:id
+    - /pedidos-admin
+    - /usuarios
+    - /fabricas, /fabricas/nuevo, /fabricas/editar/:id
+    - /aranceles, /reportes, /ajustes-tienda
+
+1.3 Campos por formulario (real)
+  A) Login
+    - email (obligatorio)
+    - password (obligatorio)
+  B) Registro
+    - email, password (obligatorios)
+    - fullName, phone (opcionales)
+  C) Producto local (alta/edición)
+    - categoryId, brandId, partNumber, title (obligatorios de negocio)
+    - description, compatibilityTags
+    - weightLb, price
+    - stockQuantity, lowStockThreshold
+    - imageData, imageType (opcionales)
+  D) Inventario producto local
+    - stockQuantity
+    - lowStockThreshold
+  E) Proveedor/Fábrica
+    - nombre (obligatorio)
+    - apiBaseUrl (si se integrará catálogo/pedido remoto)
+    - fabricaEnterpriseUserId (obligatorio para pedido remoto)
+    - tipoCambioAQuetzales (> 0 si se usa internacional)
+    - porcentajeGanancia (>= 0)
+    - costoEnvioPorLibra (>= 0)
+    - activo
+  F) Aranceles
+    - countryCode
+    - tariffPercent
+    - adminUserId
+  G) Tarifa de envío
+    - usdPerLb
+    - adminUserId
+  H) Moneda
+    - code
+    - unitsPerUsd
+    - adminUserId
+  I) Checkout / Crear pedido
+    - userId
+    - items[]
+      * local: partId, qty
+      * fábrica: proveedorId, fabricaPartId, qty, unitPrice, title?, partNumber?, weightLb?
+    - payment opcional: cardNumber, expiryMonth, expiryYear
+    - shippingCountryCode (obligatorio cuando hay líneas fábrica)
+    - currencyCode (opcional)
+
+1.4 Flujos exactos (paso a paso)
+  Flujo D1: Login
+    1. Abrir /login.
+    2. Capturar email/password.
+    3. POST /api/auth/login.
+    4. Si 200, guardar user + roles en contexto local.
+    5. Si 401, mostrar credenciales incorrectas.
+
+  Flujo D2: Configurar fábrica/proveedor (admin)
+    1. Ir a /fabricas -> "nuevo".
+    2. Llenar nombre y apiBaseUrl.
+    3. Si se usará pedido remoto, definir fabricaEnterpriseUserId.
+    4. Guardar (POST /api/proveedores).
+    5. Si tipo de cambio informado y <= 0, rechaza.
+    6. Si campos internacionales parciales sin tipo de cambio, rechaza.
+
+  Flujo D3: Pedido mixto (local + fábrica)
+    1. Desde /tienda agregar ítems locales y/o de fábrica.
+    2. Ir a /carrito -> validar cantidades.
+    3. En /checkout elegir país destino LATAM si hay líneas de fábrica.
+    4. Enviar POST /api/pedidos.
+    5. Backend:
+       - agrupa líneas fábrica por proveedor
+       - crea pedido remoto por proveedor
+       - reserva stock local
+       - calcula shipping + arancel + total
+       - crea pedido maestro y líneas LOCAL/FABRICA
+    6. Redirigir a /gracias y luego /pedidos.
+
+  Flujo D4: Cambio de estado (admin/employee)
+    1. Ir a /pedidos-admin.
+    2. Elegir pedido y nuevo estado.
+    3. PATCH /api/pedidos/{id}/estado con userId actor.
+    4. Si estado retrocede, API retorna 400.
+    5. Si válido, persiste historial y puede notificar correo.
+
+1.5 Reglas visibles al usuario
+  • Estados solo avanzan: INITIATED -> CONFIRMED -> PREPARING -> SHIPPED -> DELIVERED.
+  • CANCELLED permitido solo antes de entrega.
+  • Pedido mixto exige shippingCountryCode válido LATAM.
+  • Arancel aplicado solo a líneas de fábrica.
+  • Envío depende de peso total y tarifa global USD por libra.
+  • Cambio de arancel/moneda/tarifa requiere ADMIN.
+  • Error frecuente de integración: proveedor sin apiBaseUrl o sin fabricaEnterpriseUserId.
+
+1.6 Casos de uso reales para manual
+  • CU-DIS-01 registrar usuario.
+  • CU-DIS-02 crear producto local.
+  • CU-DIS-03 configurar proveedor de fábrica.
+  • CU-DIS-04 comprar solo local.
+  • CU-DIS-05 comprar pedido mixto.
+  • CU-DIS-06 cambiar estado de pedido.
+  • CU-DIS-07 actualizar arancel y moneda.
+  • CU-DIS-08 consultar reportes.
+
+2) MANUAL TÉCNICO (IMPLEMENTACIÓN REAL)
+
+2.1 Estructura exacta de proyecto
+  distribuidores/frontend/src/
+    - App.tsx
+    - views/*
+    - api/*
+    - context/*
+    - components/*
+  distribuidores/backend/
+    - Program.cs
+    - Controllers/*
+    - Services/*
+    - Models/*
+    - Data/AppDbContext.cs
+    - Data/SeedData.cs
+  distribuidores/BackendDistribuidores.Tests/
+
+2.2 Base de datos detallada (SQL Server vía EF)
+  ROLE(role_id, name)
+  APP_USER(user_id, email, password_hash, full_name, phone, status, created_at)
+  USER_ROLE(user_id, role_id) [PK compuesta]
+  CATEGORY(category_id, name, ...)
+  BRAND(brand_id, name, ...)
+  PART(part_id, category_id, brand_id, part_number, title, description,
+       compatibility_tags, weight_lb, price, active, created_at, stock_quantity,
+       low_stock_threshold, reserved_quantity, image_data, image_type)
+  PART_IMAGE(part_image_id, part_id, sort_order, image_data, image_type)
+  ORDER_HEADER(order_id, order_number, user_id, order_type, subtotal, shipping_total,
+       tariff_total, total, currency, shipping_country_code, created_at)
+  ORDER_ITEM(order_item_id, order_id, line_source, part_id nullable, proveedor_id nullable,
+       fabrica_part_id nullable, fabrica_order_id nullable, qty, unit_price, line_total,
+       fabrica_status, fabrica_tracking_number, fabrica_eta_days, title_snapshot, part_number_snapshot, ...)
+  ORDER_STATUS_HISTORY(order_status_id, order_id, status, comment_text,
+       tracking_number, eta_days, changed_by_user_id, changed_at)
+  PROVEEDOR(proveedor_id, nombre, contacto, email, telefono, api_base_url,
+       fabrica_enterprise_user_id, tipo_cambio_a_quetzales, porcentaje_ganancia,
+       costo_envio_por_libra, activo)
+  ARANCEL_PAIS(country_code PK, country_name, tariff_percent)
+  ENVIO_CONFIG(id=1, usd_per_lb)
+  MONEDA(code PK, name, symbol, units_per_usd, activo, sort_order)
+
+2.3 Endpoints completos (ejemplos)
+  POST /api/auth/login
+    Body: { "email": "admin@admin.com", "password": "123456" }
+    200: { userId, email, fullName, roles[] }
+    401: { message: "Credenciales incorrectas" }
+
+  POST /api/proveedores
+    Body:
+      {
+        "nombre": "Fabrica 1",
+        "apiBaseUrl": "http://fabrica1:8080/api",
+        "fabricaEnterpriseUserId": 12,
+        "tipoCambioAQuetzales": 7.85,
+        "porcentajeGanancia": 15,
+        "costoEnvioPorLibra": 3.2,
+        "activo": true
+      }
+    201: proveedor creado
+    400: validaciones de negocio
+
+  GET /api/repuestos/catalogo/unificado?q=filtro
+    200: mezcla catálogo local + catálogo de fábricas activas
+
+  POST /api/pedidos
+    Body mínimo mixto:
+      {
+        "userId": 3,
+        "shippingCountryCode": "GT",
+        "currencyCode": "USD",
+        "items": [
+          { "partId": 1, "qty": 2 },
+          { "proveedorId": 2, "fabricaPartId": 10, "qty": 1, "unitPrice": 25.5, "title": "Filtro X" }
+        ]
+      }
+    200/201: pedido maestro creado
+    400: faltan campos o error integración/proveedor
+
+  PATCH /api/pedidos/{orderId}/estado
+    Body:
+      { "userId": 1, "status": "SHIPPED", "comment": "Despachado", "trackingNumber": "AB123", "etaDays": 2 }
+    200: estado actualizado
+    400: retroceso/no válido
+    403: actor sin rol ADMIN/EMPLOYEE
+
+2.4 Lógica interna importante
+  • Precio final: subtotal local + subtotal fábrica + envío + arancel.
+  • Envío: totalWeightLb * usdPerLb, redondeado.
+  • Arancel: porcentaje por countryCode sobre subtotal de líneas fábrica.
+  • Reserva stock: solo líneas LOCAL.
+  • Consolidación por proveedor: group by ProveedorId antes de invocar API fábrica.
+  • Estado: PedidoEstadoRules.CanAdvanceTo evita retroceso.
+  • Normalización estado fábrica: CONFIRMED/IN_PREPARATION -> PREPARING.
+  • Sync de fábrica: endpoint de integración actualiza estados remotos.
+
+2.5 Instalación completa
+  Prerrequisitos:
+    - .NET SDK compatible con proyecto
+    - SQL Server disponible
+    - Node.js para frontend
+  Variables:
+    ConnectionStrings__DefaultConnection
+    PORT
+    CORS_ALLOWED_ORIGINS
+  Backend:
+    cd distribuidores/backend
+    dotnet restore
+    dotnet run
+    (Program.cs ejecuta EnsureCreated + SeedData)
+  Frontend:
+    cd distribuidores/frontend
+    npm install
+    npm run dev
+  Pruebas:
+    cd distribuidores
+    dotnet test
+
+2.6 Seguridad
+  • Auth por email/password con BCrypt.
+  • Autorización por rol en controladores (ADMIN, ADMIN/EMPLOYEE).
+  • CORS configurable.
+  • Integraciones con fábrica por URL/proveedor + usuario enterprise remoto.
+  • Recomendaciones manual técnico: HTTPS obligatorio en productivo, secretos fuera de repo.
+
+2.7 Pruebas
+  Ubicación:
+    distribuidores/BackendDistribuidores.Tests
+  Ejecución:
+    dotnet test
+  Cobertura esperada:
+    auth, servicios de pedido, reglas de negocio críticas.
+
+3) CHECKLIST CORTO PARA COMPLETAR MANUAL FINAL
+  [ ] 10-15 capturas de Distribuidora (tienda, checkout, admin, errores)
+  [ ] 3 request/response reales (login, proveedor, pedido mixto)
+  [ ] extracto de tablas SQL Server (schema + columnas)
+  [ ] 2-3 flujos grabados (login, pedido mixto, cambio estado)
+  [ ] matriz final de permisos USER/EMPLOYEE/ADMIN por pantalla
+
+================================================================================
