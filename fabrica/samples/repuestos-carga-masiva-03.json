@@ -1,0 +1,98 @@
+[
+  {
+    "partNumber": "FILT-ACEITE-001",
+    "title": "Filtro de aceite universal",
+    "description": "Filtro de aceite para motor. Especificaciones: rosca M20x1.5, altura 120mm.",
+    "categoryId": 1,
+    "brandId": 1,
+    "price": 15.99,
+    "weightLb": 0.5,
+    "stockQuantity": 100,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "BATERIA-001-C",
+    "title": "Bateria AGM 12V 65Ah",
+    "description": "Bateria AGM para sistemas start-stop.",
+    "categoryId": 2,
+    "brandId": 1,
+    "price": 129.0,
+    "weightLb": 31.2,
+    "stockQuantity": 16,
+    "lowStockThreshold": 4,
+    "active": 1
+  },
+  {
+    "partNumber": "BUJIA-001-C",
+    "title": "Bujia doble platino",
+    "description": "Bujia con mejor ignicion y durabilidad.",
+    "categoryId": 3,
+    "brandId": 2,
+    "price": 9.25,
+    "weightLb": 0.2,
+    "stockQuantity": 95,
+    "lowStockThreshold": 15,
+    "active": 1
+  },
+  {
+    "partNumber": "ACEITE-0W20-001-C",
+    "title": "Aceite sintetico 0W20 1L",
+    "description": "Aceite para motores modernos de baja friccion.",
+    "categoryId": 4,
+    "brandId": 3,
+    "price": 13.4,
+    "weightLb": 2.0,
+    "stockQuantity": 68,
+    "lowStockThreshold": 10,
+    "active": 1
+  },
+  {
+    "partNumber": "AMORT-KIT-001-C",
+    "title": "Kit amortiguadores delantero",
+    "description": "Par de amortiguadores para eje delantero.",
+    "categoryId": 5,
+    "brandId": 4,
+    "price": 121.0,
+    "weightLb": 13.0,
+    "stockQuantity": 10,
+    "lowStockThreshold": 3,
+    "active": 1
+  },
+  {
+    "partNumber": "RADIADOR-003-C",
+    "title": "Radiador compacto",
+    "description": "Radiador para vehiculos compactos.",
+    "categoryId": 6,
+    "brandId": 2,
+    "price": 138.3,
+    "weightLb": 10.1,
+    "stockQuantity": 8,
+    "lowStockThreshold": 3,
+    "active": 1
+  },
+  {
+    "partNumber": "SENSOR-CKP-001-C",
+    "title": "Sensor ciguenal CKP",
+    "description": "Sensor de posicion de ciguenal.",
+    "categoryId": 7,
+    "brandId": 5,
+    "price": 31.8,
+    "weightLb": 0.3,
+    "stockQuantity": 27,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "BOMBA-DIREC-001-C",
+    "title": "Bomba direccion hidraulica",
+    "description": "Bomba para sistema de direccion asistida.",
+    "categoryId": 8,
+    "brandId": 4,
+    "price": 146.7,
+    "weightLb": 5.0,
+    "stockQuantity": 9,
+    "lowStockThreshold": 3,
+    "active": 1
+  }
+]

@@ -3,6 +3,7 @@ package com.agencias.backend;
 import com.agencias.backend.config.ConfigLoader;
 import com.agencias.backend.config.DatabaseConfig;
 import com.agencias.backend.config.JerseyConfig;
+import com.agencias.backend.service.UserService;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -37,6 +38,9 @@ public class Main {
             // Inicializar EntityManagerFactory
             DatabaseConfig.getEntityManagerFactory();
             System.out.println("EntityManagerFactory inicializado correctamente");
+
+            // Seed inicial idempotente: crear usuario administrador por defecto si no existe.
+            ensureDefaultAdminUser();
             
             // Configurar Jersey
             JerseyConfig jerseyConfig = new JerseyConfig();
@@ -70,6 +74,17 @@ public class Main {
             System.err.println("Error al iniciar el servidor: " + e.getMessage());
             e.printStackTrace();
             System.exit(1);
+        }
+    }
+
+    private static void ensureDefaultAdminUser() {
+        try {
+            UserService userService = new UserService(DatabaseConfig.getEntityManagerFactory());
+            String adminEmail = "admin@admin.com";
+            userService.ensureAdminUser(adminEmail, "123456", "Administrador");
+            System.out.println("Usuario admin inicial asegurado: " + adminEmail);
+        } catch (Exception e) {
+            System.err.println("No se pudo asegurar usuario admin inicial: " + e.getMessage());
         }
     }
 }

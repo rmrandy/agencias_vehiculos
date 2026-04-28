@@ -79,6 +79,13 @@
             <version>${hibernate.version}</version>
         </dependency>
 
+        <!-- Jandex requerido por Hibernate 6 al escanear entidades -->
+        <dependency>
+            <groupId>io.smallrye</groupId>
+            <artifactId>jandex</artifactId>
+            <version>3.1.6</version>
+        </dependency>
+
         <!-- Oracle JDBC Driver -->
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
@@ -197,9 +204,11 @@
                             </transformers>
                             <filters>
                                 <filter>
-                                    <artifact>io.smallrye:jandex</artifact>
+                                    <artifact>*:*</artifact>
                                     <excludes>
-                                        <exclude>**</exclude>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
                                     </excludes>
                                 </filter>
                             </filters>

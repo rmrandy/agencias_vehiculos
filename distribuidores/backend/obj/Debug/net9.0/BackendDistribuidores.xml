@@ -430,6 +430,9 @@
         <member name="P:BackendDistribuidores.Models.OrderItem.FabricaOrderId">
             <summary>ORDER_ID del pedido creado en la fábrica (mismo valor para todas las líneas de ese proveedor en este checkout).</summary>
         </member>
+        <member name="P:BackendDistribuidores.Models.OrderItem.FabricaStatus">
+            <summary>Snapshot del estado remoto por línea/proveedor reportado por webhook de fábrica.</summary>
+        </member>
         <member name="T:BackendDistribuidores.Models.OrderStatusHistory">
             <summary>Historial de estado del pedido (misma lógica que fábrica).</summary>
         </member>

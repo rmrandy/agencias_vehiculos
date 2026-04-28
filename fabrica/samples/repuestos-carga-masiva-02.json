@@ -1,0 +1,98 @@
+[
+  {
+    "partNumber": "FILT-ACEITE-001",
+    "title": "Filtro de aceite universal",
+    "description": "Filtro de aceite para motor. Especificaciones: rosca M20x1.5, altura 120mm.",
+    "categoryId": 1,
+    "brandId": 1,
+    "price": 14.49,
+    "weightLb": 0.5,
+    "stockQuantity": 100,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "BATERIA-001-B",
+    "title": "Bateria 12V 60Ah",
+    "description": "Bateria libre de mantenimiento.",
+    "categoryId": 2,
+    "brandId": 1,
+    "price": 99.5,
+    "weightLb": 29.0,
+    "stockQuantity": 20,
+    "lowStockThreshold": 4,
+    "active": 1
+  },
+  {
+    "partNumber": "BUJIA-001-B",
+    "title": "Bujia platino",
+    "description": "Bujia de larga duracion.",
+    "categoryId": 3,
+    "brandId": 2,
+    "price": 7.9,
+    "weightLb": 0.2,
+    "stockQuantity": 130,
+    "lowStockThreshold": 20,
+    "active": 1
+  },
+  {
+    "partNumber": "ACEITE-5W40-001-B",
+    "title": "Aceite sintetico 5W40 1L",
+    "description": "Lubricante para alto kilometraje.",
+    "categoryId": 4,
+    "brandId": 3,
+    "price": 12.1,
+    "weightLb": 2.0,
+    "stockQuantity": 70,
+    "lowStockThreshold": 10,
+    "active": 1
+  },
+  {
+    "partNumber": "AMORT-TRAS-001-B",
+    "title": "Amortiguador trasero",
+    "description": "Amortiguador para eje trasero.",
+    "categoryId": 5,
+    "brandId": 4,
+    "price": 58.3,
+    "weightLb": 6.5,
+    "stockQuantity": 19,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "RADIADOR-002-B",
+    "title": "Radiador cobre",
+    "description": "Radiador reforzado para clima calido.",
+    "categoryId": 6,
+    "brandId": 2,
+    "price": 152.0,
+    "weightLb": 12.0,
+    "stockQuantity": 7,
+    "lowStockThreshold": 3,
+    "active": 1
+  },
+  {
+    "partNumber": "SENSOR-MAF-001-B",
+    "title": "Sensor MAF",
+    "description": "Sensor de flujo de aire masico.",
+    "categoryId": 7,
+    "brandId": 5,
+    "price": 44.6,
+    "weightLb": 0.5,
+    "stockQuantity": 34,
+    "lowStockThreshold": 6,
+    "active": 1
+  },
+  {
+    "partNumber": "BOMBA-ACEITE-001-B",
+    "title": "Bomba de aceite",
+    "description": "Bomba para lubricacion del motor.",
+    "categoryId": 8,
+    "brandId": 4,
+    "price": 109.75,
+    "weightLb": 4.2,
+    "stockQuantity": 11,
+    "lowStockThreshold": 4,
+    "active": 1
+  }
+]

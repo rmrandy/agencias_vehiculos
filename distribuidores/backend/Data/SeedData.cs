@@ -163,6 +163,14 @@ public static class SeedData
                   ALTER TABLE ORDER_ITEM ADD FabricaPartId bigint NULL;
                 IF COL_LENGTH(N'ORDER_ITEM', N'FabricaOrderId') IS NULL
                   ALTER TABLE ORDER_ITEM ADD FabricaOrderId bigint NULL;
+                IF COL_LENGTH(N'ORDER_ITEM', N'FabricaStatus') IS NULL
+                  ALTER TABLE ORDER_ITEM ADD FabricaStatus nvarchar(30) NULL;
+                IF COL_LENGTH(N'ORDER_ITEM', N'FabricaTrackingNumber') IS NULL
+                  ALTER TABLE ORDER_ITEM ADD FabricaTrackingNumber nvarchar(100) NULL;
+                IF COL_LENGTH(N'ORDER_ITEM', N'FabricaEtaDays') IS NULL
+                  ALTER TABLE ORDER_ITEM ADD FabricaEtaDays int NULL;
+                IF COL_LENGTH(N'ORDER_ITEM', N'FabricaStatusUpdatedAt') IS NULL
+                  ALTER TABLE ORDER_ITEM ADD FabricaStatusUpdatedAt datetime2 NULL;
                 IF COL_LENGTH(N'ORDER_ITEM', N'TitleSnapshot') IS NULL
                   ALTER TABLE ORDER_ITEM ADD TitleSnapshot nvarchar(500) NULL;
                 IF COL_LENGTH(N'ORDER_ITEM', N'PartNumberSnapshot') IS NULL
@@ -203,32 +211,59 @@ public static class SeedData
 
     static async Task SeedRolesAndUserAsync(AppDbContext db, CancellationToken ct)
     {
-        if (await db.Roles.AnyAsync(ct)) return;
-
-        var roleUser = new Role { Name = "USER" };
-        var roleAdmin = new Role { Name = "ADMIN" };
-        var roleEmployee = new Role { Name = "EMPLOYEE" };
-        db.Roles.Add(roleUser);
-        db.Roles.Add(roleAdmin);
-        db.Roles.Add(roleEmployee);
-        await db.SaveChangesAsync(ct);
-
-        if (await db.AppUsers.AnyAsync(ct)) return;
-
-        string hash = BCrypt.Net.BCrypt.HashPassword("123456", BCrypt.Net.BCrypt.GenerateSalt(10));
-        var user = new AppUser
+        var roleUser = await db.Roles.FirstOrDefaultAsync(r => r.Name == "USER", ct);
+        if (roleUser is null)
         {
-            Email = "admin@distribuidor.local",
-            PasswordHash = hash,
-            FullName = "Administrador",
-            Status = "ACTIVE",
-            CreatedAt = DateTime.UtcNow
-        };
-        db.AppUsers.Add(user);
+            roleUser = new Role { Name = "USER" };
+            db.Roles.Add(roleUser);
+        }
+
+        var roleAdmin = await db.Roles.FirstOrDefaultAsync(r => r.Name == "ADMIN", ct);
+        if (roleAdmin is null)
+        {
+            roleAdmin = new Role { Name = "ADMIN" };
+            db.Roles.Add(roleAdmin);
+        }
+
+        var roleEmployee = await db.Roles.FirstOrDefaultAsync(r => r.Name == "EMPLOYEE", ct);
+        if (roleEmployee is null)
+        {
+            roleEmployee = new Role { Name = "EMPLOYEE" };
+            db.Roles.Add(roleEmployee);
+        }
+
         await db.SaveChangesAsync(ct);
 
-        db.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = roleAdmin.RoleId });
-        db.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = roleUser.RoleId });
+        var user = await db.AppUsers.FirstOrDefaultAsync(u => u.Email == "admin@admin.com", ct);
+        if (user is null)
+        {
+            string hash = BCrypt.Net.BCrypt.HashPassword("123456", BCrypt.Net.BCrypt.GenerateSalt(10));
+            user = new AppUser
+            {
+                Email = "admin@admin.com",
+                PasswordHash = hash,
+                FullName = "Administrador",
+                Status = "ACTIVE",
+                CreatedAt = DateTime.UtcNow
+            };
+            db.AppUsers.Add(user);
+            await db.SaveChangesAsync(ct);
+        }
+
+        bool hasAdminRole = await db.UserRoles.AnyAsync(
+            ur => ur.UserId == user.UserId && ur.RoleId == roleAdmin.RoleId, ct);
+        if (!hasAdminRole)
+        {
+            db.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = roleAdmin.RoleId });
+        }
+
+        bool hasUserRole = await db.UserRoles.AnyAsync(
+            ur => ur.UserId == user.UserId && ur.RoleId == roleUser.RoleId, ct);
+        if (!hasUserRole)
+        {
+            db.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = roleUser.RoleId });
+        }
+
         await db.SaveChangesAsync(ct);
     }
 

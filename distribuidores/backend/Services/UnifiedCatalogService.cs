@@ -8,6 +8,29 @@ namespace BackendDistribuidores.Services;
 /// <summary>Catálogo local + N fábricas (proveedores con ApiBaseUrl activo).</summary>
 public sealed class UnifiedCatalogService
 {
+    private sealed record CatalogRow(
+        string source,
+        long? proveedorId,
+        string? proveedorNombre,
+        string? fabricaBaseUrl,
+        long partId,
+        long? categoryId,
+        long? brandId,
+        string partNumber,
+        string title,
+        string? description,
+        string? compatibilityTags,
+        decimal? weightLb,
+        decimal price,
+        int active,
+        object? createdAt,
+        bool hasImage,
+        bool inStock,
+        bool lowStock,
+        int? stockQuantity,
+        int? availableQuantity
+    );
+
     private readonly AppDbContext _db;
     private readonly PartService _partService;
     private readonly FabricaIntegrationService _fabrica;
@@ -22,7 +45,7 @@ public sealed class UnifiedCatalogService
     public async Task<List<object>> SearchAsync(string? term, CancellationToken ct)
     {
         var t = term?.Trim() ?? "";
-        var results = new List<object>();
+        var results = new List<CatalogRow>();
 
         var local = await _partService.SearchAsync(string.IsNullOrEmpty(t) ? null : t, ct);
         foreach (var p in local)
@@ -56,37 +79,41 @@ public sealed class UnifiedCatalogService
             }
         }
 
-        return results;
+        return results
+            .OrderBy(r => r.title ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(r => r.price)
+            .ThenBy(r => r.proveedorNombre ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+            .Cast<object>()
+            .ToList();
     }
 
-    private static object ToLocalRow(Part p)
+    private static CatalogRow ToLocalRow(Part p)
     {
-        return new
-        {
-            source = "local",
-            proveedorId = (long?)null,
-            proveedorNombre = (string?)null,
-            fabricaBaseUrl = (string?)null,
-            partId = p.PartId,
-            categoryId = p.CategoryId,
-            brandId = p.BrandId,
-            partNumber = p.PartNumber,
-            title = p.Title,
-            description = p.Description,
-            compatibilityTags = p.CompatibilityTags,
-            weightLb = p.WeightLb,
-            price = p.Price,
-            active = p.Active,
-            createdAt = p.CreatedAt,
-            hasImage = p.HasImage,
-            inStock = p.InStock,
-            lowStock = p.LowStock,
-            stockQuantity = p.StockQuantity,
-            availableQuantity = p.AvailableQuantity
-        };
+        return new CatalogRow(
+            source: "local",
+            proveedorId: null,
+            proveedorNombre: null,
+            fabricaBaseUrl: null,
+            partId: p.PartId,
+            categoryId: p.CategoryId,
+            brandId: p.BrandId,
+            partNumber: p.PartNumber,
+            title: p.Title,
+            description: p.Description,
+            compatibilityTags: p.CompatibilityTags,
+            weightLb: p.WeightLb,
+            price: p.Price,
+            active: p.Active,
+            createdAt: p.CreatedAt,
+            hasImage: p.HasImage,
+            inStock: p.InStock,
+            lowStock: p.LowStock,
+            stockQuantity: p.StockQuantity,
+            availableQuantity: p.AvailableQuantity
+        );
     }
 
-    private static object? MapFabricRow(JsonElement el, Proveedor prov)
+    private static CatalogRow? MapFabricRow(JsonElement el, Proveedor prov)
     {
         if (!TryGetInt64(el, "partId", out var partId))
             return null;
@@ -111,29 +138,28 @@ public sealed class UnifiedCatalogService
         if (el.TryGetProperty("active", out var ac) && ac.ValueKind == JsonValueKind.Number)
             active = ac.GetInt32();
 
-        return new
-        {
-            source = "fabrica",
-            proveedorId = prov.ProveedorId,
-            proveedorNombre = prov.Nombre,
-            fabricaBaseUrl = baseUrl,
-            partId,
-            categoryId = TryGetInt64Nullable(el, "categoryId"),
-            brandId = TryGetInt64Nullable(el, "brandId"),
-            partNumber,
-            title,
-            description = el.TryGetProperty("description", out var d) ? d.GetString() : null,
-            compatibilityTags = el.TryGetProperty("compatibilityTags", out var tags) ? tags.GetString() : null,
-            weightLb = TryGetDecimalNullable(el, "weightLb"),
-            price,
-            active,
-            createdAt = (string?)null,
-            hasImage,
-            inStock,
-            lowStock = el.TryGetProperty("lowStock", out var ls) && ls.ValueKind == JsonValueKind.True,
-            stockQuantity = TryGetInt32Nullable(el, "stockQuantity"),
-            availableQuantity = TryGetInt32Nullable(el, "availableQuantity")
-        };
+        return new CatalogRow(
+            source: "fabrica",
+            proveedorId: prov.ProveedorId,
+            proveedorNombre: prov.Nombre,
+            fabricaBaseUrl: baseUrl,
+            partId: partId,
+            categoryId: TryGetInt64Nullable(el, "categoryId"),
+            brandId: TryGetInt64Nullable(el, "brandId"),
+            partNumber: partNumber,
+            title: title,
+            description: el.TryGetProperty("description", out var d) ? d.GetString() : null,
+            compatibilityTags: el.TryGetProperty("compatibilityTags", out var tags) ? tags.GetString() : null,
+            weightLb: TryGetDecimalNullable(el, "weightLb"),
+            price: price,
+            active: active,
+            createdAt: null,
+            hasImage: hasImage,
+            inStock: inStock,
+            lowStock: el.TryGetProperty("lowStock", out var ls) && ls.ValueKind == JsonValueKind.True,
+            stockQuantity: TryGetInt32Nullable(el, "stockQuantity"),
+            availableQuantity: TryGetInt32Nullable(el, "availableQuantity")
+        );
     }
 
     private static bool TryGetInt64(JsonElement el, string name, out long v)

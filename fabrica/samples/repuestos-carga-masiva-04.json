@@ -1,0 +1,98 @@
+[
+  {
+    "partNumber": "FILT-ACEITE-001",
+    "title": "Filtro de aceite universal",
+    "description": "Filtro de aceite para motor. Especificaciones: rosca M20x1.5, altura 120mm.",
+    "categoryId": 1,
+    "brandId": 1,
+    "price": 17.49,
+    "weightLb": 0.5,
+    "stockQuantity": 100,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "BATERIA-001-D",
+    "title": "Bateria gel 12V 70Ah",
+    "description": "Bateria sellada tipo gel.",
+    "categoryId": 2,
+    "brandId": 1,
+    "price": 141.2,
+    "weightLb": 33.0,
+    "stockQuantity": 12,
+    "lowStockThreshold": 3,
+    "active": 1
+  },
+  {
+    "partNumber": "BUJIA-001-D",
+    "title": "Bujia cobre estandar",
+    "description": "Bujia de reemplazo economico.",
+    "categoryId": 3,
+    "brandId": 2,
+    "price": 5.7,
+    "weightLb": 0.2,
+    "stockQuantity": 180,
+    "lowStockThreshold": 25,
+    "active": 1
+  },
+  {
+    "partNumber": "ACEITE-10W40-001-D",
+    "title": "Aceite semisintetico 10W40 1L",
+    "description": "Aceite para motores con uso mixto.",
+    "categoryId": 4,
+    "brandId": 3,
+    "price": 9.95,
+    "weightLb": 2.0,
+    "stockQuantity": 88,
+    "lowStockThreshold": 12,
+    "active": 1
+  },
+  {
+    "partNumber": "AMORT-GAS-001-D",
+    "title": "Amortiguador de gas",
+    "description": "Amortiguador presurizado para mejor confort.",
+    "categoryId": 5,
+    "brandId": 4,
+    "price": 67.8,
+    "weightLb": 7.1,
+    "stockQuantity": 17,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "RADIADOR-004-D",
+    "title": "Radiador alto flujo",
+    "description": "Radiador para aplicaciones de alto rendimiento.",
+    "categoryId": 6,
+    "brandId": 2,
+    "price": 164.4,
+    "weightLb": 12.5,
+    "stockQuantity": 6,
+    "lowStockThreshold": 2,
+    "active": 1
+  },
+  {
+    "partNumber": "SENSOR-TPS-001-D",
+    "title": "Sensor TPS",
+    "description": "Sensor de posicion de acelerador.",
+    "categoryId": 7,
+    "brandId": 5,
+    "price": 28.4,
+    "weightLb": 0.3,
+    "stockQuantity": 31,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "BOMBA-AGUA-004-D",
+    "title": "Bomba de agua reforzada",
+    "description": "Bomba de agua con impulsor metalico.",
+    "categoryId": 8,
+    "brandId": 4,
+    "price": 92.6,
+    "weightLb": 4.1,
+    "stockQuantity": 13,
+    "lowStockThreshold": 4,
+    "active": 1
+  }
+]

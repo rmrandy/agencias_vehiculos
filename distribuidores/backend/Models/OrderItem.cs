@@ -16,6 +16,11 @@ public class OrderItem
     public long? FabricaPartId { get; set; }
     /// <summary>ORDER_ID del pedido creado en la fábrica (mismo valor para todas las líneas de ese proveedor en este checkout).</summary>
     public long? FabricaOrderId { get; set; }
+    /// <summary>Snapshot del estado remoto por línea/proveedor reportado por webhook de fábrica.</summary>
+    public string? FabricaStatus { get; set; }
+    public string? FabricaTrackingNumber { get; set; }
+    public int? FabricaEtaDays { get; set; }
+    public DateTime? FabricaStatusUpdatedAt { get; set; }
     public string? TitleSnapshot { get; set; }
     public string? PartNumberSnapshot { get; set; }
 }

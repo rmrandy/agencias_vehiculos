@@ -1,0 +1,98 @@
+[
+  {
+    "partNumber": "FILT-ACEITE-001",
+    "title": "Filtro de aceite universal",
+    "description": "Filtro de aceite para motor. Especificaciones: rosca M20x1.5, altura 120mm.",
+    "categoryId": 1,
+    "brandId": 1,
+    "price": 18.99,
+    "weightLb": 0.5,
+    "stockQuantity": 100,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "BATERIA-001-E",
+    "title": "Bateria EFB 12V 68Ah",
+    "description": "Bateria mejorada para uso urbano.",
+    "categoryId": 2,
+    "brandId": 1,
+    "price": 136.9,
+    "weightLb": 32.4,
+    "stockQuantity": 15,
+    "lowStockThreshold": 3,
+    "active": 1
+  },
+  {
+    "partNumber": "BUJIA-001-E",
+    "title": "Bujia iridio premium",
+    "description": "Bujia premium para alto desempeno.",
+    "categoryId": 3,
+    "brandId": 2,
+    "price": 10.6,
+    "weightLb": 0.2,
+    "stockQuantity": 110,
+    "lowStockThreshold": 15,
+    "active": 1
+  },
+  {
+    "partNumber": "ACEITE-5W20-001-E",
+    "title": "Aceite sintetico 5W20 1L",
+    "description": "Aceite para motores de baja viscosidad.",
+    "categoryId": 4,
+    "brandId": 3,
+    "price": 12.8,
+    "weightLb": 2.0,
+    "stockQuantity": 72,
+    "lowStockThreshold": 10,
+    "active": 1
+  },
+  {
+    "partNumber": "AMORT-OEM-001-E",
+    "title": "Amortiguador tipo OEM",
+    "description": "Amortiguador de reemplazo original.",
+    "categoryId": 5,
+    "brandId": 4,
+    "price": 64.1,
+    "weightLb": 6.9,
+    "stockQuantity": 21,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "RADIADOR-005-E",
+    "title": "Radiador doble nucleo",
+    "description": "Radiador de doble nucleo para mayor enfriamiento.",
+    "categoryId": 6,
+    "brandId": 2,
+    "price": 171.0,
+    "weightLb": 13.4,
+    "stockQuantity": 5,
+    "lowStockThreshold": 2,
+    "active": 1
+  },
+  {
+    "partNumber": "SENSOR-MAP-001-E",
+    "title": "Sensor MAP",
+    "description": "Sensor de presion absoluta del multiple.",
+    "categoryId": 7,
+    "brandId": 5,
+    "price": 33.2,
+    "weightLb": 0.3,
+    "stockQuantity": 29,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "BOMBA-FRENO-001-E",
+    "title": "Bomba principal de freno",
+    "description": "Cilindro maestro para sistema de frenos.",
+    "categoryId": 8,
+    "brandId": 4,
+    "price": 84.75,
+    "weightLb": 3.5,
+    "stockQuantity": 12,
+    "lowStockThreshold": 4,
+    "active": 1
+  }
+]

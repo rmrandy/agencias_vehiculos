@@ -1,0 +1,312 @@
+services:
+  oracle-shared:
+    platform: linux/amd64
+    image: gvenzl/oracle-xe:21-slim
+    container_name: ${STACK_NAME:-agencias}-oracle-shared
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_SYS_PASSWORD:-oracle123}
+      APP_USER: FABRICA1
+      APP_USER_PASSWORD: ${ORACLE_F1_APP_PASSWORD:-123}
+      ORACLE_F2_APP_PASSWORD: ${ORACLE_F2_APP_PASSWORD:-123}
+      ORACLE_F3_APP_PASSWORD: ${ORACLE_F3_APP_PASSWORD:-123}
+      ORACLE_F4_APP_PASSWORD: ${ORACLE_F4_APP_PASSWORD:-123}
+      ORACLE_F5_APP_PASSWORD: ${ORACLE_F5_APP_PASSWORD:-123}
+      INIT_SGA_SIZE: 512
+      INIT_PGA_SIZE: 128
+    ports:
+      - "${ORACLE_PORT:-18121}:1521"
+    volumes:
+      - oracle_shared_data:/opt/oracle/oradata
+      - ./fabrica/oracle-init:/container-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'select 1 from dual;' | sqlplus -s system/${ORACLE_SYS_PASSWORD:-oracle123}@localhost:1521/XEPDB1 || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 20
+    restart: unless-stopped
+
+  fabrica-be-1:
+    build:
+      context: ./fabrica/backend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-fabrica-be-1
+    environment:
+      PORT: 8080
+      CORS_ALLOWED_ORIGINS: "*"
+      DB_HOST: oracle-shared
+      DB_PORT: 1521
+      DB_SERVICE: XEPDB1
+      DB_USER: FABRICA1
+      DB_PASS: ${ORACLE_F1_APP_PASSWORD:-123}
+    depends_on:
+      oracle-shared:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${FABRICA_1_BE_PORT:-5051}:8080"
+
+  fabrica-fe-1:
+    build:
+      context: ./fabrica/frontend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-fabrica-fe-1
+    environment:
+      FRONTEND_PORT: 5173
+      VITE_API_URL: http://${HOST_IP:-localhost}:${FABRICA_1_BE_PORT:-5051}
+    depends_on:
+      - fabrica-be-1
+    ports:
+      - "${FABRICA_1_FE_PORT:-5052}:5173"
+
+  fabrica-be-2:
+    build:
+      context: ./fabrica/backend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-fabrica-be-2
+    environment:
+      PORT: 8080
+      CORS_ALLOWED_ORIGINS: "*"
+      DB_HOST: oracle-shared
+      DB_PORT: 1521
+      DB_SERVICE: XEPDB1
+      DB_USER: FABRICA2
+      DB_PASS: ${ORACLE_F2_APP_PASSWORD:-123}
+    depends_on:
+      oracle-shared:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${FABRICA_2_BE_PORT:-5061}:8080"
+
+  fabrica-fe-2:
+    build:
+      context: ./fabrica/frontend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-fabrica-fe-2
+    environment:
+      FRONTEND_PORT: 5173
+      VITE_API_URL: http://${HOST_IP:-localhost}:${FABRICA_2_BE_PORT:-5061}
+    depends_on:
+      - fabrica-be-2
+    ports:
+      - "${FABRICA_2_FE_PORT:-5062}:5173"
+
+  fabrica-be-3:
+    build:
+      context: ./fabrica/backend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-fabrica-be-3
+    environment:
+      PORT: 8080
+      CORS_ALLOWED_ORIGINS: "*"
+      DB_HOST: oracle-shared
+      DB_PORT: 1521
+      DB_SERVICE: XEPDB1
+      DB_USER: FABRICA3
+      DB_PASS: ${ORACLE_F3_APP_PASSWORD:-123}
+    depends_on:
+      oracle-shared:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${FABRICA_3_BE_PORT:-5071}:8080"
+
+  fabrica-fe-3:
+    build:
+      context: ./fabrica/frontend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-fabrica-fe-3
+    environment:
+      FRONTEND_PORT: 5173
+      VITE_API_URL: http://${HOST_IP:-localhost}:${FABRICA_3_BE_PORT:-5071}
+    depends_on:
+      - fabrica-be-3
+    ports:
+      - "${FABRICA_3_FE_PORT:-5072}:5173"
+
+  fabrica-be-4:
+    build:
+      context: ./fabrica/backend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-fabrica-be-4
+    environment:
+      PORT: 8080
+      CORS_ALLOWED_ORIGINS: "*"
+      DB_HOST: oracle-shared
+      DB_PORT: 1521
+      DB_SERVICE: XEPDB1
+      DB_USER: FABRICA4
+      DB_PASS: ${ORACLE_F4_APP_PASSWORD:-123}
+    depends_on:
+      oracle-shared:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${FABRICA_4_BE_PORT:-5081}:8080"
+
+  fabrica-fe-4:
+    build:
+      context: ./fabrica/frontend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-fabrica-fe-4
+    environment:
+      FRONTEND_PORT: 5173
+      VITE_API_URL: http://${HOST_IP:-localhost}:${FABRICA_4_BE_PORT:-5081}
+    depends_on:
+      - fabrica-be-4
+    ports:
+      - "${FABRICA_4_FE_PORT:-5082}:5173"
+
+  fabrica-be-5:
+    build:
+      context: ./fabrica/backend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-fabrica-be-5
+    environment:
+      PORT: 8080
+      CORS_ALLOWED_ORIGINS: "*"
+      DB_HOST: oracle-shared
+      DB_PORT: 1521
+      DB_SERVICE: XEPDB1
+      DB_USER: FABRICA5
+      DB_PASS: ${ORACLE_F5_APP_PASSWORD:-123}
+    depends_on:
+      oracle-shared:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${FABRICA_5_BE_PORT:-5091}:8080"
+
+  fabrica-fe-5:
+    build:
+      context: ./fabrica/frontend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-fabrica-fe-5
+    environment:
+      FRONTEND_PORT: 5173
+      VITE_API_URL: http://${HOST_IP:-localhost}:${FABRICA_5_BE_PORT:-5091}
+    depends_on:
+      - fabrica-be-5
+    ports:
+      - "${FABRICA_5_FE_PORT:-5092}:5173"
+
+  sqlserver-d1:
+    platform: linux/amd64
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: ${STACK_NAME:-agencias}-sqlserver-d1
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: ${SQL_D1_SA_PASSWORD:-Yomismo123!}
+      MSSQL_MEMORY_LIMIT_MB: "512"
+    deploy:
+      resources:
+        limits:
+          memory: 1500m
+    ports:
+      - "${SQL_D1_PORT:-1433}:1433"
+    volumes:
+      - sql_d1_data:/var/opt/mssql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 3 bash -c '</dev/tcp/127.0.0.1/1433' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 90s
+
+  dist-be-1:
+    platform: linux/amd64
+    build:
+      context: ./distribuidores/backend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-dist-be-1
+    environment:
+      ASPNETCORE_URLS: http://+:5080
+      Server__Port: 5080
+      CORS_ALLOWED_ORIGINS: "*"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver-d1,1433;Database=AgenciasDistribuidores1;User Id=sa;Password=${SQL_D1_SA_PASSWORD:-Yomismo123!};TrustServerCertificate=True;"
+      FabricaApiUrl: http://${HOST_IP:-fabrica-be-1}:${FABRICA_1_BE_PORT:-5051}
+    depends_on:
+      sqlserver-d1:
+        condition: service_healthy
+      fabrica-be-1:
+        condition: service_started
+    restart: unless-stopped
+    ports:
+      - "${DIST_1_BE_PORT:-5180}:5080"
+
+  dist-fe-1:
+    build:
+      context: ./distribuidores/frontend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-dist-fe-1
+    environment:
+      FRONTEND_PORT: 5173
+      VITE_API_URL: http://${HOST_IP:-localhost}:${DIST_1_BE_PORT:-5180}
+    depends_on:
+      - dist-be-1
+    ports:
+      - "${DIST_1_FE_PORT:-5273}:5173"
+
+  sqlserver-d2:
+    platform: linux/amd64
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: ${STACK_NAME:-agencias}-sqlserver-d2
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: ${SQL_D2_SA_PASSWORD:-Yomismo123!}
+      MSSQL_MEMORY_LIMIT_MB: "512"
+    deploy:
+      resources:
+        limits:
+          memory: 1500m
+    ports:
+      - "${SQL_D2_PORT:-1434}:1433"
+    volumes:
+      - sql_d2_data:/var/opt/mssql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 3 bash -c '</dev/tcp/127.0.0.1/1433' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 90s
+
+  dist-be-2:
+    platform: linux/amd64
+    build:
+      context: ./distribuidores/backend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-dist-be-2
+    environment:
+      ASPNETCORE_URLS: http://+:5080
+      Server__Port: 5080
+      CORS_ALLOWED_ORIGINS: "*"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver-d2,1433;Database=AgenciasDistribuidores2;User Id=sa;Password=${SQL_D2_SA_PASSWORD:-Yomismo123!};TrustServerCertificate=True;"
+      FabricaApiUrl: http://${HOST_IP:-fabrica-be-2}:${FABRICA_2_BE_PORT:-5061}
+    depends_on:
+      sqlserver-d2:
+        condition: service_healthy
+      fabrica-be-2:
+        condition: service_started
+    restart: unless-stopped
+    ports:
+      - "${DIST_2_BE_PORT:-5280}:5080"
+
+  dist-fe-2:
+    build:
+      context: ./distribuidores/frontend
+      dockerfile: Dockerfile
+    container_name: ${STACK_NAME:-agencias}-dist-fe-2
+    environment:
+      FRONTEND_PORT: 5173
+      VITE_API_URL: http://${HOST_IP:-localhost}:${DIST_2_BE_PORT:-5280}
+    depends_on:
+      - dist-be-2
+    ports:
+      - "${DIST_2_FE_PORT:-5373}:5173"
+
+volumes:
+  oracle_shared_data:
+  sql_d1_data:
+  sql_d2_data:

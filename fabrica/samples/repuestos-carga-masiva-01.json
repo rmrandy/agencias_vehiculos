@@ -1,0 +1,98 @@
+[
+  {
+    "partNumber": "FILT-ACEITE-001",
+    "title": "Filtro de aceite universal",
+    "description": "Filtro de aceite para motor. Especificaciones: rosca M20x1.5, altura 120mm.",
+    "categoryId": 1,
+    "brandId": 1,
+    "price": 12.99,
+    "weightLb": 0.5,
+    "stockQuantity": 100,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "BATERIA-001-A",
+    "title": "Bateria 12V 55Ah",
+    "description": "Bateria automotriz de arranque en frio.",
+    "categoryId": 2,
+    "brandId": 1,
+    "price": 95.0,
+    "weightLb": 28.0,
+    "stockQuantity": 18,
+    "lowStockThreshold": 4,
+    "active": 1
+  },
+  {
+    "partNumber": "BUJIA-001-A",
+    "title": "Bujia iridio",
+    "description": "Bujia de alto rendimiento para gasolina.",
+    "categoryId": 3,
+    "brandId": 2,
+    "price": 8.5,
+    "weightLb": 0.2,
+    "stockQuantity": 120,
+    "lowStockThreshold": 20,
+    "active": 1
+  },
+  {
+    "partNumber": "ACEITE-5W30-001-A",
+    "title": "Aceite sintetico 5W30 1L",
+    "description": "Lubricante para motor gasolina y diesel ligero.",
+    "categoryId": 4,
+    "brandId": 3,
+    "price": 11.75,
+    "weightLb": 2.0,
+    "stockQuantity": 75,
+    "lowStockThreshold": 10,
+    "active": 1
+  },
+  {
+    "partNumber": "AMORT-DEL-001-A",
+    "title": "Amortiguador delantero",
+    "description": "Amortiguador para eje delantero.",
+    "categoryId": 5,
+    "brandId": 4,
+    "price": 62.4,
+    "weightLb": 6.8,
+    "stockQuantity": 22,
+    "lowStockThreshold": 5,
+    "active": 1
+  },
+  {
+    "partNumber": "RADIADOR-001-A",
+    "title": "Radiador aluminio",
+    "description": "Radiador de enfriamiento alta eficiencia.",
+    "categoryId": 6,
+    "brandId": 2,
+    "price": 145.9,
+    "weightLb": 11.3,
+    "stockQuantity": 9,
+    "lowStockThreshold": 3,
+    "active": 1
+  },
+  {
+    "partNumber": "SENSOR-O2-001-A",
+    "title": "Sensor de oxigeno",
+    "description": "Sensor O2 para control de mezcla.",
+    "categoryId": 7,
+    "brandId": 5,
+    "price": 39.99,
+    "weightLb": 0.4,
+    "stockQuantity": 40,
+    "lowStockThreshold": 6,
+    "active": 1
+  },
+  {
+    "partNumber": "BOMBA-COMB-001-A",
+    "title": "Bomba de combustible",
+    "description": "Modulo de bomba para sistema de inyeccion.",
+    "categoryId": 8,
+    "brandId": 4,
+    "price": 118.2,
+    "weightLb": 3.9,
+    "stockQuantity": 14,
+    "lowStockThreshold": 4,
+    "active": 1
+  }
+]

@@ -37,24 +37,36 @@ builder.Services.AddScoped<BackendDistribuidores.Services.PedidoReciboPdfService
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+var corsAllowedOrigins = Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS");
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("InstanceCors", policy =>
     {
-        policy.AllowAnyOrigin()
+        if (string.IsNullOrWhiteSpace(corsAllowedOrigins) || corsAllowedOrigins!.Trim() == "*")
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+            return;
+        }
+
+        var origins = corsAllowedOrigins
+            .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+        policy.WithOrigins(origins)
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
 });
 
 // Puerto configurable: variable de entorno PORT o Server:Port en appsettings (por defecto 5080)
+// Importante en Docker: escuchar en 0.0.0.0 para exponer correctamente el contenedor.
 var port = Environment.GetEnvironmentVariable("PORT") ?? builder.Configuration["Server:Port"] ?? "5080";
-builder.WebHost.UseUrls($"http://localhost:{port}");
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 var app = builder.Build();
 
-app.UseCors();
-app.UseHttpsRedirection();
+app.UseCors("InstanceCors");
 // SPA: los assets del front (Vite) deben estar en wwwroot; p. ej. `npm run build` en
 // `distribuidores/frontend` (el .csproj copia dist/ → wwwroot/ al compilar si index.html existe).
 app.UseDefaultFiles();
@@ -66,7 +78,34 @@ app.MapFallbackToFile("index.html");
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.EnsureCreatedAsync();
+    var maxAttempts = 20;
+    var delay = TimeSpan.FromSeconds(5);
+    var ensured = false;
+
+    // SQL Server en contenedor puede tardar en aceptar conexiones aunque el contenedor esté "running".
+    for (var attempt = 1; attempt <= maxAttempts; attempt++)
+    {
+        try
+        {
+            await db.Database.EnsureCreatedAsync();
+            ensured = true;
+            break;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Startup] EnsureCreated intento {attempt}/{maxAttempts} falló: {ex.Message}");
+            if (attempt == maxAttempts)
+            {
+                throw;
+            }
+            await Task.Delay(delay);
+        }
+    }
+
+    if (!ensured)
+    {
+        throw new InvalidOperationException("No se pudo inicializar la base de datos.");
+    }
     await SeedData.EnsureSeedAsync(db);
 }
 

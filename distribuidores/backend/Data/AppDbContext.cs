@@ -129,6 +129,7 @@ public class AppDbContext : DbContext
         {
             e.ToTable("ENVIO_CONFIG");
             e.HasKey(x => x.Id);
+            e.Property(x => x.Id).ValueGeneratedNever();
             e.Property(x => x.UsdPerLb).HasPrecision(12, 4);
         });
 
@@ -151,6 +152,8 @@ public class AppDbContext : DbContext
             e.Property(x => x.PartId).IsRequired(false);
             e.Property(x => x.UnitPrice).HasPrecision(12, 2);
             e.Property(x => x.LineTotal).HasPrecision(12, 2);
+            e.Property(x => x.FabricaStatus).HasMaxLength(30);
+            e.Property(x => x.FabricaTrackingNumber).HasMaxLength(100);
             e.Property(x => x.TitleSnapshot).HasMaxLength(500);
             e.Property(x => x.PartNumberSnapshot).HasMaxLength(100);
         });

@@ -10,6 +10,7 @@ public class OrderService
     private readonly AppDbContext _db;
     private readonly PartService _partService;
     private readonly FabricaIntegrationService _fabrica;
+    private readonly MailService _mailService;
     private readonly ArancelService _arancel;
     private readonly ShippingRateService _shippingRate;
     private readonly MonedaService _moneda;
@@ -18,6 +19,7 @@ public class OrderService
         AppDbContext db,
         PartService partService,
         FabricaIntegrationService fabrica,
+        MailService mailService,
         ArancelService arancel,
         ShippingRateService shippingRate,
         MonedaService moneda)
@@ -25,6 +27,7 @@ public class OrderService
         _db = db;
         _partService = partService;
         _fabrica = fabrica;
+        _mailService = mailService;
         _arancel = arancel;
         _shippingRate = shippingRate;
         _moneda = moneda;
@@ -409,29 +412,133 @@ public class OrderService
         if (string.IsNullOrWhiteSpace(normalized))
             throw new ArgumentException("status es obligatorio");
 
-        IQueryable<OrderItem> query = _db.OrderItems.AsNoTracking()
+        IQueryable<OrderItem> query = _db.OrderItems
             .Where(i => i.FabricaOrderId == fabricaOrderId
                 && string.Equals(i.LineSource, "FABRICA", StringComparison.OrdinalIgnoreCase));
         if (proveedorId.HasValue)
             query = query.Where(i => i.ProveedorId == proveedorId.Value);
 
-        var orderIds = await query.Select(i => i.OrderId).Distinct().ToListAsync(ct);
+        var changedLines = await query.ToListAsync(ct);
+        var orderIds = changedLines.Select(i => i.OrderId).Distinct().ToList();
         if (orderIds.Count == 0)
             return Array.Empty<long>();
+
+        foreach (var line in changedLines)
+        {
+            line.FabricaStatus = normalized;
+            line.FabricaTrackingNumber = trackingNumber;
+            line.FabricaEtaDays = etaDays;
+            line.FabricaStatusUpdatedAt = DateTime.UtcNow;
+        }
+        await _db.SaveChangesAsync(ct);
 
         var updated = new List<long>();
         foreach (var orderId in orderIds)
         {
-            var current = await GetLatestStatusAsync(orderId, ct);
-            var currentStatus = current?.Status?.Trim().ToUpperInvariant() ?? "INITIATED";
-            if (!PedidoEstadoRules.CanAdvanceTo(currentStatus, normalized))
+            var changedForOrder = changedLines.Where(x => x.OrderId == orderId).ToList();
+            await NotifyLineLevelEventsAsync(orderId, proveedorId, normalized, changedForOrder.Count, comment, trackingNumber, etaDays, ct);
+
+            var aggregate = await ComputeAggregatedStatusFromFabricaLinesAsync(orderId, ct);
+            if (aggregate == null)
                 continue;
 
-            await AddOrderStatusAsync(orderId, normalized, comment, trackingNumber, etaDays, null, ct);
+            var current = await GetLatestStatusAsync(orderId, ct);
+            var currentStatus = current?.Status?.Trim().ToUpperInvariant() ?? "INITIATED";
+            var aggregateValue = aggregate.Value;
+            if (!PedidoEstadoRules.CanAdvanceTo(currentStatus, aggregateValue.Status))
+                continue;
+
+            await AddOrderStatusAsync(orderId, aggregateValue.Status, aggregateValue.Comment, trackingNumber, etaDays, null, ct);
             updated.Add(orderId);
         }
 
         return updated;
+    }
+
+    private async Task NotifyLineLevelEventsAsync(
+        long orderId,
+        long? proveedorId,
+        string normalizedStatus,
+        int affectedLines,
+        string? comment,
+        string? trackingNumber,
+        int? etaDays,
+        CancellationToken ct)
+    {
+        if (affectedLines <= 0)
+            return;
+
+        var order = await _db.OrderHeaders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == orderId, ct);
+        if (order == null)
+            return;
+        var user = await _db.AppUsers.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == order.UserId, ct);
+        if (user == null || string.IsNullOrWhiteSpace(user.Email))
+            return;
+
+        string? proveedorNombre = null;
+        if (proveedorId.HasValue)
+        {
+            var prov = await _db.Proveedores.AsNoTracking().FirstOrDefaultAsync(p => p.ProveedorId == proveedorId.Value, ct);
+            proveedorNombre = prov?.Nombre;
+        }
+
+        var statusForMail = normalizedStatus;
+        var prefix = normalizedStatus == "CANCELLED"
+            ? "Se canceló"
+            : normalizedStatus == "SHIPPED"
+                ? "Se envió"
+                : "Se actualizó";
+        var detalleProv = !string.IsNullOrWhiteSpace(proveedorNombre) ? $" en {proveedorNombre}" : "";
+        var msg = $"{prefix} {affectedLines} producto(s){detalleProv} en tu pedido de distribuidora.";
+        if (!string.IsNullOrWhiteSpace(comment))
+            msg += $" Nota: {comment}";
+
+        _mailService.SendOrderStatusUpdate(
+            user.Email!,
+            user.FullName,
+            order.OrderNumber,
+            statusForMail,
+            msg,
+            trackingNumber,
+            etaDays);
+    }
+
+    private async Task<(string Status, string Comment)?> ComputeAggregatedStatusFromFabricaLinesAsync(long orderId, CancellationToken ct)
+    {
+        var lines = await _db.OrderItems.AsNoTracking()
+            .Where(i => i.OrderId == orderId && string.Equals(i.LineSource, "FABRICA", StringComparison.OrdinalIgnoreCase))
+            .ToListAsync(ct);
+        if (lines.Count == 0)
+            return null;
+
+        bool IsCancelled(OrderItem l) => string.Equals(l.FabricaStatus, "CANCELLED", StringComparison.OrdinalIgnoreCase);
+        bool IsShipped(OrderItem l) =>
+            string.Equals(l.FabricaStatus, "SHIPPED", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(l.FabricaStatus, "DELIVERED", StringComparison.OrdinalIgnoreCase);
+        bool IsDelivered(OrderItem l) => string.Equals(l.FabricaStatus, "DELIVERED", StringComparison.OrdinalIgnoreCase);
+
+        var cancelled = lines.Count(IsCancelled);
+        var shipped = lines.Count(IsShipped);
+        var delivered = lines.Count(IsDelivered);
+
+        if (cancelled == lines.Count)
+            return ("CANCELLED", "Todos los productos provenientes de fábrica fueron cancelados.");
+
+        var activeLines = lines.Where(l => !IsCancelled(l)).ToList();
+        if (activeLines.Count > 0 && activeLines.All(IsDelivered))
+            return ("DELIVERED", cancelled > 0
+                ? "Productos restantes de fábrica entregados; hubo cancelaciones parciales."
+                : "Todos los productos de fábrica fueron entregados.");
+
+        if (activeLines.Count > 0 && activeLines.All(IsShipped))
+            return ("SHIPPED", cancelled > 0
+                ? "Productos restantes de fábrica enviados; hubo cancelaciones parciales."
+                : "Todos los productos de fábrica fueron enviados.");
+
+        if (cancelled > 0 || shipped > 0)
+            return ("PREPARING", "Pedido con avance parcial en fábrica (envíos y/o cancelaciones parciales).");
+
+        return ("PREPARING", "Pedido en preparación en fábrica.");
     }
 
     private static string GenerateOrderNumber()

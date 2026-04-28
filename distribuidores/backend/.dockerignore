@@ -1,0 +1,10 @@
+bin/
+obj/
+docs/
+.vs/
+.vscode/
+*.user
+*.suo
+*.tmp
+*.log
+.DS_Store

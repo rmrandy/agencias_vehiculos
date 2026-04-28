@@ -8,7 +8,6 @@ import jakarta.persistence.EntityManagerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class UserService {
 
@@ -52,6 +51,41 @@ public class UserService {
 
     public AppUser getById(Long id) {
         return userRepo.findById(id).orElse(null);
+    }
+
+    /**
+     * Crea o actualiza un usuario administrador inicial con credenciales conocidas.
+     * Es idempotente y garantiza que el usuario tenga rol ADMIN.
+     */
+    public AppUser ensureAdminUser(String email, String password, String fullName) {
+        UserRegistrationValidator.validateEmailAndPassword(email, password);
+        String normalizedEmail = email.trim().toLowerCase();
+        AppUser user = userRepo.findByEmailIgnoreCase(normalizedEmail).orElse(null);
+        Role adminRole = ensureRole("ADMIN");
+        Role registeredRole = ensureRole("REGISTERED");
+
+        if (user == null) {
+            user = new AppUser();
+            user.setEmail(normalizedEmail);
+            user.setStatus("ACTIVE");
+        }
+
+        user.setPasswordHash(PasswordEncoding.hash(password));
+        user.setFullName(fullName != null ? fullName.trim() : user.getFullName());
+        if (user.getStatus() == null || user.getStatus().isBlank()) {
+            user.setStatus("ACTIVE");
+        }
+
+        boolean hasAdmin = user.getRoles().stream().anyMatch(r -> "ADMIN".equals(r.getName()));
+        if (!hasAdmin) {
+            user.getRoles().add(adminRole);
+        }
+        boolean hasRegistered = user.getRoles().stream().anyMatch(r -> "REGISTERED".equals(r.getName()));
+        if (!hasRegistered) {
+            user.getRoles().add(registeredRole);
+        }
+
+        return userRepo.save(user);
     }
 
     /**
